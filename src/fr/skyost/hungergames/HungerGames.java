@@ -10,7 +10,6 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +21,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -43,6 +43,7 @@ public class HungerGames extends JavaPlugin {
 	
 	public static HungerGames instance;
 	
+	public static PluginLogger logger;
 	public static ConfigFile config;
 	public static MessagesFile messages;
 	public static WinnersFile winners;
@@ -82,6 +83,8 @@ public class HungerGames extends JavaPlugin {
 			messages.init();
 			winners = new WinnersFile(this.getDataFolder());
 			winners.init();
+			logger = new PluginLogger(this);
+			logger.log(Level.INFO, "Enabling plugin...");
 			final int winnersSize = winners.Winners.size();
 			if(winnersSize != 0)  {
 				for(int i = 0; i != winnersSize; i++) {
@@ -124,11 +127,13 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
+			logger.log(Level.SEVERE, "Error enabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
 	@Override
 	public final void onDisable() {
+		logger.log(Level.INFO, "Disabling plugin...");
 		try {
 			if(players.size() != 0) {
 				for(final Player player : players.keySet()) {
@@ -160,6 +165,7 @@ public class HungerGames extends JavaPlugin {
 	}
 	
 	public static final void addPlayer(final Player player) {
+		logger.log(Level.INFO, player.getName() + " joined the lobby.");
 		players.put(player, new HungerGamesProfile(player));
 		final PlayerInventory inventory = player.getInventory();
 		inventory.setArmorContents(new ItemStack[]{null, null, null, null});
@@ -172,6 +178,7 @@ public class HungerGames extends JavaPlugin {
 		totalPlayers++;
 		broadcastMessage(messages.Messages_14.replaceAll("/n/", String.valueOf(totalPlayers)).replaceAll("/n-max/", String.valueOf(config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
 		if(totalPlayers == config.Game_MinPlayers) {
+			logger.log(Level.INFO, "Starting game...");
 			broadcastMessage(messages.Messages_3.replaceAll("/n/", String.valueOf(config.Lobby_Countdown_Time)));
 			currentStep = Step.FIRST_COUNTDOWN;
 			tasks.set(0, new Countdown(config.Lobby_Countdown_Time, config.Lobby_Countdown_ExpBarLevel, new PostExecuteFirst()).runTaskTimer(instance, 0, 20L).getTaskId());
@@ -229,6 +236,7 @@ public class HungerGames extends JavaPlugin {
 	}
 	
 	public static final void finishGame(final String message) {
+		logger.log(Level.INFO, "Finishing game...");
 		final BukkitScheduler scheduler = Bukkit.getScheduler();
 		for(final int task : tasks) {
 			if(task != -1) {
@@ -295,17 +303,19 @@ public class HungerGames extends JavaPlugin {
 	
 	public static final void deleteCurrentMap() {
 		try {
+			logger.log(Level.INFO, "Deleting the current map...");
 			Bukkit.unloadWorld(currentMap, false);
 			Utils.getMCClass("RegionFileCache").getMethod("a").invoke(null);
 			Utils.delete(currentMap.getWorldFolder());
+			logger.log(Level.INFO, "Done !");
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
+			logger.log(Level.SEVERE, "Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
 	
 	public static final void copyRandomMap() {
-		final Logger logger = instance.getLogger();
 		try {
 			logger.log(Level.INFO, "Processing maps...");
 			final File[] maps = mapsFolder.listFiles();

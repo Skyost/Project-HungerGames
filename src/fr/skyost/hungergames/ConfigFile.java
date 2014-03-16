@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 
 import fr.skyost.hungergames.HungerGames.Mode;
 import fr.skyost.hungergames.utils.Config;
@@ -27,7 +28,7 @@ public class ConfigFile extends Config {
 	public int Game_MaxPlayers = 8;
 	public int Game_SpawnDistance = 200;
 	public int Game_Random_Delay = 1000;
-	public List<Material> Game_Random_Items = Arrays.asList(Material.GOLD_SWORD, Material.EMERALD, Material.COAL);
+	public List<List<String>> Game_Random_Items = Arrays.asList(Arrays.asList(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), String.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())), Arrays.asList(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too."), Arrays.asList(Material.COAL.name()));
 	public boolean Game_Random_Chests = true;
 	public int Game_Random_Distance = 100;
 	public boolean Game_Random_Thundering = true;
@@ -43,6 +44,8 @@ public class ConfigFile extends Config {
 	public boolean Spectators_Permissions_Chat = false;
 	public boolean Spectators_Permissions_PickupItems = false;
 	public boolean Spectators_Permissions_Interact = false;
+	
+	public boolean Log_Console = true;
 	
 	public ConfigFile(final File dataFolder) {
 		CONFIG_FILE = new File(dataFolder, "config.yml");
