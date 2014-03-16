@@ -1,0 +1,24 @@
+name: Project HungerGames
+main: fr.skyost.hungergames.HungerGames
+description: Yet Another Hunger Games plugin.
+version: 0.1
+author: Skyost
+website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/
+commands:
+ hg:
+  description: Main command of Project HungerGames.
+  aliases: [hunger-games, h-g]
+  usage: /hg join, /hg leave, /hg infos or /hg winners <page>.
+permissions:
+ hungergames.join:
+  default: true
+  description: Allows you to join the game.
+ hungergames.leave:
+  default: true
+  description: Allows you to leave the game.
+ hungergames.infos:
+  default: true
+  description: Allows you to view informations about the next game.
+ hungergames.winners:
+  default: true
+  description: Allows you to view the winners.
