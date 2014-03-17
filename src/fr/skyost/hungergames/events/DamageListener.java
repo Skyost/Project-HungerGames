@@ -1,30 +1,20 @@
-package fr.skyost.hungergames.listeners;
+package fr.skyost.hungergames.events;
 
 import java.util.Random;
 
-import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -32,10 +22,10 @@ import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.utils.Utils;
 
-public class EventsListener implements Listener {
+public class DamageListener implements Listener {
 	
 	@EventHandler
-	private final void onEntityDamageEvent(final EntityDamageEvent event) {
+	private final void onEntityDamage(final EntityDamageEvent event) {
 		final Entity entity = event.getEntity();
 		if(entity.getType() == EntityType.PLAYER) {
 			final Player player = (Player)entity;
@@ -79,49 +69,6 @@ public class EventsListener implements Listener {
 	}
 	
 	@EventHandler
-	private final void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer()) && !HungerGames.config.Spectators_Permissions_Chat) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	private final void onPlayerPickupItemEvent(final PlayerPickupItemEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer()) && !HungerGames.config.Spectators_Permissions_PickupItems) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	private final void onPlayerInteract(final PlayerInteractEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer()) && !HungerGames.config.Spectators_Permissions_Interact) {
-			event.setCancelled(true);
-		}
-	}
-	
-	/**
-	 * @author asofold.
-	 */
-	
-	@EventHandler(priority = EventPriority.LOW)
-	private final void onEntityTarget(final EntityTargetEvent event) {
-		if(event.isCancelled()) {
-			return;
-		}	
-		final Entity entity = event.getEntity();
-		final Entity target = event.getTarget();
-		if(target instanceof Player) {
-			final Player player = (Player)target;
-			if(HungerGames.isSpectator(player) && entity instanceof ExperienceOrb) {
-				Utils.repellExpOrb(player, (ExperienceOrb)entity);
-				event.setCancelled(true);
-				event.setTarget(null);
-				return;
-			}
-		}
-	}
-	
-	@EventHandler
 	private final void onFoodLevelChange(final FoodLevelChangeEvent event) {
 		final HumanEntity entity = event.getEntity();
 		if(entity.getType() == EntityType.PLAYER) {
@@ -129,35 +76,6 @@ public class EventsListener implements Listener {
 			if((world.equals(HungerGames.lobby) || HungerGames.isSpectator((Player)entity) || (world.equals(HungerGames.currentMap) && HungerGames.currentStep != Step.GAME))) {
 				event.setCancelled(true);
 			}
-		}
-	}
-	
-	@EventHandler
-	private final void onChunkUnloadEvent(final ChunkUnloadEvent event) {
-		final Chunk chunk = event.getChunk();
-		if(HungerGames.generatedChunks.contains(chunk)) {
-			if(HungerGames.currentStep == Step.GAME) {
-				HungerGames.generatedChunks.remove(chunk);
-			}
-			else {
-				event.setCancelled(true);
-			}
-		}
-	}
-	
-	@EventHandler
-	private final void onPlayerQuit(final PlayerQuitEvent event) {
-		final Player player = event.getPlayer();
-		final World world = player.getWorld();
-		if(world.equals(HungerGames.lobby)|| world.equals(HungerGames.currentMap)) {
-			HungerGames.removePlayer(player, null, false);
-		}
-	}
-	
-	@EventHandler
-	private final void onServerListPingEvent(final ServerListPingEvent event) {
-		if(HungerGames.config.Game_Motd_Change) {
-			event.setMotd(HungerGames.getCurrentMotd());
 		}
 	}
 	

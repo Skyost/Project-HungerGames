@@ -26,6 +26,7 @@ public class HungerGamesProfile implements Serializable {
 	private final ItemStack[] armor;
 	private final GameMode gameMode;
 	private final boolean allowFlight;
+	private final boolean isSneaking;
 	
 	private final Location generatedLocation;
 
@@ -44,6 +45,7 @@ public class HungerGamesProfile implements Serializable {
 		gameMode = player.getGameMode();
 		allowFlight = player.getAllowFlight();
 		generatedLocation = HungerGames.currentMap.getSpawnLocation();
+		isSneaking = player.isSneaking();
 		final Random random = new Random();
 		final int doubledDistance = HungerGames.config.Game_SpawnDistance * 2;
 		final int x = random.nextInt(doubledDistance) - HungerGames.config.Game_SpawnDistance + 1;
@@ -115,6 +117,17 @@ public class HungerGamesProfile implements Serializable {
 	
 	public final boolean getAllowFlight() {
 		return allowFlight;
+	}
+	
+	/**
+	 * If the player is sneaking.
+	 * 
+	 * @return <b>true</b> If the player is sneaking.
+	 * <br><b>false</b> If the player is not sneaking.
+	 */
+	
+	public final boolean isSneaking() {
+		return isSneaking;
 	}
 
 	

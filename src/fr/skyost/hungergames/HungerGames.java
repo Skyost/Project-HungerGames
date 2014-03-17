@@ -15,13 +15,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginLogger;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -30,8 +33,16 @@ import org.bukkit.util.ChatPaginator;
 
 import com.google.common.base.CharMatcher;
 
-import fr.skyost.hungergames.listeners.CommandsExecutor;
-import fr.skyost.hungergames.listeners.EventsListener;
+import fr.skyost.hungergames.commands.HungerGamesCommand;
+import fr.skyost.hungergames.events.DamageListener;
+import fr.skyost.hungergames.events.EntityListener;
+import fr.skyost.hungergames.events.PlayerListener;
+import fr.skyost.hungergames.events.WorldListener;
+import fr.skyost.hungergames.events.configurable.AsyncChatListener;
+import fr.skyost.hungergames.events.configurable.ChunkLoadListener;
+import fr.skyost.hungergames.events.configurable.InteractListener;
+import fr.skyost.hungergames.events.configurable.PickupItemListener;
+import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.tasks.Countdown;
 import fr.skyost.hungergames.tasks.PostExecuteFirst;
 import fr.skyost.hungergames.utils.MetricsLite;
@@ -106,10 +117,6 @@ public class HungerGames extends JavaPlugin {
 					spectatorsList = new ArrayList<Player>();
 				}
 			}
-			lobby = Bukkit.getWorld(config.Lobby_World);
-			if(lobby == null) {
-				lobby = Bukkit.createWorld(new WorldCreator(config.Lobby_World));
-			}
 			mapsFolder = new File(config.Maps_Folder);
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
@@ -120,10 +127,10 @@ public class HungerGames extends JavaPlugin {
 			else {
 				copyRandomMap();
 			}
-			Bukkit.getPluginManager().registerEvents(new EventsListener(), this);
+			registerEvents();
 			final PluginCommand command = this.getCommand("hunger-games");
 			command.setUsage(ChatColor.RED + "/hg join, /hg leave, /hg infos or /hg winners <page>.");
-			command.setExecutor(new CommandsExecutor());
+			command.setExecutor(new HungerGamesCommand());
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -164,6 +171,30 @@ public class HungerGames extends JavaPlugin {
 		}
 	}
 	
+	private final void registerEvents() {
+		final PluginManager manager = Bukkit.getPluginManager();
+		for(final Listener listener : new Listener[]{new DamageListener(), new EntityListener(), new PlayerListener(), new WorldListener()}) {
+			manager.registerEvents(listener, this);
+		}
+		if(config.Game_Motd_Change) {
+			manager.registerEvents(new ServerListPingListener(), this);
+		}
+		if(config.Spectators_Enable) {
+			if(!config.Spectators_Permissions_Chat) {
+				manager.registerEvents(new AsyncChatListener(), this);
+			}
+			if(!config.Spectators_Permissions_Interact) {
+				manager.registerEvents(new InteractListener(), this);
+			}
+			if(!config.Spectators_Permissions_PickupItems) {
+				manager.registerEvents(new PickupItemListener(), this);
+			}
+		}
+		if(config.Maps_Limit_Enable) {
+			manager.registerEvents(new ChunkLoadListener(), this);
+		}
+	}
+	
 	public static final void addPlayer(final Player player) {
 		logger.log(Level.INFO, player.getName() + " joined the lobby.");
 		players.put(player, new HungerGamesProfile(player));
@@ -174,7 +205,7 @@ public class HungerGames extends JavaPlugin {
 		player.setTotalExperience(0);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
-		player.teleport(HungerGames.lobby.getSpawnLocation());
+		player.teleport(new Location(lobby, config.Lobby_Spawn_X, config.Lobby_Spawn_Y, config.Lobby_Spawn_Z));
 		totalPlayers++;
 		broadcastMessage(messages.Messages_14.replaceAll("/n/", String.valueOf(totalPlayers)).replaceAll("/n-max/", String.valueOf(config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
 		if(totalPlayers == config.Game_MinPlayers) {
@@ -289,6 +320,7 @@ public class HungerGames extends JavaPlugin {
 		Utils.updateInventory(player);
 		player.setGameMode(profile.getGameMode());
 		player.setAllowFlight(profile.getAllowFlight());
+		player.setSneaking(profile.isSneaking());
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);
 		player.setFireTicks(0);
@@ -304,6 +336,12 @@ public class HungerGames extends JavaPlugin {
 	public static final void deleteCurrentMap() {
 		try {
 			logger.log(Level.INFO, "Deleting the current map...");
+			final List<Player> players = currentMap.getPlayers();
+			if(players.size() != 0) {
+				for(final Player player : players) {
+					player.teleport(lobby.getSpawnLocation());
+				}
+			}
 			Bukkit.unloadWorld(currentMap, false);
 			Utils.getMCClass("RegionFileCache").getMethod("a").invoke(null);
 			Utils.delete(currentMap.getWorldFolder());

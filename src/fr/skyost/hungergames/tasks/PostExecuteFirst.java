@@ -22,6 +22,7 @@ public class PostExecuteFirst extends BukkitRunnable {
 			player.teleport(entry.getValue().getGeneratedLocation());
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setAllowFlight(false);
+			player.setSneaking(HungerGames.config.Game_AutoSneak);
 			player.setHealth(player.getMaxHealth());
 			player.setFoodLevel(20);
 			player.sendMessage(message);

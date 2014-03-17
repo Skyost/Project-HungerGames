@@ -1,4 +1,4 @@
-package fr.skyost.hungergames.listeners;
+package fr.skyost.hungergames.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,7 +9,7 @@ import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.utils.Utils;
 
-public class CommandsExecutor implements CommandExecutor {
+public class HungerGamesCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender commandSender, final Command command, final String label, final String[] args) {
