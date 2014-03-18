@@ -10,7 +10,7 @@ public class AsyncChatListener implements Listener {
 	
 	@EventHandler
 	private final void onAsyncPlayerChat(final AsyncPlayerChatEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer())) {
+		if(HungerGames.spectatorsManager.hasSpectator(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}

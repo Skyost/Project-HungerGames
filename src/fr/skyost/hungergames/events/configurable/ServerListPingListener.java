@@ -4,13 +4,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 
-import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.HungerGamesAPI;
 
 public class ServerListPingListener implements Listener {
 	
 	@EventHandler
 	private final void onServerListPing(final ServerListPingEvent event) {
-		event.setMotd(HungerGames.getCurrentMotd());
+		event.setMotd(HungerGamesAPI.getCurrentMotd());
 	}
 	
 }

@@ -1,5 +1,7 @@
 package fr.skyost.hungergames;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -8,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -28,11 +29,15 @@ public class SpectatorsManager {
 	// No players in the ghost factory
 	private static final OfflinePlayer[] EMPTY_PLAYERS = new OfflinePlayer[0];
 	
+	private static List<Player> spectatorsList;
+	private Mode mode;
+	
 	private Team spectatorsTeam;
 	
-	// Task that must be cleaned up
-	private BukkitTask task;
-	private boolean closed;
+	public enum Mode {
+		GHOST_FACTORY,
+		INVISIBLE_POTION;
+	}
 	
 	/**
 	 * Constructs a new instance of SpectatorsManager.
@@ -40,10 +45,16 @@ public class SpectatorsManager {
 	 * @param plugin The plugin which is used for the Scheduler.
 	 */
 	
-	public SpectatorsManager(final Plugin plugin) {
-		// Initialize
-		createTask(plugin);
-		createGetTeam();
+	public SpectatorsManager(final Plugin plugin, final Mode mode) {
+		this.mode = mode;
+		if(mode == Mode.GHOST_FACTORY) {
+			// Initialize
+			createTask(plugin);
+			createGetTeam();
+		}
+		else {
+			spectatorsList = new ArrayList<Player>();
+		}
 	}
 	
 	private final void createGetTeam() {
@@ -57,11 +68,13 @@ public class SpectatorsManager {
 	}
 	
 	private final void createTask(final Plugin plugin) {
-		task = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
+		Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
-				for(final OfflinePlayer ghostPlayer : getSpectators()) {
+				OfflinePlayer ghostPlayer;
+				for(final Object objPlayer : getSpectators()) {
+					ghostPlayer = (OfflinePlayer)objPlayer;
 					final Player player = ghostPlayer.getPlayer();
 					if(player != null) {
 						if(!player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
@@ -78,82 +91,70 @@ public class SpectatorsManager {
 	}
 	
 	public final void clearSpectators() {
-		if(spectatorsTeam != null) {
-			for(final OfflinePlayer ghostPlayer : getSpectators()) {
-				spectatorsTeam.removePlayer(ghostPlayer);
-				final Player player = ghostPlayer.getPlayer();
-				if(player != null) {
-					removeSpectator(player);
+		if(mode == Mode.GHOST_FACTORY) {
+			if(spectatorsTeam != null) {
+				OfflinePlayer ghostPlayer;
+				for(final Object objPlayer : getSpectators()) {
+					ghostPlayer = (OfflinePlayer)objPlayer;
+					spectatorsTeam.removePlayer(ghostPlayer);
+					final Player player = ghostPlayer.getPlayer();
+					if(player != null) {
+						removeSpectator(player);
+					}
 				}
 			}
+		}
+		else {
+			for(final Player player : spectatorsList) {
+				player.removePotionEffect(PotionEffectType.INVISIBILITY);
+			}
+			spectatorsList.clear();
 		}
 	}
 	
 	public final void addSpectator(final Player player) {
-		validateState();
 		if(!spectatorsTeam.hasPlayer(player)) {
-			spectatorsTeam.addPlayer(player);
+			if(mode == Mode.GHOST_FACTORY) {
+				spectatorsTeam.addPlayer(player);
+			}
+			else {
+				spectatorsList.add(player);
+			}
 			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-			player.setAllowFlight(true);
-		}
-	}
-	
-	public final void addSpectator(final Player player, final boolean allowFlight) {
-		validateState();
-		if(!spectatorsTeam.hasPlayer(player)) {
-			spectatorsTeam.addPlayer(player);
-			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
-			player.setAllowFlight(allowFlight);
 		}
 	}
 	
 	public final boolean hasSpectator(final Player player) {
-		validateState();
-		return spectatorsTeam.hasPlayer(player);
+		if(mode == Mode.GHOST_FACTORY) {
+			return spectatorsTeam.hasPlayer(player);
+		}
+		return spectatorsList.contains(player);
 	}
 	
 	public final void removeSpectator(final Player player) {
-		validateState();
-		if(spectatorsTeam.removePlayer(player)) {
-			player.removePotionEffect(PotionEffectType.INVISIBILITY);
-			player.setAllowFlight(false);
-		}
-	}
-	
-	public final void removeSpectator(final Player player, boolean allowFlight) {
-		validateState();
-		if(spectatorsTeam.removePlayer(player)) {
-			player.removePotionEffect(PotionEffectType.INVISIBILITY);
-			player.setAllowFlight(allowFlight);
-		}
-	}
-	
-	public final OfflinePlayer[] getSpectators() {
-		validateState();
-		Set<OfflinePlayer> players = spectatorsTeam.getPlayers();
-		if(players != null) {
-			return players.toArray(new OfflinePlayer[0]);
+		if(mode == Mode.GHOST_FACTORY) {
+			if(!spectatorsTeam.removePlayer(player)) {
+				return;
+			}
 		}
 		else {
-			return EMPTY_PLAYERS;
+			spectatorsList.remove(player);
 		}
+		player.removePotionEffect(PotionEffectType.INVISIBILITY);
 	}
 	
-	public final void close() {
-		if(!closed) {
-			task.cancel();
-			spectatorsTeam.unregister();
-			closed = true;
+	public final Object[] getSpectators() {
+		if(mode == Mode.GHOST_FACTORY) {
+			Set<OfflinePlayer> players = spectatorsTeam.getPlayers();
+			if(players != null) {
+				return players.toArray(new OfflinePlayer[0]);
+			}
+			else {
+				return EMPTY_PLAYERS;
+			}
 		}
-	}
-	
-	public final boolean isClosed() {
-		return closed;
-	}
-	
-	private final void validateState() {
-		if(closed) {
-			throw new IllegalStateException("SpectatorsManager has closed. Cannot reuse instances.");
+		else {
+			return spectatorsList.toArray();
 		}
 	}
 	

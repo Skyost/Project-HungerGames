@@ -10,7 +10,7 @@ public class InteractListener implements Listener {
 	
 	@EventHandler
 	private final void onPlayerInteract(final PlayerInteractEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer()) && !HungerGames.config.Spectators_Permissions_Interact) {
+		if(HungerGames.spectatorsManager.hasSpectator(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}

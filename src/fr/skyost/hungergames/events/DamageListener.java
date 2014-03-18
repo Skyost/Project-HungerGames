@@ -20,6 +20,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGames.Step;
+import fr.skyost.hungergames.HungerGamesAPI;
 import fr.skyost.hungergames.utils.Utils;
 
 public class DamageListener implements Listener {
@@ -30,7 +31,7 @@ public class DamageListener implements Listener {
 		if(entity.getType() == EntityType.PLAYER) {
 			final Player player = (Player)entity;
 			final World world = entity.getWorld();
-			if((world.equals(HungerGames.lobby) || HungerGames.isSpectator(player) || (world.equals(HungerGames.currentMap) && HungerGames.currentStep != Step.GAME))) {
+			if(world.equals(HungerGames.lobby) || HungerGames.spectatorsManager.hasSpectator(player) || (world.equals(HungerGames.currentMap) && HungerGames.currentStep != Step.GAME)) {
 				event.setCancelled(true);
 			}
 			else if(world.equals(HungerGames.currentMap) && HungerGames.currentStep == Step.GAME) {
@@ -62,7 +63,8 @@ public class DamageListener implements Listener {
 						playerKey.sendMessage(HungerGames.messages.DeathMessages.get(new Random().nextInt(HungerGames.messages.DeathMessages.size())).replaceAll("/player/", player.getName()));
 						world.playSound(playerKey.getLocation(), HungerGames.config.Game_DeathSound_Sound, Float.parseFloat(HungerGames.config.Game_DeathSound_Volume), Float.parseFloat(HungerGames.config.Game_DeathSound_Pitch));
 					}
-					HungerGames.removePlayer(player, HungerGames.config.Spectators_Enable ? HungerGames.messages.Messages_9 + (HungerGames.totalPlayers <= 2 ? "" : "\n" + HungerGames.messages.Messages_12) : HungerGames.messages.Messages_9);
+					player.sendMessage(HungerGames.config.Spectators_Enable ? HungerGames.messages.Messages_9 + (HungerGames.totalPlayers <= 2 ? "" : "\n" + HungerGames.messages.Messages_12) : HungerGames.messages.Messages_9);
+					HungerGamesAPI.removePlayer(player);
 				}
 			}
 		}
@@ -73,7 +75,7 @@ public class DamageListener implements Listener {
 		final HumanEntity entity = event.getEntity();
 		if(entity.getType() == EntityType.PLAYER) {
 			final World world = entity.getWorld();
-			if((world.equals(HungerGames.lobby) || HungerGames.isSpectator((Player)entity) || (world.equals(HungerGames.currentMap) && HungerGames.currentStep != Step.GAME))) {
+			if((world.equals(HungerGames.lobby) || HungerGames.spectatorsManager.hasSpectator((Player)entity) || (world.equals(HungerGames.currentMap) && HungerGames.currentStep != Step.GAME))) {
 				event.setCancelled(true);
 			}
 		}

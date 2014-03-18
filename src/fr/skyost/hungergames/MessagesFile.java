@@ -8,6 +8,8 @@ import fr.skyost.hungergames.utils.Config;
 
 public class MessagesFile extends Config {
 	
+	public int VERSION = 1;
+	
 	public String Messages_1 = "§cThe game is full or has already begun !";
 	public String Messages_2 = "§cYou are already in the game !";
 	public String Messages_3 = "§6The game starts in /n/ seconds.";

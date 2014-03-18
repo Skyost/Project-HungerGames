@@ -26,7 +26,7 @@ public class EntityListener  implements Listener {
 		final Entity target = event.getTarget();
 		if(target instanceof Player) {
 			final Player player = (Player)target;
-			if(HungerGames.isSpectator(player) && entity instanceof ExperienceOrb) {
+			if(HungerGames.spectatorsManager.hasSpectator(player) && entity instanceof ExperienceOrb) {
 				Utils.repellExpOrb(player, (ExperienceOrb)entity);
 				event.setCancelled(true);
 				event.setTarget(null);

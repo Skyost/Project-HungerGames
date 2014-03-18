@@ -7,6 +7,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.HungerGamesAPI;
 
 public class RandomMessages extends BukkitRunnable {
 	
@@ -15,7 +16,7 @@ public class RandomMessages extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-		HungerGames.broadcastMessage(HungerGames.messages.RandomMessages_Messages.get(random.nextInt(HungerGames.messages.RandomMessages_Messages.size())));
+		HungerGamesAPI.broadcastMessage(HungerGames.messages.RandomMessages_Messages.get(random.nextInt(HungerGames.messages.RandomMessages_Messages.size())));
 		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.messages.RandomMessages_Delay * 20));
 	}
 	

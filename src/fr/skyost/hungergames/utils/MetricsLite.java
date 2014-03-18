@@ -55,7 +55,7 @@ public class MetricsLite {
     /**
      * The current revision number
      */
-    private final static int REVISION = 7;
+    private final static int REVISION = 541057;
 
     /**
      * The base url of the metrics domain

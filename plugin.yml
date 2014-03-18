@@ -2,6 +2,7 @@ name: Project HungerGames
 main: fr.skyost.hungergames.HungerGames
 description: Yet Another Hunger Games plugin.
 version: 0.3
+softdepend: [WorldEdit]
 author: Skyost
 website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/
 commands:

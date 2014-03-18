@@ -11,10 +11,13 @@ import org.bukkit.Sound;
 import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 
-import fr.skyost.hungergames.HungerGames.Mode;
+import fr.skyost.hungergames.SpectatorsManager.Mode;
 import fr.skyost.hungergames.utils.Config;
+import fr.skyost.hungergames.utils.borders.WorldEditBorder.Type;
 
 public class ConfigFile extends Config {
+	
+	public int VERSION = 1;
 	
 	public boolean EnableUpdater = true;
 	public boolean EnableMetrics = true;
@@ -22,8 +25,11 @@ public class ConfigFile extends Config {
 	public String Maps_Folder;
 	public boolean Maps_Generate_Enable = false;
 	public String Maps_Generate_Name = "generated_map";
-	public boolean Maps_Limit_Enable = true;
-	public int Maps_Limit_Size = 1000;
+	public boolean Maps_Borders_Enable = true;
+	public int Maps_Borders_Radius = 1000;
+	public Type Maps_Borders_Type = Type.SQUARE;
+	public Material Maps_Borders_Material = Material.BEDROCK;
+	public int Maps_Borders_Meta = 0;
 	
 	public String Lobby_World = "hungergames_lobby";
 	public double Lobby_Spawn_X;

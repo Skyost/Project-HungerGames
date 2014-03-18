@@ -7,6 +7,8 @@ import fr.skyost.hungergames.utils.Config;
 
 public class WinnersFile extends Config {
 	
+	public int VERSION = 1;
+	
 	public List<String> Winners = new ArrayList<String>();
 
 	public WinnersFile(final File dataFolder) {

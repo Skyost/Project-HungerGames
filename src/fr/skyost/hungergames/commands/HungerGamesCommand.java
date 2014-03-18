@@ -5,7 +5,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.HungerGamesAPI;
 import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.utils.Utils;
 
@@ -28,11 +30,16 @@ public class HungerGamesCommand implements CommandExecutor {
 				commandSender.sendMessage(HungerGames.messages.Messages_2);
 				return true;
 			}
-			if(HungerGames.totalPlayers == HungerGames.config.Game_MaxPlayers || (HungerGames.currentStep != Step.LOBBY && HungerGames.currentStep != Step.FIRST_COUNTDOWN)) {
+			if(!HungerGames.config.Spectators_Enable && (HungerGames.totalPlayers == HungerGames.config.Game_MaxPlayers || (HungerGames.currentStep != Step.LOBBY && HungerGames.currentStep != Step.FIRST_COUNTDOWN))) {
 				commandSender.sendMessage(HungerGames.messages.Messages_1);
 				return true;
 			}
-			HungerGames.addPlayer(player);
+			boolean spectator = false;
+			if(HungerGames.currentStep == Step.SECOND_COUNTDOWN || HungerGames.currentStep == Step.GAME) {
+				player.sendMessage(HungerGames.messages.Messages_12);
+				spectator = true;
+			}
+			HungerGamesAPI.addPlayer(player, spectator);
 			break;
 		case "leave":
 			if(!commandSender.hasPermission("hungergames.leave")) {
@@ -43,7 +50,8 @@ public class HungerGamesCommand implements CommandExecutor {
 				commandSender.sendMessage(HungerGames.messages.Messages_6);
 				return true;
 			}
-			HungerGames.removePlayer(player, HungerGames.messages.Messages_11, false);
+			player.sendMessage(HungerGames.messages.Messages_11);
+			HungerGamesAPI.removePlayer(player, false);
 			break;
 		case "infos":
 			if(!commandSender.hasPermission("hungergames.infos")) {
@@ -57,11 +65,11 @@ public class HungerGamesCommand implements CommandExecutor {
 			else {
 				final StringBuilder builder = new StringBuilder();
 				for(final Player playerKey : HungerGames.players.keySet()) {
-					builder.append(playerKey.getName() + " ");
+					builder.append(HungerGames.spectatorsManager.hasSpectator(playerKey) ? "(S)" : "(P)" + playerKey.getName() + " ");
 				}
 				players = builder.toString();
 			}
-			commandSender.sendMessage(HungerGames.messages.Messages_13.replaceAll("/n/", String.valueOf(HungerGames.players.size())).replaceAll("/players/", players).replaceAll("/map/", HungerGames.currentMap.getName()).replaceAll("/status/", HungerGames.getCurrentMotd()).replaceAll("/line-separator/", "\n"));
+			commandSender.sendMessage(HungerGames.messages.Messages_13.replaceAll("/n/", String.valueOf(HungerGames.players.size())).replaceAll("/players/", players).replaceAll("/map/", HungerGames.currentMap.getName()).replaceAll("/status/", HungerGamesAPI.getCurrentMotd()).replaceAll("/line-separator/", "\n"));
 			break;
 		case "winners":
 			if(!commandSender.hasPermission("hungergames.winners")) {

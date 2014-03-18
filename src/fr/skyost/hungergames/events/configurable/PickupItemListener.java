@@ -10,7 +10,7 @@ public class PickupItemListener implements Listener {
 	
 	@EventHandler
 	private final void onPlayerPickupItem(final PlayerPickupItemEvent event) {
-		if(HungerGames.isSpectator(event.getPlayer())) {
+		if(HungerGames.spectatorsManager.hasSpectator(event.getPlayer())) {
 			event.setCancelled(true);
 		}
 	}

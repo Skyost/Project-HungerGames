@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.HungerGamesAPI;
 
 public class RandomItems extends BukkitRunnable {
 	
@@ -56,7 +57,7 @@ public class RandomItems extends BukkitRunnable {
 		else {
 			HungerGames.currentMap.dropItem(location, item);
 		}
-		HungerGames.broadcastMessage(HungerGames.messages.Messages_10.replaceAll("/x/", String.valueOf(location.getBlockX())).replaceAll("/y/", String.valueOf(y)).replaceAll("/z/", String.valueOf(location.getBlockZ())));
+		HungerGamesAPI.broadcastMessage(HungerGames.messages.Messages_10.replaceAll("/x/", String.valueOf(location.getBlockX())).replaceAll("/y/", String.valueOf(y)).replaceAll("/z/", String.valueOf(location.getBlockZ())));
 		if(HungerGames.config.Game_Random_Thundering) {
 			HungerGames.currentMap.strikeLightningEffect(location);
 		}

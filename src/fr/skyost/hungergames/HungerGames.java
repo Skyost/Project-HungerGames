@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -14,21 +13,13 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.WorldCreator;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.ChatPaginator;
 
 import com.google.common.base.CharMatcher;
@@ -39,16 +30,20 @@ import fr.skyost.hungergames.events.EntityListener;
 import fr.skyost.hungergames.events.PlayerListener;
 import fr.skyost.hungergames.events.WorldListener;
 import fr.skyost.hungergames.events.configurable.AsyncChatListener;
-import fr.skyost.hungergames.events.configurable.ChunkLoadListener;
 import fr.skyost.hungergames.events.configurable.InteractListener;
 import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
-import fr.skyost.hungergames.tasks.Countdown;
-import fr.skyost.hungergames.tasks.PostExecuteFirst;
+import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
 import fr.skyost.hungergames.utils.MetricsLite;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Skyupdater;
-import fr.skyost.hungergames.utils.Utils;
+import fr.skyost.hungergames.utils.borders.WorldEditBorderCreator;
+
+/**
+ * The class where fields and others variables are stocked.
+ * 
+ * @author Skyost.
+ */
 
 public class HungerGames extends JavaPlugin {
 	
@@ -58,10 +53,9 @@ public class HungerGames extends JavaPlugin {
 	public static ConfigFile config;
 	public static MessagesFile messages;
 	public static WinnersFile winners;
-	public static List<Integer> tasks = Arrays.asList(-1, -1, -1, -1);
+	public static List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1);
 	public static List<Chunk> generatedChunks = new ArrayList<Chunk>();
 	public static SpectatorsManager spectatorsManager;
-	public static List<Player> spectatorsList;
 	
 	public static World lobby;
 	public static File mapsFolder;
@@ -79,11 +73,6 @@ public class HungerGames extends JavaPlugin {
 		GAME;
 	}
 	
-	public enum Mode {
-		GHOST_FACTORY,
-		INVISIBLE_POTION;
-	}
-	
 	@Override
 	public final void onEnable() {
 		try {
@@ -94,8 +83,10 @@ public class HungerGames extends JavaPlugin {
 			messages.init();
 			winners = new WinnersFile(this.getDataFolder());
 			winners.init();
-			logger = new PluginLogger(this);
-			logger.log(Level.INFO, "Enabling plugin...");
+			if(config.Log_Console) {
+				logger = new PluginLogger(this);
+				logger.log(Level.INFO, "Enabling plugin...");
+			}
 			final int winnersSize = winners.Winners.size();
 			if(winnersSize != 0)  {
 				for(int i = 0; i != winnersSize; i++) {
@@ -109,23 +100,19 @@ public class HungerGames extends JavaPlugin {
 			if(config.EnableMetrics) {
 				new MetricsLite(this).start();
 			}
-			if(config.Spectators_Enable) {
-				if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-					spectatorsManager = new SpectatorsManager(this);
-				}
-				else {
-					spectatorsList = new ArrayList<Player>();
-				}
-			}
+			spectatorsManager = new SpectatorsManager(this, config.Spectators_Mode);
 			mapsFolder = new File(config.Maps_Folder);
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
 			}
-			if(config.Maps_Generate_Enable) {
-				currentMap = Bukkit.createWorld(new WorldCreator(config.Maps_Generate_Name));
+			currentMap = HungerGamesAPI.generateMap();
+			final Boolean useWorldEdit = HungerGamesAPI.useWorldEdit();
+			if(useWorldEdit) {
+				WorldEditBorderCreator.initialize();
+				HungerGamesAPI.addBorders(currentMap);
 			}
-			else {
-				copyRandomMap();
+			else if(useWorldEdit == null) {
+				logger.log(Level.WARNING, "WorldEdit was not found !");
 			}
 			registerEvents();
 			final PluginCommand command = this.getCommand("hunger-games");
@@ -134,24 +121,21 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			logger.log(Level.SEVERE, "Error enabling the plugin... Check the stacktrace above.");
+			logger.log(Level.SEVERE, "Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
 	@Override
 	public final void onDisable() {
-		logger.log(Level.INFO, "Disabling plugin...");
+		if(config.Log_Console) {
+			logger.log(Level.INFO, "Disabling plugin...");
+		}
 		try {
 			if(players.size() != 0) {
 				for(final Player player : players.keySet()) {
-					revertPlayer(player, true);
-					if(isSpectator(player)) {
-						if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-							spectatorsManager.removeSpectator(player);
-						}
-						else {
-							player.removePotionEffect(PotionEffectType.INVISIBILITY);
-						}
+					HungerGamesAPI.revertPlayer(player, true);
+					if(spectatorsManager.hasSpectator(player)) {
+						spectatorsManager.removeSpectator(player);
 					}
 				}
 			}
@@ -164,10 +148,11 @@ public class HungerGames extends JavaPlugin {
 			}
 			winners.save();
 			players.clear();
-			deleteCurrentMap();
+			HungerGamesAPI.deleteMap(currentMap);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
+			logger.log(Level.SEVERE, "Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
@@ -190,210 +175,9 @@ public class HungerGames extends JavaPlugin {
 				manager.registerEvents(new PickupItemListener(), this);
 			}
 		}
-		if(config.Maps_Limit_Enable) {
-			manager.registerEvents(new ChunkLoadListener(), this);
+		if(config.Game_AutoSneak) {
+			manager.registerEvents(new ToggleSneakListener(), this);
 		}
-	}
-	
-	public static final void addPlayer(final Player player) {
-		logger.log(Level.INFO, player.getName() + " joined the lobby.");
-		players.put(player, new HungerGamesProfile(player));
-		final PlayerInventory inventory = player.getInventory();
-		inventory.setArmorContents(new ItemStack[]{null, null, null, null});
-		inventory.clear();
-		Utils.updateInventory(player);
-		player.setTotalExperience(0);
-		player.setGameMode(GameMode.SURVIVAL);
-		player.setFoodLevel(20);
-		player.teleport(new Location(lobby, config.Lobby_Spawn_X, config.Lobby_Spawn_Y, config.Lobby_Spawn_Z));
-		totalPlayers++;
-		broadcastMessage(messages.Messages_14.replaceAll("/n/", String.valueOf(totalPlayers)).replaceAll("/n-max/", String.valueOf(config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
-		if(totalPlayers == config.Game_MinPlayers) {
-			logger.log(Level.INFO, "Starting game...");
-			broadcastMessage(messages.Messages_3.replaceAll("/n/", String.valueOf(config.Lobby_Countdown_Time)));
-			currentStep = Step.FIRST_COUNTDOWN;
-			tasks.set(0, new Countdown(config.Lobby_Countdown_Time, config.Lobby_Countdown_ExpBarLevel, new PostExecuteFirst()).runTaskTimer(instance, 0, 20L).getTaskId());
-		}
-	}
-	
-	public static final void removePlayer(final Player player, final String message) {
-		removePlayer(player, message, config.Spectators_Enable);
-	}
-	
-	public static final void removePlayer(final Player player, final String message, final boolean setSpectator) {
-		final boolean spectate = isSpectator(player);
-		if(!spectate && setSpectator && totalPlayers > 2) {
-			if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-				spectatorsManager.addSpectator(player);
-			}
-			else {
-				player.setAllowFlight(true);
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
-				spectatorsList.add(player);
-			}
-		}
-		else {
-			if(spectate) {
-				if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-					spectatorsManager.removeSpectator(player);
-				}
-				else {
-					player.removePotionEffect(PotionEffectType.INVISIBILITY);
-				}
-			}
-			revertPlayer(player, false);
-			players.remove(player);
-		}
-		player.sendMessage(message == null ? "" : message);
-		totalPlayers--;
-		if(currentStep == Step.GAME && totalPlayers == 1) {
-			finishGame(messages.Messages_8);
-		}
-		else if(currentStep != Step.GAME && totalPlayers < config.Game_MinPlayers) {
-			finishGame(messages.Messages_7);
-		}
-	}
-	
-	public static final boolean isSpectator(final Player player) {
-		if(config.Spectators_Enable) {
-			if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-				return spectatorsManager.hasSpectator(player);
-			}
-			else {
-				return spectatorsList.contains(player);
-			}
-		}
-		return false;
-	}
-	
-	public static final void finishGame(final String message) {
-		logger.log(Level.INFO, "Finishing game...");
-		final BukkitScheduler scheduler = Bukkit.getScheduler();
-		for(final int task : tasks) {
-			if(task != -1) {
-				scheduler.cancelTask(task);
-			}
-		}
-		for(final Player player : players.keySet()) {
-			revertPlayer(player, true);
-			if(isSpectator(player)) {
-				if(config.Spectators_Mode == Mode.GHOST_FACTORY) {
-					spectatorsManager.removeSpectator(player);
-				}
-				else {
-					player.removePotionEffect(PotionEffectType.INVISIBILITY);
-				}
-			}
-			else {
-				player.sendMessage(message);
-				winnersMap.put(winnersMap.size(), player.getName());
-				pages = new Pages(winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.Messages_17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.Messages_17));
-			}
-		}
-		players.clear();
-		deleteCurrentMap();
-		if(config.Maps_Generate_Enable) {
-			currentMap = Bukkit.createWorld(new WorldCreator(config.Maps_Generate_Name));
-		}
-		else {
-			copyRandomMap();
-		}
-		totalPlayers = 0;
-		currentStep = Step.LOBBY;
-	}
-	
-	private static final void revertPlayer(final Player player, final boolean clearInventory) {
-		revertPlayer(player, players.get(player), clearInventory);
-	}
-	
-	
-	private static final void revertPlayer(final Player player, final HungerGamesProfile profile, final boolean clearInventory) {
-		final PlayerInventory inventory = player.getInventory();
-		player.setTotalExperience(profile.getTotalExp());
-		if(clearInventory) {
-			inventory.setArmorContents(new ItemStack[]{null, null, null, null});
-			inventory.clear();
-			Utils.updateInventory(player);
-		}
-		inventory.setContents(profile.getInventoryContents());
-		inventory.setArmorContents(profile.getInventoryArmorContents());
-		Utils.updateInventory(player);
-		player.setGameMode(profile.getGameMode());
-		player.setAllowFlight(profile.getAllowFlight());
-		player.setSneaking(profile.isSneaking());
-		player.setHealth(player.getMaxHealth());
-		player.setFoodLevel(20);
-		player.setFireTicks(0);
-		player.teleport(profile.getPreviousLocation());
-	}
-	
-	public static final void broadcastMessage(final String message) {
-		for(final Player player : players.keySet()) {
-			player.sendMessage(message);
-		}
-	}
-	
-	public static final void deleteCurrentMap() {
-		try {
-			logger.log(Level.INFO, "Deleting the current map...");
-			final List<Player> players = currentMap.getPlayers();
-			if(players.size() != 0) {
-				for(final Player player : players) {
-					player.teleport(lobby.getSpawnLocation());
-				}
-			}
-			Bukkit.unloadWorld(currentMap, false);
-			Utils.getMCClass("RegionFileCache").getMethod("a").invoke(null);
-			Utils.delete(currentMap.getWorldFolder());
-			logger.log(Level.INFO, "Done !");
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			logger.log(Level.SEVERE, "Error while deleting the current map... Check the stacktrace above.");
-		}
-	}
-	
-	public static final void copyRandomMap() {
-		try {
-			logger.log(Level.INFO, "Processing maps...");
-			final File[] maps = mapsFolder.listFiles();
-			if(maps.length == 0) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "The maps folder is empty ! Creating a new map...");
-				currentMap = Bukkit.createWorld(new WorldCreator(config.Maps_Generate_Name));
-				Utils.copy(currentMap.getWorldFolder(), new File(mapsFolder, config.Maps_Generate_Name));
-			}
-			else {
-				final File currentWorld = maps[new Random().nextInt(maps.length)];
-				final String currentWorldName = currentWorld.getName();
-				Utils.copy(currentWorld, new File(currentWorldName));
-				currentMap = Bukkit.createWorld(new WorldCreator(currentWorldName));
-			}
-			logger.log(Level.INFO, "Done ! The selected map is : '" + currentMap.getName() + "'.");
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-			logger.log(Level.SEVERE, "Error while processing maps... Check the stacktrace above.");
-			Bukkit.getPluginManager().disablePlugin(instance);
-		}
-	}
-	
-	public static final String getCurrentMotd() {
-		String motd = null;
-		switch(HungerGames.currentStep) {
-		case LOBBY:
-			motd = HungerGames.messages.Motds_1.replaceAll("/n/", String.valueOf(HungerGames.config.Game_MinPlayers - HungerGames.totalPlayers));
-			break;
-		case FIRST_COUNTDOWN:
-			motd = HungerGames.messages.Motds_2;
-			break;
-		case SECOND_COUNTDOWN:
-			motd = HungerGames.messages.Motds_3;
-			break;
-		case GAME:
-			motd = HungerGames.messages.Motds_4.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers));
-			break;
-		}
-		return motd;
 	}
 	
 }
