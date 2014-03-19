@@ -280,7 +280,7 @@ public class MetricsLite {
     private void postPlugin(boolean isPing) throws IOException {
         // Server software specific section
         PluginDescriptionFile description = plugin.getDescription();
-        String pluginName = description.getName();
+        String pluginName = description.getName().replaceAll("_", " ");
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
