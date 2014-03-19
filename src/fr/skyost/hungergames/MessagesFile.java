@@ -28,6 +28,7 @@ public class MessagesFile extends Config {
 	public String Messages_16 = "Winner of the /n//ordinal-suffix/ Hunger Games : /player/.";
 	public String Messages_17 = "Page /n/ of /total-pages/. View the next page with /hg winners <page>./line-separator/The above list is scrollable.";
 	public String Messages_18 = "§cPlease enter a number between 1 and /total-pages/.";
+	public String Messages_19 = "§cYou cannot bypass the borders ! Teleporing you back to your spawn...";
 	
 	public String Motds_1 = "§cWe need /n/ more player(s) to start.";
 	public String Motds_2 = "§9The game starts in a few seconds. Join now !";

@@ -27,7 +27,7 @@ public class ConfigFile extends Config {
 	public String Maps_Generate_Name = "generated_map";
 	public boolean Maps_Borders_Enable = true;
 	public int Maps_Borders_Radius = 1000;
-	public Type Maps_Borders_Type = Type.SQUARE;
+	public Type Maps_Borders_Type = Type.INVISIBLE;
 	public Material Maps_Borders_Material = Material.BEDROCK;
 	public int Maps_Borders_Meta = 0;
 	

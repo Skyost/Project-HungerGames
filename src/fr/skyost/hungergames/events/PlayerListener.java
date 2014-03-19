@@ -5,8 +5,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGamesAPI;
+import fr.skyost.hungergames.HungerGamesProfile;
 
 public class PlayerListener implements Listener {
 	
@@ -16,6 +19,14 @@ public class PlayerListener implements Listener {
 		final World world = player.getWorld();
 		if(world.equals(HungerGames.lobby)|| world.equals(HungerGames.currentMap)) {
 			HungerGamesAPI.removePlayer(player, false);
+		}
+	}
+	
+	@EventHandler
+	private final void onPlayerRespawn(final PlayerRespawnEvent event) {
+		final HungerGamesProfile profile = HungerGames.players.get(event.getPlayer());
+		if(profile != null) {
+			event.setRespawnLocation(profile.getGeneratedLocation());
 		}
 	}
 	

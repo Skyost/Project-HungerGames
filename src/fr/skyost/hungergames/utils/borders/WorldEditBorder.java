@@ -8,7 +8,8 @@ public abstract class WorldEditBorder {
 	public enum Type {
 		CYLINDER,
 		ROOFING,
-		SQUARE;
+		SQUARE,
+		INVISIBLE;
 	}
 	
 	public abstract String getID();

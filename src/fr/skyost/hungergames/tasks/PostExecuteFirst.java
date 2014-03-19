@@ -2,13 +2,15 @@ package fr.skyost.hungergames.tasks;
 
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGamesProfile;
 import fr.skyost.hungergames.HungerGames.Step;
+import fr.skyost.hungergames.utils.borders.WorldEditBorder.Type;
 
 public class PostExecuteFirst extends BukkitRunnable {
 	
@@ -29,6 +31,12 @@ public class PostExecuteFirst extends BukkitRunnable {
 		}
 		HungerGames.tasks.set(0, new Countdown(HungerGames.config.Game_Countdown_Time, HungerGames.config.Game_Countdown_ExpBarLevel, new PostExecuteSecond()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
 		HungerGames.tasks.set(1, -1);
+		if(HungerGames.config.Maps_Borders_Enable && HungerGames.config.Maps_Borders_Type == Type.INVISIBLE) {
+			final Location spawn = HungerGames.lobby.getSpawnLocation();
+			final int x = spawn.getBlockX();
+			final int z = spawn.getBlockZ();
+			HungerGames.tasks.set(5, Bukkit.getScheduler().scheduleSyncRepeatingTask(HungerGames.instance, new InvisibleBorderChecker(x + HungerGames.config.Maps_Borders_Radius, x - HungerGames.config.Maps_Borders_Radius, z + HungerGames.config.Maps_Borders_Radius, z - HungerGames.config.Maps_Borders_Radius), 0, 60L));
+		}
 	}
 	
 }

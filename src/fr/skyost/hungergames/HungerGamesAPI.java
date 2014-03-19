@@ -26,6 +26,7 @@ import fr.skyost.hungergames.tasks.PostExecuteFirst;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Utils;
 import fr.skyost.hungergames.utils.borders.BorderParams;
+import fr.skyost.hungergames.utils.borders.WorldEditBorder.Type;
 
 /**
  * API class of Project HungerGames.
@@ -102,20 +103,22 @@ public class HungerGamesAPI {
 	 */
 
 	public static final void removePlayer(final Player player, final boolean setSpectator) {
-		final boolean isSpectating = HungerGames.spectatorsManager.hasSpectator(player);
-		if(!isSpectating && setSpectator && HungerGames.totalPlayers > 2) {
-			HungerGames.spectatorsManager.addSpectator(player);
-			player.teleport(HungerGames.currentMap.getSpawnLocation());
-		}
-		else {
-			if(isSpectating) {
-				HungerGames.spectatorsManager.removeSpectator(player);
-			}
+		if(HungerGames.spectatorsManager.hasSpectator(player)) {
+			HungerGames.spectatorsManager.removeSpectator(player);
 			revertPlayer(player, false);
 			HungerGames.players.remove(player);
-			// TODO: Faire en sorte que le joueur ne fasse pas finir la partie si ce n'est qu'un simple spectateur.
 		}
-		HungerGames.totalPlayers--;
+		else {
+			if(setSpectator && HungerGames.totalPlayers > 2) {
+				HungerGames.spectatorsManager.addSpectator(player);
+				player.teleport(HungerGames.players.get(player).getGeneratedLocation());
+			}
+			else {
+				revertPlayer(player, true);
+				HungerGames.players.remove(player);
+			}
+			HungerGames.totalPlayers--;
+		}
 		if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
 			finishGame(HungerGames.messages.Messages_8, true);
 		}
@@ -332,7 +335,7 @@ public class HungerGamesAPI {
 	 */
 	
 	public static final boolean useWorldEdit() {
-		return HungerGames.config.Maps_Borders_Enable ? (Bukkit.getPluginManager().getPlugin("WorldEdit") == null ? null : true) : false;
+		return HungerGames.config.Maps_Borders_Type == Type.INVISIBLE ? false : (HungerGames.config.Maps_Borders_Enable ? (Bukkit.getPluginManager().getPlugin("WorldEdit") == null ? null : true) : false);
 	}
 	
 }

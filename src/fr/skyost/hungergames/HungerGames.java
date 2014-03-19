@@ -53,7 +53,7 @@ public class HungerGames extends JavaPlugin {
 	public static ConfigFile config;
 	public static MessagesFile messages;
 	public static WinnersFile winners;
-	public static List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1);
+	public static List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1, -1);
 	public static List<Chunk> generatedChunks = new ArrayList<Chunk>();
 	public static SpectatorsManager spectatorsManager;
 	
@@ -114,7 +114,11 @@ public class HungerGames extends JavaPlugin {
 			else if(useWorldEdit == null) {
 				logger.log(Level.WARNING, "WorldEdit was not found !");
 			}
-			registerEvents();
+			final PluginManager manager = Bukkit.getPluginManager();
+			registerEvents(manager);
+			if(!checkConfig()) {
+				manager.disablePlugin(this);
+			}
 			final PluginCommand command = this.getCommand("hunger-games");
 			command.setUsage(ChatColor.RED + "/hg join, /hg leave, /hg infos or /hg winners <page>.");
 			command.setExecutor(new HungerGamesCommand());
@@ -156,8 +160,7 @@ public class HungerGames extends JavaPlugin {
 		}
 	}
 	
-	private final void registerEvents() {
-		final PluginManager manager = Bukkit.getPluginManager();
+	private final void registerEvents(final PluginManager manager) {
 		for(final Listener listener : new Listener[]{new DamageListener(), new EntityListener(), new PlayerListener(), new WorldListener()}) {
 			manager.registerEvents(listener, this);
 		}
@@ -178,6 +181,26 @@ public class HungerGames extends JavaPlugin {
 		if(config.Game_AutoSneak) {
 			manager.registerEvents(new ToggleSneakListener(), this);
 		}
+	}
+	
+	private final boolean checkConfig() {
+		if(config.Game_MinPlayers < 2) {
+			logger.log(Level.SEVERE, "MinPlayers cannot be inferior than two !");
+			return false;
+		}
+		if(config.Game_MaxPlayers < config.Game_MinPlayers) {
+			logger.log(Level.SEVERE, "MinPlayers cannot be inferior than MaxPlayers !");
+			return false;
+		}
+		if(config.Maps_Borders_Meta < 0) {
+			logger.log(Level.SEVERE, "Borders_Meta cannot be inferior than zero !");
+			return false;
+		}
+		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
+			logger.log(Level.SEVERE, "SpawnDistance cannot be superior than BordersRadius !");
+			return false;
+		}
+		return true;
 	}
 	
 }

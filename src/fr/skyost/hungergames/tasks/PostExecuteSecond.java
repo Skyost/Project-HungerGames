@@ -13,8 +13,8 @@ public class PostExecuteSecond extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-		final Random random = new Random();
 		HungerGames.currentStep = Step.GAME;
+		final Random random = new Random();
 		HungerGamesAPI.broadcastMessage(HungerGames.messages.Messages_5);
 		HungerGames.tasks.set(1, -1);
 		HungerGames.tasks.set(2, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, new RandomItems(), random.nextInt(HungerGames.config.Game_Random_Delay) * 20));
