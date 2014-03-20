@@ -50,7 +50,7 @@ public class Skyupdater {
 	private String response;
 	private Thread updaterThread;
 	
-	private static final String SKYUPDATER_VERSION = "0.3.5";
+	private static final String SKYUPDATER_VERSION = "0.3.6";
 	
 	public enum Result {
 		
@@ -123,9 +123,9 @@ public class Skyupdater {
 	 * 
 	 * @param plugin Your plugin.
 	 * @param id Your plugin ID on BukkitDev (you can get it here : https://api.curseforge.com/servermods/projects?search=your+plugin).
-	 * @param pluginFile The plugin file.
+	 * @param pluginFile The plugin file. You can get it from your plugin using <i>getFile()</i>.
 	 * @param download If you want to download the file.
-	 * @param announce If you want to announce the progress of the Updater.
+	 * @param announce If you want to announce the progress of the update.
 	 * @throws IOException InputOutputException.
 	 */
 	
@@ -171,7 +171,16 @@ public class Skyupdater {
 			stringBuilder.append(lineSeparator);
 			stringBuilder.append("What is Skyupdater ?");
 			stringBuilder.append(lineSeparator);
-			stringBuilder.append("Skyupdater is a simple auto-updater created by Skyost (http://www.skyost.eu) for Bukkit plugins.");
+			stringBuilder.append("Skyupdater is a simple updater created by Skyost (http://www.skyost.eu) used to auto-update Bukkit Plugins.");
+			stringBuilder.append(lineSeparator);
+			stringBuilder.append(lineSeparator);
+			stringBuilder.append("What happens during the update process ?");
+			stringBuilder.append(lineSeparator);
+			stringBuilder.append("1 - Connection to curseforge.com.");
+			stringBuilder.append(lineSeparator);
+			stringBuilder.append("2 - Plugin version compared against version on curseforge.com.");
+			stringBuilder.append(lineSeparator);
+			stringBuilder.append("3 - Downloading of the plugin from curseforge.com.");
 			stringBuilder.append(lineSeparator);
 			stringBuilder.append(lineSeparator);
 			stringBuilder.append("So what is this file ?");
@@ -244,7 +253,7 @@ public class Skyupdater {
 	/**
 	 * Get raw data about the latest file.
 	 * 
-	 * @return An array string which contains all data you want !
+	 * @return An array string which contains every of the update process.
 	 */
 	
 	public String[] getLatestFileData() {
@@ -253,15 +262,18 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Downloads a file.
+	 * Download a file.
 	 * 
 	 * @param site The URL of the file you want to download.
 	 * @param pathTo The path where you want the file to be downloaded.
 	 * 
+	 * @return <b>true</b>If the download was a success.
+	 * </b>false</b>If there is an error during the download.
+	 * 
 	 * @throws IOException InputOutputException.
 	 */
 	
-	private boolean download(final String site, final File pathTo) {
+	private final boolean download(final String site, final File pathTo) {
 		try {
 			final HttpURLConnection connection = (HttpURLConnection)new URL(site).openConnection();
 			connection.addRequestProperty("User-Agent", "Skyupdater v" + SKYUPDATER_VERSION);
@@ -317,14 +329,7 @@ public class Skyupdater {
 	 */
 	
 	public static final boolean compareVersions(final String versionTo, final String versionWith) {
-		final int cmp = normalisedVersion(versionTo, ".", 4).compareTo(normalisedVersion(versionWith, ".", 4));
-		if(cmp < 0) {
-			return false;
-		}
-		else if(cmp > 0) {
-			return true;
-		}
-		return false;
+		return normalisedVersion(versionTo, ".", 4).compareTo(normalisedVersion(versionWith, ".", 4)) > 0;
 	}
 	
 	/**
@@ -372,6 +377,7 @@ public class Skyupdater {
 		public void run() {
 			if(isEnabled) {
 				try {
+					final String pluginName = plugin.getName().replaceAll("_", " ");
 					final HttpURLConnection con = (HttpURLConnection)url.openConnection();
 					con.addRequestProperty("User-Agent", "Skyupdater v" + SKYUPDATER_VERSION);
 					if(apiKey != null) {
@@ -399,7 +405,7 @@ public class Skyupdater {
 								if(download(updateData[0], new File(updateFolder, pluginFile.getName()))) {
 									result = Result.SUCCESS;
 									if(announce) {
-										logger.log(Level.INFO, "[Skyupdater] The update of '" + plugin.getName() + "' has been downloaded and installed. It will be loaded at the next server load / reload.");
+										logger.log(Level.INFO, "[Skyupdater] The update of '" + pluginName + "' has been downloaded and installed. It will be loaded at the next server load / reload.");
 									}
 								}
 								else {
@@ -407,19 +413,19 @@ public class Skyupdater {
 								}
 							}
 							else if(announce) {
-								logger.log(Level.INFO, "[Skyupdater] An update has been found for '" + plugin.getName() + "' but nothing was downloaded.");
+								logger.log(Level.INFO, "[Skyupdater] An update has been found for '" + pluginName + "' but nothing was downloaded.");
 							}
 							return;
 						}
 						else {
 							result = Result.NO_UPDATE;
 							if(announce) {
-								logger.log(Level.INFO, "[Skyupdater] No update found for '" + plugin.getName() + "'.");
+								logger.log(Level.INFO, "[Skyupdater] No update found for '" + pluginName + "'.");
 							}
 						}
 					}
 					else {
-						logger.log(Level.SEVERE, "[Skyupdater] The ID '" + id + "' was not found (or no files found for this project) ! Maybe the author(s) (" + Joiner.on(", ").join(plugin.getDescription().getAuthors()) + ") of '" + plugin.getName() + "' has misconfigured his plugin ?");
+						logger.log(Level.SEVERE, "[Skyupdater] The ID '" + id + "' was not found (or no files found for this project) ! Maybe the author(s) (" + Joiner.on(", ").join(plugin.getDescription().getAuthors()) + ") of '" + pluginName + "' has/have misconfigured his/their plugin ?");
 						result = Result.ERROR;
 					}
 				}
