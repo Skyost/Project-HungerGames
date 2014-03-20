@@ -37,6 +37,7 @@ public class ConfigFile extends Config {
 	public double Lobby_Spawn_Z;
 	public int Lobby_Countdown_Time = 30;
 	public boolean Lobby_Countdown_ExpBarLevel = true;
+	public boolean Lobby_Protect = true;
 	
 	public int Game_MinPlayers = 2;
 	public int Game_MaxPlayers = 8;

@@ -31,6 +31,7 @@ import fr.skyost.hungergames.events.PlayerListener;
 import fr.skyost.hungergames.events.WorldListener;
 import fr.skyost.hungergames.events.configurable.AsyncChatListener;
 import fr.skyost.hungergames.events.configurable.InteractListener;
+import fr.skyost.hungergames.events.configurable.LobbyListener;
 import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
@@ -180,6 +181,9 @@ public class HungerGames extends JavaPlugin {
 		}
 		if(config.Game_AutoSneak) {
 			manager.registerEvents(new ToggleSneakListener(), this);
+		}
+		if(config.Lobby_Protect) {
+			manager.registerEvents(new LobbyListener(), this);
 		}
 	}
 	
