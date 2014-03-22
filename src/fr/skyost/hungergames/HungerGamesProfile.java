@@ -1,6 +1,5 @@
 package fr.skyost.hungergames;
 
-import java.io.Serializable;
 import java.util.Random;
 
 import org.bukkit.Chunk;
@@ -16,9 +15,7 @@ import org.bukkit.inventory.PlayerInventory;
  * @author Skyost.
  */
 
-public class HungerGamesProfile implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
+public class HungerGamesProfile {
 	
 	private final Location previousLocation;
 	private final int totalExp;

@@ -15,6 +15,10 @@
       <id>sk89q-repo</id>
       <url>http://maven.sk89q.com/repo/</url>
     </repository>
+    <repository>
+      <id>nixium-repo</id>
+      <url>http://repo.nixium.com/</url>
+    </repository>
   </repositories>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -39,6 +43,63 @@
   		<groupId>com.sk89q</groupId>
   		<artifactId>worldedit</artifactId>
   		<version>5.6</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>js</artifactId>
+  				<groupId>rhino</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>jchronic</artifactId>
+  				<groupId>com.sk89q</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>truezip</artifactId>
+  				<groupId>de.schlichtherle</groupId>
+  			</exclusion>
+  		</exclusions>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.onarandombox.multiversecore</groupId>
+  		<artifactId>Multiverse-Core</artifactId>
+  		<version>2.5</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>craftbukkit</artifactId>
+  				<groupId>org.bukkit</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>SerializationConfig</artifactId>
+  				<groupId>me.main__.util</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>AllPay</artifactId>
+  				<groupId>com.fernferret.allpay</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>Vault</artifactId>
+  				<groupId>net.milkbowl.vault</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>metrics</artifactId>
+  				<groupId>org.mcstats</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>junit</artifactId>
+  				<groupId>junit</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>Logging</artifactId>
+  				<groupId>com.dumptruckman.minecraft</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>CommandHandler</artifactId>
+  				<groupId>com.pneumaticraft.commandhandler</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>buscript</artifactId>
+  				<groupId>com.dumptruckman.minecraft</groupId>
+  			</exclusion>
+  		</exclusions>
   	</dependency>
   </dependencies>
 </project>

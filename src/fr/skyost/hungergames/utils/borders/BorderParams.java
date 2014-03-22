@@ -1,5 +1,7 @@
 package fr.skyost.hungergames.utils.borders;
 
+import java.io.Serializable;
+
 import fr.skyost.hungergames.utils.borders.Border.Type;
 
 /**
@@ -9,7 +11,9 @@ import fr.skyost.hungergames.utils.borders.Border.Type;
  * </br><b>Modified :</b> Skyost.
  */
 
-public class BorderParams {
+public class BorderParams implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	
 	private String worldName;
 	private final int x;

@@ -23,20 +23,33 @@ public class InvisibleBorderChecker extends BukkitRunnable {
 	@Override
 	public void run() {
 		for(final Player player : HungerGames.players.keySet()) {
-			if(!validLocation(player.getLocation())) {
+			if(correctLocation(player)) {
 				player.sendMessage(HungerGames.messages.Messages_19);
-				player.teleport(HungerGames.currentMap.getSpawnLocation());
 			}
 		}
 	}
 	
-	public final boolean validLocation(final Location location) {
+	public final boolean correctLocation(final Player player) {
+		final Location location = player.getLocation();
 		final int x = location.getBlockX();
 		final int z = location.getBlockZ();
-		if(x > xMax || x < xMin || z > zMax || z < zMin) {
-			return false;
+		if(x > xMax) {
+			player.teleport(location.subtract(x - xMax, 0, 0));
+			return true;
 		}
-		return true;
+		if(x < xMin) {
+			player.teleport(location.add(xMin - x, 0, 0));
+			return true;
+		}
+		if(z > zMax) {
+			player.teleport(location.subtract(0, 0, z - zMax));
+			return true;
+		}
+		if(z < zMin) {
+			player.teleport(location.subtract(0, 0, zMin - z));
+			return true;
+		}
+		return false;
 	}
 	
 }

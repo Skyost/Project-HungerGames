@@ -17,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,7 +36,9 @@ import fr.skyost.hungergames.events.configurable.LobbyListener;
 import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
+import fr.skyost.hungergames.utils.ErrorSender;
 import fr.skyost.hungergames.utils.MetricsLite;
+import fr.skyost.hungergames.utils.MultiverseUtils;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Skyupdater;
 
@@ -48,22 +51,25 @@ import fr.skyost.hungergames.utils.Skyupdater;
 public class HungerGames extends JavaPlugin {
 	
 	public static HungerGames instance;
+	public static SpectatorsManager spectatorsManager;
+	public static MultiverseUtils multiverseUtils;
 	
-	public static PluginLogger logger;
 	public static ConfigFile config;
 	public static MessagesFile messages;
 	public static WinnersFile winners;
+	
 	public static final List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1, -1);
 	public static final List<Chunk> generatedChunks = new ArrayList<Chunk>();
-	public static SpectatorsManager spectatorsManager;
+	public static final HashMap<Player, HungerGamesProfile> players = new HashMap<Player, HungerGamesProfile>();
+	public static final SortedMap<Integer, String> winnersMap = new TreeMap<Integer, String>(Collections.reverseOrder());
+	
+	public static PluginLogger logger;
 	
 	public static World lobby;
 	public static File mapsFolder;
 	public static World currentMap;
-	public static final HashMap<Player, HungerGamesProfile> players = new HashMap<Player, HungerGamesProfile>();
 	public static int totalPlayers = 0;
 	public static Step currentStep = Step.LOBBY;
-	public static final SortedMap<Integer, String> winnersMap = new TreeMap<Integer, String>(Collections.reverseOrder());
 	public static Pages pages;
 	
 	public enum Step {
@@ -83,9 +89,12 @@ public class HungerGames extends JavaPlugin {
 			messages.init();
 			winners = new WinnersFile(this.getDataFolder());
 			winners.init();
+			logger = new PluginLogger(this);
 			if(config.Log_Console) {
-				logger = new PluginLogger(this);
 				logger.log(Level.INFO, "Enabling plugin...");
+			}
+			if(config.BugsReport_Enable) {
+				ErrorSender.addHandler(logger);
 			}
 			final int winnersSize = winners.Winners.size();
 			if(winnersSize != 0)  {
@@ -100,24 +109,30 @@ public class HungerGames extends JavaPlugin {
 			if(config.EnableMetrics) {
 				new MetricsLite(this).start();
 			}
+			new ErrorSender(config.BugsReport_Name, config.BugsReport_Mail, "Hi ! This is just a test to see if it works perfectly !").report();
 			spectatorsManager = new SpectatorsManager(this, config.Spectators_Mode);
 			mapsFolder = new File(config.Maps_Folder);
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
 			}
-			currentMap = HungerGamesAPI.generateMap();
 			final PluginManager manager = Bukkit.getPluginManager();
 			registerEvents(manager);
 			if(!checkConfig()) {
 				manager.disablePlugin(this);
 			}
+			final Plugin multiverse = manager.getPlugin("Multiverse-Core");
+			if(multiverse != null) {
+				multiverseUtils = new MultiverseUtils(multiverse);
+				logger.log(Level.INFO, "Multiverse hooked with success !");
+			}
+			currentMap = HungerGamesAPI.generateMap();
 			final PluginCommand command = this.getCommand("hunger-games");
 			command.setUsage(ChatColor.RED + "/hg join, /hg leave, /hg infos or /hg winners <page>.");
 			command.setExecutor(new HungerGamesCommand());
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			logger.log(Level.SEVERE, "Error while enabling the plugin... Check the stacktrace above.");
+			logger.log(Level.INFO, "Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
@@ -150,7 +165,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			logger.log(Level.SEVERE, "Error while disabling the plugin... Check the stacktrace above.");
+			logger.log(Level.INFO, "Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}
 	

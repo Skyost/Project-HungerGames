@@ -23,6 +23,10 @@ public class ConfigFile extends Config {
 	public boolean EnableUpdater = true;
 	public boolean EnableMetrics = true;
 	
+	public boolean BugsReport_Enable = true;
+	public String BugsReport_Name = "My Name";
+	public String BugsReport_Mail = "your@mail.com";
+	
 	public String Maps_Folder;
 	public HashMap<String, String> Maps_GameRules = new HashMap<String, String>();
 	public int Maps_DefaultTime = 0;

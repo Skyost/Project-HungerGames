@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -233,16 +234,21 @@ public class HungerGamesAPI {
 					player.teleport(HungerGames.lobby.getSpawnLocation());
 				}
 			}
-			Bukkit.unloadWorld(world, false);
-			Utils.getMCClass("RegionFileCache").getMethod("a").invoke(null);
-			Utils.delete(world.getWorldFolder());
+			if(HungerGames.multiverseUtils == null) {
+				Bukkit.unloadWorld(world, false);
+				Utils.getMCClass("RegionFileCache").getMethod("a").invoke(null);
+				Utils.delete(world.getWorldFolder());
+			}
+			else {
+				HungerGames.multiverseUtils.deleteWorld(world.getName());
+			}
 			if(HungerGames.config.Log_Console) {
 				HungerGames.logger.log(Level.INFO, "Done !");
 			}
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			HungerGames.logger.log(Level.SEVERE, "Error while deleting the current map... Check the stacktrace above.");
+			HungerGames.logger.log(Level.INFO, "Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
 	
@@ -256,7 +262,7 @@ public class HungerGamesAPI {
 		try {
 			final World world;
 			if(HungerGames.config.Maps_Generate_Enable) {
-				world = Bukkit.createWorld(new WorldCreator(HungerGames.config.Maps_Generate_Name));
+				world = createWorld(HungerGames.config.Maps_Generate_Name);
 			}
 			else {
 				if(HungerGames.config.Log_Console) {
@@ -264,15 +270,15 @@ public class HungerGamesAPI {
 				}
 				final File[] maps = HungerGames.mapsFolder.listFiles();
 				if(maps.length == 0) {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "The maps folder is empty ! Creating a new map...");
-					world = Bukkit.createWorld(new WorldCreator(HungerGames.config.Maps_Generate_Name));
+					HungerGames.logger.log(Level.SEVERE, "The maps folder is empty ! Creating a new map...");
+					world = createWorld(HungerGames.config.Maps_Generate_Name);
 					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
 				}
 				else {
 					final File currentWorld = maps[new Random().nextInt(maps.length)];
 					final String currentWorldName = currentWorld.getName();
 					Utils.copy(currentWorld, new File(currentWorldName));
-					world = Bukkit.createWorld(new WorldCreator(currentWorldName));
+					world = createWorld(currentWorldName);
 				}
 				if(HungerGames.config.Log_Console) {
 					HungerGames.logger.log(Level.INFO, "Done ! The selected map is : '" + world.getName() + "'.");
@@ -296,10 +302,28 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			HungerGames.logger.log(Level.SEVERE, "Error while processing maps... Check the stacktrace above.");
+			HungerGames.logger.log(Level.INFO, "Error while processing maps... Check the stacktrace above.");
 			Bukkit.getPluginManager().disablePlugin(HungerGames.instance);
 		}
 		return null;
+	}
+	
+	/**
+	 * Create a new world with or without Multiverse.
+	 * 
+	 * @param name The world name.
+	 * 
+	 * @return The created world.
+	 */
+	
+	private static final World createWorld(final String name) {
+		final World world = Bukkit.createWorld(new WorldCreator(name));
+		if(HungerGames.multiverseUtils == null) {
+			return world;
+		}
+		final ChunkGenerator generator = world.getGenerator();
+		HungerGames.multiverseUtils.createWorld(name, world.getEnvironment(), world.getSeed(), world.getWorldType(), world.canGenerateStructures(), generator == null ? null : generator.getClass().getName());
+		return HungerGames.multiverseUtils.getWorld(name);
 	}
 	
 	/**
