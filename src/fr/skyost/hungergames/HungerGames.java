@@ -53,8 +53,8 @@ public class HungerGames extends JavaPlugin {
 	public static ConfigFile config;
 	public static MessagesFile messages;
 	public static WinnersFile winners;
-	public static List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1, -1);
-	public static List<Chunk> generatedChunks = new ArrayList<Chunk>();
+	public static final List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1, -1);
+	public static final List<Chunk> generatedChunks = new ArrayList<Chunk>();
 	public static SpectatorsManager spectatorsManager;
 	
 	public static World lobby;

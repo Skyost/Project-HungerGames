@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -118,6 +119,17 @@ public class Utils {
 	@SuppressWarnings("deprecation")
 	public static final void updateInventory(final Player player) {
 		player.updateInventory();
+	}
+	
+	/**
+	 * Used only in the goal to suppress the horrible annotation from the other code.
+	 * 
+	 * @param material The material.
+	 */
+	
+	@SuppressWarnings("deprecation")
+	public static final int getId(final Material material) {
+		return material.getId();
 	}
 	
 	/**

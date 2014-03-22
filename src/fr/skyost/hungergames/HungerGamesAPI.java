@@ -266,7 +266,7 @@ public class HungerGamesAPI {
 				if(maps.length == 0) {
 					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "The maps folder is empty ! Creating a new map...");
 					world = Bukkit.createWorld(new WorldCreator(HungerGames.config.Maps_Generate_Name));
-					Utils.copy(HungerGames.currentMap.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
+					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
 				}
 				else {
 					final File currentWorld = maps[new Random().nextInt(maps.length)];
@@ -308,14 +308,13 @@ public class HungerGamesAPI {
 	 * @param world The world.
 	 */
 	
-	@SuppressWarnings("deprecation")
 	public static final void addBorders(final World world) {
 		if(HungerGames.config.Maps_Borders_Type != Type.INVISIBLE && Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
 			HungerGames.logger.log(Level.WARNING, "WorldEdit was not found !");
 			return;
 		}
 		final Location spawn = world.getSpawnLocation();
-		HungerGames.tasks.set(4, new BorderCreatorTask(new BorderParams(world.getName(), spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.Maps_Borders_Radius, HungerGames.config.Maps_Borders_Type, HungerGames.config.Maps_Borders_Material.getId(), HungerGames.config.Maps_Borders_Meta)).runTask(HungerGames.instance).getTaskId());
+		HungerGames.tasks.set(4, new BorderCreatorTask(new BorderParams(world.getName(), spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.Maps_Borders_Radius, HungerGames.config.Maps_Borders_Type, Utils.getId(HungerGames.config.Maps_Borders_Material), HungerGames.config.Maps_Borders_Meta)).runTask(HungerGames.instance).getTaskId());
 	}
 	
 	/**
