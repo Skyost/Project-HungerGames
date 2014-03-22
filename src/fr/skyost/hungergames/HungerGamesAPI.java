@@ -270,7 +270,7 @@ public class HungerGamesAPI {
 				}
 				final File[] maps = HungerGames.mapsFolder.listFiles();
 				if(maps.length == 0) {
-					HungerGames.logger.log(Level.SEVERE, "The maps folder is empty ! Creating a new map...");
+					HungerGames.logger.log(Level.WARNING, "The maps folder is empty ! Creating a new map...");
 					world = createWorld(HungerGames.config.Maps_Generate_Name);
 					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
 				}
