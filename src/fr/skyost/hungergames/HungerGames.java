@@ -109,7 +109,6 @@ public class HungerGames extends JavaPlugin {
 			if(config.EnableMetrics) {
 				new MetricsLite(this).start();
 			}
-			new ErrorSender(config.BugsReport_Name, config.BugsReport_Mail, "Hi ! This is just a test to see if it works perfectly !").report();
 			spectatorsManager = new SpectatorsManager(this, config.Spectators_Mode);
 			mapsFolder = new File(config.Maps_Folder);
 			if(!mapsFolder.exists()) {
