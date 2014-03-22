@@ -2,6 +2,7 @@ package fr.skyost.hungergames;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -13,7 +14,7 @@ import org.bukkit.enchantments.Enchantment;
 
 import fr.skyost.hungergames.SpectatorsManager.Mode;
 import fr.skyost.hungergames.utils.Config;
-import fr.skyost.hungergames.utils.borders.WorldEditBorder.Type;
+import fr.skyost.hungergames.utils.borders.Border.Type;
 
 public class ConfigFile extends Config {
 	
@@ -23,6 +24,8 @@ public class ConfigFile extends Config {
 	public boolean EnableMetrics = true;
 	
 	public String Maps_Folder;
+	public HashMap<String, String> Maps_GameRules = new HashMap<String, String>();
+	public int Maps_DefaultTime = 0;
 	public boolean Maps_Generate_Enable = false;
 	public String Maps_Generate_Name = "generated_map";
 	public boolean Maps_Borders_Enable = true;
@@ -37,7 +40,7 @@ public class ConfigFile extends Config {
 	public double Lobby_Spawn_Z;
 	public int Lobby_Countdown_Time = 30;
 	public boolean Lobby_Countdown_ExpBarLevel = true;
-	public boolean Lobby_Protect = true;
+	public boolean Lobby_Protect = false;
 	
 	public int Game_MinPlayers = 2;
 	public int Game_MaxPlayers = 8;
@@ -68,6 +71,8 @@ public class ConfigFile extends Config {
 		CONFIG_HEADER = "Project HungerGames by Skyost";
 		
 		Maps_Folder = new File(dataFolder + File.separator + "maps").getPath();
+		
+		Maps_GameRules.put("naturalRegeneration", "false");
 		
 		HungerGames.lobby = Bukkit.getWorld(Lobby_World);
 		if(HungerGames.lobby == null) {

@@ -1,84 +1,108 @@
 package fr.skyost.hungergames.utils.borders;
 
+import fr.skyost.hungergames.utils.borders.Border.Type;
+
 /**
- * Holds all the information about a border
- * @author ghowden
+ * Holds all informations about a border.
  *
+ * @author <b>Original :</b> ghowden.
+ * </br><b>Modified :</b> Skyost.
  */
+
 public class BorderParams {
 	
-	private int x;
-	private int z;
 	private String worldName;
-	private int blockID;
-	private int blockMeta;
+	private final int x;
+	private final int z;
 	private int radius;
-	private String typeID;
+	private Type type;
+	private int blockId;
+	private int blockMeta;
 	
-	public BorderParams(final int x, final int z, final int radius, final String typeID, final String worldName, final int blockID, final int blockMeta) {
-		this.x = x;
-		this.z = z;
-		this.radius = radius;
-		this.typeID = typeID;
+	/**
+	 * Create some new params.
+	 * 
+	 * @param worldName The world's name.
+	 * @param x The X coord.
+	 * @param z The Z coord.
+	 * @param radius The radius.
+	 * @param type The border type.
+	 * @param blockId The block ID.
+	 * @param blockMeta The block meta.
+	 */
+	
+	public BorderParams(final String worldName, final int x, final int z, final int radius, final Type type, final int blockId, final int blockMeta) {
 		this.worldName = worldName;
-		this.blockID = blockID;
-		this.blockMeta = blockMeta;
-	}
-	
-	public final int getX() {
-		return x;
-	}
-	
-	public final void setX(final int x) {
 		this.x = x;
-	}
-	
-	public final int getZ() {
-		return z;
-	}
-	
-	public final void setZ(final int z) {
 		this.z = z;
-	}
-	
-	public final int getRadius() {
-		return radius;
-	}
-	
-	public final void setRadius(final int radius) {
 		this.radius = radius;
-	}
-	
-	public final String getTypeID() {
-		return typeID;
-	}
-	
-	public final void setTypeID(final String typeID) {
-		this.typeID = typeID;
+		this.type = type;
+		this.blockId = blockId;
+		this.blockMeta = blockMeta;
 	}
 	
 	public final String getWorldName() {
 		return worldName;
 	}
 	
-	public final void setWorldName(final String worldName) {
-		this.worldName = worldName;
+	/**
+	 * Get the X coord.
+	 * 
+	 * @return The X coord.
+	 */
+	
+	public final int getX() {
+		return x;
 	}
+	
+	/**
+	 * Get the Z coord.
+	 * 
+	 * @return The Z coord.
+	 */
+	
+	public final int getZ() {
+		return z;
+	}
+	
+	/**
+	 * Get the radius.
+	 * 
+	 * @return The radius.
+	 */
+	
+	public final int getRadius() {
+		return radius;
+	}
+	
+	/**
+	 * Get the border type.
+	 * 
+	 * @return The border type.
+	 */
+	
+	public final Type getType() {
+		return type;
+	}
+	
+	/**
+	 * Get the block ID.
+	 * 
+	 * @return The block ID.
+	 */
 	
 	public final int getBlockID() {
-		return blockID;
+		return blockId;
 	}
 	
-	public final void setBlockID(final int blockID) {
-		this.blockID = blockID;
-	}
+	/**
+	 * Get the block meta.
+	 * 
+	 * @return The block meta.
+	 */
 	
 	public final int getBlockMeta() {
 		return blockMeta;
-	}
-	
-	public final void setBlockMeta(final int blockMeta) {
-		this.blockMeta = blockMeta;
 	}
 	
 }

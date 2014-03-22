@@ -38,7 +38,6 @@ import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
 import fr.skyost.hungergames.utils.MetricsLite;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Skyupdater;
-import fr.skyost.hungergames.utils.borders.WorldEditBorderCreator;
 
 /**
  * The class where fields and others variables are stocked.
@@ -107,14 +106,6 @@ public class HungerGames extends JavaPlugin {
 				mapsFolder.mkdir();
 			}
 			currentMap = HungerGamesAPI.generateMap();
-			final Boolean useWorldEdit = HungerGamesAPI.useWorldEdit();
-			if(useWorldEdit) {
-				WorldEditBorderCreator.initialize();
-				HungerGamesAPI.addBorders(currentMap);
-			}
-			else if(useWorldEdit == null) {
-				logger.log(Level.WARNING, "WorldEdit was not found !");
-			}
 			final PluginManager manager = Bukkit.getPluginManager();
 			registerEvents(manager);
 			if(!checkConfig()) {

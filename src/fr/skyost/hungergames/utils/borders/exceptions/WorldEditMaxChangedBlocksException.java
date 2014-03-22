@@ -1,6 +1,7 @@
 package fr.skyost.hungergames.utils.borders.exceptions;
 
-@SuppressWarnings("serial")
 public class WorldEditMaxChangedBlocksException extends Exception {
+
+	private static final long serialVersionUID = 1L;
 	
 }

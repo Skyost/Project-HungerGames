@@ -9,12 +9,12 @@ import fr.skyost.hungergames.utils.borders.BorderParams;
 import fr.skyost.hungergames.utils.borders.WorldEditBorder;
 import fr.skyost.hungergames.utils.borders.exceptions.WorldEditMaxChangedBlocksException;
 
-public class Cylinder extends WorldEditBorder {
+public class Roof extends WorldEditBorder {
 	
 	@Override
 	protected void createBorder(BorderParams bp) throws WorldEditMaxChangedBlocksException {
 		try {
-			newEditSession(bp).makeCylinder(new Vector(bp.getX(), 0, bp.getZ()), new SingleBlockPattern(new BaseBlock(bp.getBlockID(), bp.getBlockMeta())), bp.getRadius(), bp.getRadius(), 256, false);
+			newEditSession(bp).makeCylinder(new Vector(bp.getX(), 255, bp.getZ()), new SingleBlockPattern(new BaseBlock(bp.getBlockID(), bp.getBlockMeta())), bp.getRadius(), bp.getRadius(), 1, true);
 		}
 		catch(MaxChangedBlocksException ex) {
 			new WorldEditMaxChangedBlocksException();
@@ -23,11 +23,11 @@ public class Cylinder extends WorldEditBorder {
 	
 	@Override
 	public Type getType() {
-		return Type.CYLINDER;
+		return Type.ROOF;
 	}
 	
 	@Override
 	public String getDescription() {
-		return "Creates a cylinder wall around the map.";
+		return "Creates a circular roof over the area.";
 	}
 }

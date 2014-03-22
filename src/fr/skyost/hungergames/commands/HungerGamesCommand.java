@@ -19,6 +19,9 @@ public class HungerGamesCommand implements CommandExecutor {
 			commandSender.sendMessage(ChatColor.RED + "Please perform this command from the game !");
 			return true;
 		}
+		if(args.length == 0) {
+			return false;
+		}
 		final Player player = (Player)commandSender;
 		switch(args[0]) {
 		case "join":

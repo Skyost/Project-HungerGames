@@ -2,6 +2,7 @@ package fr.skyost.hungergames;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -20,13 +21,13 @@ import org.bukkit.util.ChatPaginator;
 import com.google.common.base.CharMatcher;
 
 import fr.skyost.hungergames.HungerGames.Step;
-import fr.skyost.hungergames.tasks.BordersCreator;
+import fr.skyost.hungergames.tasks.BorderCreatorTask;
 import fr.skyost.hungergames.tasks.Countdown;
 import fr.skyost.hungergames.tasks.PostExecuteFirst;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Utils;
+import fr.skyost.hungergames.utils.borders.Border.Type;
 import fr.skyost.hungergames.utils.borders.BorderParams;
-import fr.skyost.hungergames.utils.borders.WorldEditBorder.Type;
 
 /**
  * API class of Project HungerGames.
@@ -160,9 +161,6 @@ public class HungerGamesAPI {
 		HungerGames.players.clear();
 		deleteMap(HungerGames.currentMap);
 		HungerGames.currentMap = generateMap();
-		if(useWorldEdit()) {
-			HungerGamesAPI.addBorders(HungerGames.currentMap);
-		}
 		HungerGames.totalPlayers = 0;
 		HungerGames.currentStep = Step.LOBBY;
 	}
@@ -280,6 +278,20 @@ public class HungerGamesAPI {
 					HungerGames.logger.log(Level.INFO, "Done ! The selected map is : '" + world.getName() + "'.");
 				}
 			}
+			if(HungerGames.config.Maps_Borders_Enable) {
+				HungerGamesAPI.addBorders(world);
+			}
+			String gameRule;
+			for(final Entry<String, String> entry : HungerGames.config.Maps_GameRules.entrySet()) {
+				gameRule = entry.getKey();
+				if(world.isGameRule(gameRule)) {
+					world.setGameRuleValue(gameRule, entry.getValue());
+				}
+				else if(HungerGames.config.Log_Console) {
+					HungerGames.logger.log(Level.WARNING, "'" + gameRule + "' is not a valid game rule !");
+				}
+			}
+			world.setTime(HungerGames.config.Maps_DefaultTime);
 			return world;
 		}
 		catch(Exception ex) {
@@ -298,8 +310,12 @@ public class HungerGamesAPI {
 	
 	@SuppressWarnings("deprecation")
 	public static final void addBorders(final World world) {
+		if(HungerGames.config.Maps_Borders_Type != Type.INVISIBLE && Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
+			HungerGames.logger.log(Level.WARNING, "WorldEdit was not found !");
+			return;
+		}
 		final Location spawn = world.getSpawnLocation();
-		HungerGames.tasks.set(4, new BordersCreator(new BorderParams(spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.Maps_Borders_Radius, HungerGames.config.Maps_Borders_Type.name(), world.getName(), HungerGames.config.Maps_Borders_Material.getId(), HungerGames.config.Maps_Borders_Meta)).runTask(HungerGames.instance).getTaskId());
+		HungerGames.tasks.set(4, new BorderCreatorTask(new BorderParams(world.getName(), spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.Maps_Borders_Radius, HungerGames.config.Maps_Borders_Type, HungerGames.config.Maps_Borders_Material.getId(), HungerGames.config.Maps_Borders_Meta)).runTask(HungerGames.instance).getTaskId());
 	}
 	
 	/**
@@ -325,17 +341,6 @@ public class HungerGamesAPI {
 			break;
 		}
 		return motd;
-	}
-	
-	/**
-	 * Check if Project HungerGames uses WorldEdit.
-	 * 
-	 * @return <b>true</b> If WorldEdit is in use.
-	 * <br><b>false</b> If WorldEdit is not in use.
-	 */
-	
-	public static final boolean useWorldEdit() {
-		return HungerGames.config.Maps_Borders_Type == Type.INVISIBLE ? false : (HungerGames.config.Maps_Borders_Enable ? (Bukkit.getPluginManager().getPlugin("WorldEdit") == null ? null : true) : false);
 	}
 	
 }
