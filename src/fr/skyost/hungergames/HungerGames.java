@@ -144,7 +144,9 @@ public class HungerGames extends JavaPlugin {
 			}
 			winners.save();
 			players.clear();
-			HungerGamesAPI.deleteMap(currentMap);
+			if(currentMap != null) {
+				HungerGamesAPI.deleteMap(currentMap);
+			}
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
