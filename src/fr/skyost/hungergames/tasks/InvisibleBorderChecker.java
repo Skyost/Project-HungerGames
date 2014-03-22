@@ -46,7 +46,7 @@ public class InvisibleBorderChecker extends BukkitRunnable {
 			return true;
 		}
 		if(z < zMin) {
-			player.teleport(location.subtract(0, 0, zMin - z));
+			player.teleport(location.add(0, 0, zMin - z));
 			return true;
 		}
 		return false;
