@@ -1,6 +1,5 @@
 package fr.skyost.hungergames.events;
 
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,8 +15,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	private final void onPlayerQuit(final PlayerQuitEvent event) {
 		final Player player = event.getPlayer();
-		final World world = player.getWorld();
-		if(world.equals(HungerGames.lobby)|| world.equals(HungerGames.currentMap)) {
+		if(HungerGames.players.get(player) != null) {
 			HungerGamesAPI.removePlayer(player, false);
 		}
 	}
