@@ -3,6 +3,7 @@
   <groupId>fr.skyost.hungergames</groupId>
   <artifactId>project-hungergames</artifactId>
   <version>0.5</version>
+  <packaging>jar</packaging>
   <name>Project HungerGames</name>
   <description>May the odds be ever in your favour.</description>
   <repositories>
