@@ -5,6 +5,16 @@
   <version>0.5</version>
   <name>Project HungerGames</name>
   <description>May the odds be ever in your favour.</description>
+  <repositories>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+  </repositories>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -18,4 +28,16 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.bukkit</groupId>
+  		<artifactId>bukkit</artifactId>
+  		<version>1.7.2-R0.3</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.sk89q</groupId>
+  		<artifactId>worldedit</artifactId>
+  		<version>5.6</version>
+  	</dependency>
+  </dependencies>
 </project>
