@@ -37,6 +37,9 @@ public class LogsManager {
 	public LogsManager(final Logger logger, final File logsFolder) {
 		this.logger = logger;
 		this.logsFolder = logsFolder;
+		if(!logsFolder.exists()) {
+			logsFolder.mkdir();
+		}
 	}
 	
 	public final void setLogger(final Logger logger) {
@@ -45,6 +48,9 @@ public class LogsManager {
 	
 	public final void setLogsFolder(final File logsFolder) {
 		this.logsFolder = logsFolder;
+		if(!logsFolder.exists()) {
+			logsFolder.mkdir();
+		}
 	}
 	
 	public static final String date(final DateType date) {
