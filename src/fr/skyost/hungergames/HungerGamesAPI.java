@@ -257,9 +257,7 @@ public class HungerGamesAPI {
 				world = createWorld(HungerGames.config.Maps_Generate_Name);
 			}
 			else {
-				if(HungerGames.config.Log_Console) {
-					HungerGames.logsManager.log("Processing maps...");
-				}
+				HungerGames.logsManager.log("Processing maps...");
 				final File[] maps = HungerGames.mapsFolder.listFiles();
 				if(maps.length == 0) {
 					HungerGames.logsManager.log("The maps folder is empty ! Creating a new map...", Level.WARNING);
@@ -272,9 +270,7 @@ public class HungerGamesAPI {
 					Utils.copy(currentWorld, new File(currentWorldName));
 					world = createWorld(currentWorldName);
 				}
-				if(HungerGames.config.Log_Console) {
-					HungerGames.logsManager.log("Done ! The selected map is : '" + world.getName() + "'.");
-				}
+				HungerGames.logsManager.log("Done ! The selected map is : '" + world.getName() + "'.");
 			}
 			if(HungerGames.config.Maps_Borders_Enable) {
 				HungerGamesAPI.addBorders(world);
@@ -285,7 +281,7 @@ public class HungerGamesAPI {
 				if(world.isGameRule(gameRule)) {
 					world.setGameRuleValue(gameRule, entry.getValue());
 				}
-				else if(HungerGames.config.Log_Console) {
+				else {
 					HungerGames.logsManager.log("'" + gameRule + "' is not a valid game rule !", Level.WARNING);
 				}
 			}
