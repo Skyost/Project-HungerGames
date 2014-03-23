@@ -196,19 +196,19 @@ public class HungerGames extends JavaPlugin {
 	
 	private final boolean checkConfig() {
 		if(config.Game_MinPlayers < 2) {
-			logger.log(Level.SEVERE, "MinPlayers cannot be inferior than two !");
+			logger.log(Level.WARNING, "MinPlayers cannot be inferior than two !");
 			return false;
 		}
 		if(config.Game_MaxPlayers < config.Game_MinPlayers) {
-			logger.log(Level.SEVERE, "MinPlayers cannot be inferior than MaxPlayers !");
+			logger.log(Level.WARNING, "MinPlayers cannot be inferior than MaxPlayers !");
 			return false;
 		}
 		if(config.Maps_Borders_Meta < 0) {
-			logger.log(Level.SEVERE, "Borders_Meta cannot be inferior than zero !");
+			logger.log(Level.WARNING, "Borders_Meta cannot be inferior than zero !");
 			return false;
 		}
 		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
-			logger.log(Level.SEVERE, "SpawnDistance cannot be superior than BordersRadius !");
+			logger.log(Level.WARNING, "SpawnDistance cannot be superior than BordersRadius !");
 			return false;
 		}
 		return true;
