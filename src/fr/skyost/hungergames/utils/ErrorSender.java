@@ -5,12 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
-
-import org.bukkit.plugin.PluginLogger;
-
 import fr.skyost.hungergames.HungerGames;
 
 /**
@@ -38,36 +33,23 @@ public class ErrorSender {
 	}
 	
 	/**
+	 * Report the specified exception.
+	 * 
+	 * @param throwable The exception.
+	 */
+	
+	public static final void report(final Throwable throwable) {
+		if(HungerGames.config.BugsReport_Enable) {
+			new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, throwable.toString()).report();
+		}
+	}
+	
+	/**
 	 * Send the email.
 	 */
 	
 	public final void report() {
 		new ReportSender().start();
-	}
-	
-	/**
-	 * Automatically send errors.
-	 * 
-	 * @param logger The plugin logger.
-	 */
-	
-	public static final void addHandler(final PluginLogger logger) {
-		logger.addHandler(new Handler() {
-
-			@Override
-			public void close() throws SecurityException {}
-			
-			@Override
-			public void flush() {}
-			
-			@Override
-			public void publish(final LogRecord record) {
-				if(record.getLevel() == Level.SEVERE) {
-					new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, record.getMessage()).report();
-				}
-			}
-			
-		});
 	}
 	
 	/**
@@ -136,26 +118,28 @@ public class ErrorSender {
 		@Override
 		public void run() {
 			try {
-				HungerGames.logger.log(Level.INFO, "[ErrorSender] Sending an error report from " + name + "<" + email + ">...");
+				HungerGames.logsManager.log("[ErrorSender] Sending an error report from " + name + "<" + email + ">...", Level.INFO);
 				final String encodedName = URLEncoder.encode(name, "UTF-8");
 				final String encodedEmail = URLEncoder.encode(email, "UTF-8");
 				final String encodedMessage = URLEncoder.encode(message, "UTF-8");
 				final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.skyost.eu", "/sendmail.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage).openConnection();
 				connection.setRequestMethod("GET");
 				connection.setRequestProperty("User-Agent", "Project HungerGames");
-				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 				String inputLine;
 				final StringBuilder builder = new StringBuilder();
 				while((inputLine = reader.readLine()) != null) {
 					builder.append(inputLine);
 				}
 				reader.close();
+				connection.disconnect();
 				final String response = builder.toString();
 				final boolean success = response.equals("1");
-				HungerGames.logger.log(success ? Level.INFO : Level.SEVERE, "[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."));
+				HungerGames.logsManager.log("[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
 			}
 			catch(Exception ex) {
 				ex.printStackTrace();
+				HungerGames.logsManager.log("[ErrorSender] Error while sending error report.");
 			}
 		}
 		

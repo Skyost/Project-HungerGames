@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -145,6 +146,7 @@ public class Utils {
 			return true;
 		}
 		catch(Exception ex) {
+			ErrorSender.report(ex);
 			return false;
 		}
 	}

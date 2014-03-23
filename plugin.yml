@@ -1,7 +1,7 @@
 name: Project HungerGames
 main: fr.skyost.hungergames.HungerGames
 description: May the odds be ever in your favour.
-version: 0.5.1
+version: 0.5.3
 softdepend: [WorldEdit, Multiverse-Core]
 author: Skyost
 website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/

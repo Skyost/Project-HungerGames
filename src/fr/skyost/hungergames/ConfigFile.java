@@ -69,6 +69,8 @@ public class ConfigFile extends Config {
 	public boolean Spectators_Permissions_Interact = false;
 	
 	public boolean Log_Console = true;
+	public boolean Log_File_Enable = false;
+	public String Log_File_Directory;
 	
 	public ConfigFile(final File dataFolder) {
 		CONFIG_FILE = new File(dataFolder, "config.yml");
@@ -86,6 +88,8 @@ public class ConfigFile extends Config {
 		Lobby_Spawn_X = spawn.getX();
 		Lobby_Spawn_Y = spawn.getY();
 		Lobby_Spawn_Z = spawn.getZ();
+		
+		Log_File_Directory = new File(dataFolder + File.separator + "logs").getPath();
 	}
 	
 }

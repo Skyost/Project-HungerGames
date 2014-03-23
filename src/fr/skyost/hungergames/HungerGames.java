@@ -37,6 +37,7 @@ import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
 import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.LogsManager;
 import fr.skyost.hungergames.utils.MetricsLite;
 import fr.skyost.hungergames.utils.MultiverseUtils;
 import fr.skyost.hungergames.utils.Pages;
@@ -52,6 +53,7 @@ public class HungerGames extends JavaPlugin {
 	
 	public static HungerGames instance;
 	public static SpectatorsManager spectatorsManager;
+	public static final LogsManager logsManager = new LogsManager();
 	public static MultiverseUtils multiverseUtils;
 	
 	public static ConfigFile config;
@@ -62,8 +64,6 @@ public class HungerGames extends JavaPlugin {
 	public static final List<Chunk> generatedChunks = new ArrayList<Chunk>();
 	public static final HashMap<Player, HungerGamesProfile> players = new HashMap<Player, HungerGamesProfile>();
 	public static final SortedMap<Integer, String> winnersMap = new TreeMap<Integer, String>(Collections.reverseOrder());
-	
-	public static PluginLogger logger;
 	
 	public static World lobby;
 	public static File mapsFolder;
@@ -89,13 +89,13 @@ public class HungerGames extends JavaPlugin {
 			messages.init();
 			winners = new WinnersFile(this.getDataFolder());
 			winners.init();
-			logger = new PluginLogger(this);
 			if(config.Log_Console) {
-				logger.log(Level.INFO, "Enabling plugin...");
+				logsManager.setLogger(new PluginLogger(this));
 			}
-			if(config.BugsReport_Enable) {
-				ErrorSender.addHandler(logger);
+			if(config.Log_File_Enable) {
+				logsManager.setLogsFolder(new File(config.Log_File_Directory));
 			}
+			logsManager.log("Enabling plugin...");
 			final int winnersSize = winners.Winners.size();
 			if(winnersSize != 0)  {
 				for(int i = 0; i != winnersSize; i++) {
@@ -122,7 +122,7 @@ public class HungerGames extends JavaPlugin {
 			final Plugin multiverse = manager.getPlugin("Multiverse-Core");
 			if(multiverse != null) {
 				multiverseUtils = new MultiverseUtils(multiverse);
-				logger.log(Level.INFO, "Multiverse hooked with success !");
+				logsManager.log("Multiverse hooked with success !");
 			}
 			currentMap = HungerGamesAPI.generateMap();
 			final PluginCommand command = this.getCommand("hunger-games");
@@ -131,15 +131,14 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			logger.log(Level.INFO, "Error while enabling the plugin... Check the stacktrace above.");
+			ErrorSender.report(ex);
+			logsManager.log("Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
 	@Override
 	public final void onDisable() {
-		if(config.Log_Console) {
-			logger.log(Level.INFO, "Disabling plugin...");
-		}
+		logsManager.log("Disabling plugin...");
 		try {
 			if(players.size() != 0) {
 				for(final Player player : players.keySet()) {
@@ -164,7 +163,8 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			logger.log(Level.INFO, "Error while disabling the plugin... Check the stacktrace above.");
+			ErrorSender.report(ex);
+			logsManager.log("Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}
 	
@@ -196,19 +196,19 @@ public class HungerGames extends JavaPlugin {
 	
 	private final boolean checkConfig() {
 		if(config.Game_MinPlayers < 2) {
-			logger.log(Level.WARNING, "MinPlayers cannot be inferior than two !");
+			logsManager.log("MinPlayers cannot be inferior than two !", Level.WARNING);
 			return false;
 		}
 		if(config.Game_MaxPlayers < config.Game_MinPlayers) {
-			logger.log(Level.WARNING, "MinPlayers cannot be inferior than MaxPlayers !");
+			logsManager.log("MinPlayers cannot be inferior than MaxPlayers !", Level.WARNING);
 			return false;
 		}
 		if(config.Maps_Borders_Meta < 0) {
-			logger.log(Level.WARNING, "Borders_Meta cannot be inferior than zero !");
+			logsManager.log("Borders_Meta cannot be inferior than zero !", Level.WARNING);
 			return false;
 		}
 		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
-			logger.log(Level.WARNING, "SpawnDistance cannot be superior than BordersRadius !");
+			logsManager.log("SpawnDistance cannot be superior than BordersRadius !", Level.WARNING);
 			return false;
 		}
 		return true;

@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -50,7 +50,7 @@ public class Skyupdater {
 	private String response;
 	private Thread updaterThread;
 	
-	private static final String SKYUPDATER_VERSION = "0.3.6";
+	private static final String SKYUPDATER_VERSION = "0.3.7";
 	
 	public enum Result {
 		
@@ -135,9 +135,8 @@ public class Skyupdater {
 		this.pluginFile = pluginFile;
 		this.download = download;
 		this.announce = announce;
-		final Server server = plugin.getServer();
-		logger = server.getLogger();
-		updateFolder = server.getUpdateFolderFile();
+		logger = Bukkit.getLogger();
+		updateFolder = Bukkit.getUpdateFolderFile();
 		if(!updateFolder.exists()) {
 			updateFolder.mkdir();
 		}
@@ -148,7 +147,8 @@ public class Skyupdater {
 		final File propertiesFile = new File(skyupdaterFolder, "skyupdater.properties");
 		final Properties config = new Properties();
 		if(propertiesFile.exists()) {
-			config.load(new FileInputStream(propertiesFile));
+			final FileInputStream fileInputStream = new FileInputStream(propertiesFile);
+			config.load(fileInputStream);
 			apiKey = config.getProperty("api-key", "NONE");
 			if(apiKey.equalsIgnoreCase("NONE") || apiKey.length() == 0) {
 				apiKey = null;
@@ -160,6 +160,7 @@ public class Skyupdater {
 					logger.log(Level.INFO, "[Skyupdater] Skyupdater is disabled.");
 				}
 			}
+			fileInputStream.close();
 		}
 		else {
 			final String lineSeparator = System.lineSeparator();
@@ -197,7 +198,9 @@ public class Skyupdater {
 			stringBuilder.append(lineSeparator);
 			stringBuilder.append("Good game, I hope you will enjoy your plugins always up-to-date ;)");
 			stringBuilder.append(lineSeparator);
-			config.store(new FileOutputStream(propertiesFile), stringBuilder.toString());
+			final FileOutputStream fileOutputStream = new FileOutputStream(propertiesFile);
+			config.store(fileOutputStream, stringBuilder.toString());
+			fileOutputStream.close();
 		}
 		url = new URL("https://api.curseforge.com/servermods/files?projectIds=" + id);
 		updaterThread = new Thread(new UpdaterThread());
@@ -256,7 +259,7 @@ public class Skyupdater {
 	 * @return An array string which contains every of the update process.
 	 */
 	
-	public String[] getLatestFileData() {
+	public final String[] getLatestFileData() {
 		waitForThread();
 		return updateData;
 	}
@@ -391,7 +394,9 @@ public class Skyupdater {
 						result = Result.ERROR;
 						return;
 					}
-					final String response = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
+					final InputStreamReader inputStreamReader = new InputStreamReader(con.getInputStream());
+					final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+					final String response = bufferedReader.readLine();
 					if(response != null && !response.equals("[]")) {
 						final JSONArray jsonArray = (JSONArray)JSONValue.parseWithException(response);
 						final JSONObject jsonObject = (JSONObject)jsonArray.get(jsonArray.size() - 1);
@@ -428,6 +433,8 @@ public class Skyupdater {
 						logger.log(Level.SEVERE, "[Skyupdater] The ID '" + id + "' was not found (or no files found for this project) ! Maybe the author(s) (" + Joiner.on(", ").join(plugin.getDescription().getAuthors()) + ") of '" + pluginName + "' has/have misconfigured his/their plugin ?");
 						result = Result.ERROR;
 					}
+					bufferedReader.close();
+					inputStreamReader.close();
 				}
 				catch(Exception ex) {
 					logger.log(Level.SEVERE, "Exception '" + ex + "'. Please check your network connection.");

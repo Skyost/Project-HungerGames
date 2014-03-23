@@ -25,6 +25,7 @@ import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.tasks.BorderCreatorTask;
 import fr.skyost.hungergames.tasks.Countdown;
 import fr.skyost.hungergames.tasks.PostExecuteFirst;
+import fr.skyost.hungergames.utils.ErrorSender;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Utils;
 import fr.skyost.hungergames.utils.borders.Border.Type;
@@ -57,9 +58,7 @@ public class HungerGamesAPI {
 	 */
 	
 	public static final void addPlayer(final Player player, final boolean setSpectator) {
-		if(HungerGames.config.Log_Console) {
-			HungerGames.logger.log(Level.INFO, player.getName() + " joined the lobby.");
-		}
+		HungerGames.logsManager.log(player.getName() + " joined the lobby.");
 		HungerGames.players.put(player, new HungerGamesProfile(player));
 		final PlayerInventory inventory = player.getInventory();
 		inventory.setArmorContents(new ItemStack[]{null, null, null, null});
@@ -77,9 +76,7 @@ public class HungerGamesAPI {
 			HungerGames.totalPlayers++;
 			broadcastMessage(HungerGames.messages.Messages_14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
 			if(HungerGames.totalPlayers == HungerGames.config.Game_MinPlayers) {
-				if(HungerGames.config.Log_Console) {
-					HungerGames.logger.log(Level.INFO, "Starting game...");
-				}
+				HungerGames.logsManager.log("Starting game...");
 				broadcastMessage(HungerGames.messages.Messages_3.replaceAll("/n/", String.valueOf(HungerGames.config.Lobby_Countdown_Time)));
 				HungerGames.currentStep = Step.FIRST_COUNTDOWN;
 				HungerGames.tasks.set(0, new Countdown(HungerGames.config.Lobby_Countdown_Time, HungerGames.config.Lobby_Countdown_ExpBarLevel, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
@@ -137,9 +134,7 @@ public class HungerGamesAPI {
 	 */
 	
 	public static final void finishGame(final String message, final boolean hasWinner) {
-		if(HungerGames.config.Log_Console) {
-			HungerGames.logger.log(Level.INFO, "Finishing game...");
-		}
+		HungerGames.logsManager.log("Finishing game...");
 		final BukkitScheduler scheduler = Bukkit.getScheduler();
 		for(final int task : HungerGames.tasks) {
 			if(task != -1) {
@@ -225,9 +220,7 @@ public class HungerGamesAPI {
 	
 	public static final void deleteMap(final World world) {
 		try {
-			if(HungerGames.config.Log_Console) {
-				HungerGames.logger.log(Level.INFO, "Deleting the current map...");
-			}
+			HungerGames.logsManager.log("Deleting the current map...");
 			final List<Player> players = world.getPlayers();
 			if(players.size() != 0) {
 				for(final Player player : players) {
@@ -242,13 +235,12 @@ public class HungerGamesAPI {
 			else {
 				HungerGames.multiverseUtils.deleteWorld(world.getName());
 			}
-			if(HungerGames.config.Log_Console) {
-				HungerGames.logger.log(Level.INFO, "Done !");
-			}
+			HungerGames.logsManager.log("Done !");
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			HungerGames.logger.log(Level.INFO, "Error while deleting the current map... Check the stacktrace above.");
+			ErrorSender.report(ex);
+			HungerGames.logsManager.log("Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
 	
@@ -266,11 +258,11 @@ public class HungerGamesAPI {
 			}
 			else {
 				if(HungerGames.config.Log_Console) {
-					HungerGames.logger.log(Level.INFO, "Processing maps...");
+					HungerGames.logsManager.log("Processing maps...");
 				}
 				final File[] maps = HungerGames.mapsFolder.listFiles();
 				if(maps.length == 0) {
-					HungerGames.logger.log(Level.WARNING, "The maps folder is empty ! Creating a new map...");
+					HungerGames.logsManager.log("The maps folder is empty ! Creating a new map...", Level.WARNING);
 					world = createWorld(HungerGames.config.Maps_Generate_Name);
 					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
 				}
@@ -281,7 +273,7 @@ public class HungerGamesAPI {
 					world = createWorld(currentWorldName);
 				}
 				if(HungerGames.config.Log_Console) {
-					HungerGames.logger.log(Level.INFO, "Done ! The selected map is : '" + world.getName() + "'.");
+					HungerGames.logsManager.log("Done ! The selected map is : '" + world.getName() + "'.");
 				}
 			}
 			if(HungerGames.config.Maps_Borders_Enable) {
@@ -294,7 +286,7 @@ public class HungerGamesAPI {
 					world.setGameRuleValue(gameRule, entry.getValue());
 				}
 				else if(HungerGames.config.Log_Console) {
-					HungerGames.logger.log(Level.WARNING, "'" + gameRule + "' is not a valid game rule !");
+					HungerGames.logsManager.log("'" + gameRule + "' is not a valid game rule !", Level.WARNING);
 				}
 			}
 			world.setTime(HungerGames.config.Maps_DefaultTime);
@@ -302,7 +294,8 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			HungerGames.logger.log(Level.INFO, "Error while processing maps... Check the stacktrace above.");
+			ErrorSender.report(ex);
+			HungerGames.logsManager.log("Error while processing maps... Check the stacktrace above.");
 			Bukkit.getPluginManager().disablePlugin(HungerGames.instance);
 		}
 		return null;
@@ -334,7 +327,7 @@ public class HungerGamesAPI {
 	
 	public static final void addBorders(final World world) {
 		if(HungerGames.config.Maps_Borders_Type != Type.INVISIBLE && Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
-			HungerGames.logger.log(Level.WARNING, "WorldEdit was not found !");
+			HungerGames.logsManager.log("WorldEdit was not found !", Level.WARNING);
 			return;
 		}
 		final Location spawn = world.getSpawnLocation();
