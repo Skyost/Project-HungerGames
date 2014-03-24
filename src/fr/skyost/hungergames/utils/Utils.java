@@ -146,7 +146,6 @@ public class Utils {
 			return true;
 		}
 		catch(Exception ex) {
-			ErrorSender.report(ex);
 			return false;
 		}
 	}

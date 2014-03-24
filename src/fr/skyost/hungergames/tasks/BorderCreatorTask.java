@@ -25,7 +25,7 @@ public class BorderCreatorTask extends BukkitRunnable {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.report(ex);
+			ErrorSender.uploadAndSend(ex);
 			HungerGames.logsManager.log("Error while generating borders, please check the stacktrace above.", Level.SEVERE);
 		}
 	}

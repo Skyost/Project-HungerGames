@@ -1,15 +1,17 @@
 package fr.skyost.hungergames.utils;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
+
 import fr.skyost.hungergames.HungerGames;
 
 /**
- * Used to send me emails through my website.
+ * Used to send reports.
  */
 
 public class ErrorSender {
@@ -33,15 +35,49 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Report the specified exception.
+	 * Upload the Throwable on paste.skyost.eu and send it to me.
 	 * 
-	 * @param throwable The exception.
+	 * @param throwable The Throwable.
 	 */
 	
-	public static final void report(final Throwable throwable) {
-		if(HungerGames.config.BugsReport_Enable) {
-			new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, throwable.toString()).report();
-		}
+	public static final void uploadAndSend(final Throwable throwable) {
+		new Thread() {
+			
+			@Override
+			public void run() {
+				try {
+					HungerGames.logsManager.log("[ErrorSender] Uploading your error to paste.skyost.eu");
+					final StringBuilder builder = new StringBuilder();
+					final String lineSeparator = System.lineSeparator();
+					for(final StackTraceElement element : throwable.getStackTrace()) {
+						builder.append(element + lineSeparator);
+					}
+					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "paste.skyost.eu", "/api/create").openConnection();
+					connection.setRequestMethod("POST");
+					connection.setRequestProperty("User-Agent", "Project HungerGames");
+					connection.setDoOutput(true);
+					final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream ());
+					outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
+					outputStream.flush();
+					outputStream.close();
+					builder.setLength(0);
+					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					String inputLine;
+					while((inputLine = reader.readLine()) != null) {
+						builder.append(inputLine);
+					}
+					reader.close();
+					connection.disconnect();
+					HungerGames.logsManager.log("[ErrorSender] Done !");
+					final String message = builder.toString();
+					new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage()).report();
+				}
+				catch(Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+			
+		}.start();
 	}
 	
 	/**
@@ -49,7 +85,37 @@ public class ErrorSender {
 	 */
 	
 	public final void report() {
-		new ReportSender().start();
+		new Thread() {
+			
+			@Override
+			public void run() {
+				try {
+					HungerGames.logsManager.log("[ErrorSender] Sending the report from " + name + "<" + email + ">...");
+					final String encodedName = URLEncoder.encode(name, "UTF-8");
+					final String encodedEmail = URLEncoder.encode(email, "UTF-8");
+					final String encodedMessage = URLEncoder.encode(message, "UTF-8");
+					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.skyost.eu", "/sendmail.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage).openConnection();
+					connection.setRequestMethod("GET");
+					connection.setRequestProperty("User-Agent", "Project HungerGames");
+					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					String inputLine;
+					final StringBuilder builder = new StringBuilder();
+					while((inputLine = reader.readLine()) != null) {
+						builder.append(inputLine);
+					}
+					reader.close();
+					connection.disconnect();
+					final String response = builder.toString();
+					final boolean success = response.equals("1");
+					HungerGames.logsManager.log("[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
+				}
+				catch(Exception ex) {
+					ex.printStackTrace();
+					HungerGames.logsManager.log("[ErrorSender] Error while sending error report.");
+				}
+			}
+			
+		}.start();
 	}
 	
 	/**
@@ -111,38 +177,6 @@ public class ErrorSender {
 	
 	public final void setMessage(final String message) {
 		this.message = message;
-	}
-
-	private class ReportSender extends Thread {
-		
-		@Override
-		public void run() {
-			try {
-				HungerGames.logsManager.log("[ErrorSender] Sending an error report from " + name + "<" + email + ">...", Level.INFO);
-				final String encodedName = URLEncoder.encode(name, "UTF-8");
-				final String encodedEmail = URLEncoder.encode(email, "UTF-8");
-				final String encodedMessage = URLEncoder.encode(message, "UTF-8");
-				final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.skyost.eu", "/sendmail.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage).openConnection();
-				connection.setRequestMethod("GET");
-				connection.setRequestProperty("User-Agent", "Project HungerGames");
-				final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String inputLine;
-				final StringBuilder builder = new StringBuilder();
-				while((inputLine = reader.readLine()) != null) {
-					builder.append(inputLine);
-				}
-				reader.close();
-				connection.disconnect();
-				final String response = builder.toString();
-				final boolean success = response.equals("1");
-				HungerGames.logsManager.log("[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
-			}
-			catch(Exception ex) {
-				ex.printStackTrace();
-				HungerGames.logsManager.log("[ErrorSender] Error while sending error report.");
-			}
-		}
-		
 	}
 	
 }

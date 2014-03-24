@@ -131,7 +131,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.report(ex);
+			ErrorSender.uploadAndSend(ex);
 			logsManager.log("Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
@@ -163,7 +163,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.report(ex);
+			ErrorSender.uploadAndSend(ex);
 			logsManager.log("Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}

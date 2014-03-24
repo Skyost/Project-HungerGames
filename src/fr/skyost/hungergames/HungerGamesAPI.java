@@ -239,7 +239,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.report(ex);
+			ErrorSender.uploadAndSend(ex);
 			HungerGames.logsManager.log("Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
@@ -290,7 +290,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.report(ex);
+			ErrorSender.uploadAndSend(ex);
 			HungerGames.logsManager.log("Error while processing maps... Check the stacktrace above.");
 			Bukkit.getPluginManager().disablePlugin(HungerGames.instance);
 		}
