@@ -118,6 +118,7 @@ public class HungerGames extends JavaPlugin {
 			registerEvents(manager);
 			if(!checkConfig()) {
 				manager.disablePlugin(this);
+				return;
 			}
 			final Plugin multiverse = manager.getPlugin("Multiverse-Core");
 			if(multiverse != null) {

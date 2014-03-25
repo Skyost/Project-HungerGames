@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 
+import com.google.common.base.Throwables;
+
 import fr.skyost.hungergames.HungerGames;
 
 /**
@@ -46,21 +48,16 @@ public class ErrorSender {
 			@Override
 			public void run() {
 				try {
-					HungerGames.logsManager.log("[ErrorSender] Uploading your error to paste.skyost.eu");
-					final StringBuilder builder = new StringBuilder();
-					final String lineSeparator = System.lineSeparator();
-					for(final StackTraceElement element : throwable.getStackTrace()) {
-						builder.append(element + lineSeparator);
-					}
+					HungerGames.logsManager.log("[ErrorSender] Uploading your error to paste.skyost.eu...");
 					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "paste.skyost.eu", "/api/create").openConnection();
 					connection.setRequestMethod("POST");
 					connection.setRequestProperty("User-Agent", "Project HungerGames");
 					connection.setDoOutput(true);
 					final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream ());
-					outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
+					outputStream.writeBytes("text=" + URLEncoder.encode(Throwables.getStackTraceAsString(throwable), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
 					outputStream.flush();
 					outputStream.close();
-					builder.setLength(0);
+					final StringBuilder builder = new StringBuilder();
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String inputLine;
 					while((inputLine = reader.readLine()) != null) {

@@ -12,7 +12,7 @@ import org.bukkit.Sound;
 import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 
-import fr.skyost.hungergames.SpectatorsManager.Mode;
+import fr.skyost.hungergames.SpectatorsManager.SpectatorsManagerMode;
 import fr.skyost.hungergames.utils.Config;
 import fr.skyost.hungergames.utils.borders.Border.Type;
 
@@ -63,7 +63,7 @@ public class ConfigFile extends Config {
 	public String Game_DeathSound_Pitch = "0.75";
 	
 	public boolean Spectators_Enable = true;
-	public Mode Spectators_Mode = Mode.GHOST_FACTORY;
+	public SpectatorsManagerMode Spectators_Mode = SpectatorsManagerMode.GHOST_FACTORY;
 	public boolean Spectators_Permissions_Chat = false;
 	public boolean Spectators_Permissions_PickupItems = false;
 	public boolean Spectators_Permissions_Interact = false;

@@ -20,7 +20,12 @@ public class MultiverseUtils {
 	}
 	
 	public final boolean createWorld(final String world, final Environment environment, final long seed, final WorldType type, final boolean generateStructures, final String generator) {
-		return manager.addWorld(world, environment, String.valueOf(seed), type, generateStructures, generator, false);
+		try {
+			return manager.addWorld(world, environment, String.valueOf(seed), type, generateStructures, generator, false);
+		}
+		catch(IllegalArgumentException ex) {
+			return true;
+		}
 	}
 	
 	public final boolean deleteWorld(final String world) {

@@ -30,11 +30,11 @@ public class SpectatorsManager {
 	private static final OfflinePlayer[] EMPTY_PLAYERS = new OfflinePlayer[0];
 	
 	private static List<Player> spectatorsList;
-	private Mode mode;
+	private SpectatorsManagerMode mode;
 	
 	private Team spectatorsTeam;
 	
-	public enum Mode {
+	public enum SpectatorsManagerMode {
 		GHOST_FACTORY,
 		INVISIBLE_POTION;
 	}
@@ -45,9 +45,9 @@ public class SpectatorsManager {
 	 * @param plugin The plugin which is used for the Scheduler.
 	 */
 	
-	public SpectatorsManager(final Plugin plugin, final Mode mode) {
+	public SpectatorsManager(final Plugin plugin, final SpectatorsManagerMode mode) {
 		this.mode = mode;
-		if(mode == Mode.GHOST_FACTORY) {
+		if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 			// Initialize
 			createTask(plugin);
 			createGetTeam();
@@ -91,7 +91,7 @@ public class SpectatorsManager {
 	}
 	
 	public final void clearSpectators() {
-		if(mode == Mode.GHOST_FACTORY) {
+		if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 			if(spectatorsTeam != null) {
 				OfflinePlayer ghostPlayer;
 				for(final Object objPlayer : getSpectators()) {
@@ -114,7 +114,7 @@ public class SpectatorsManager {
 	
 	public final void addSpectator(final Player player) {
 		if(!spectatorsTeam.hasPlayer(player)) {
-			if(mode == Mode.GHOST_FACTORY) {
+			if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 				spectatorsTeam.addPlayer(player);
 			}
 			else {
@@ -125,14 +125,14 @@ public class SpectatorsManager {
 	}
 	
 	public final boolean hasSpectator(final Player player) {
-		if(mode == Mode.GHOST_FACTORY) {
+		if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 			return spectatorsTeam.hasPlayer(player);
 		}
 		return spectatorsList.contains(player);
 	}
 	
 	public final void removeSpectator(final Player player) {
-		if(mode == Mode.GHOST_FACTORY) {
+		if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 			if(!spectatorsTeam.removePlayer(player)) {
 				return;
 			}
@@ -144,7 +144,7 @@ public class SpectatorsManager {
 	}
 	
 	public final Object[] getSpectators() {
-		if(mode == Mode.GHOST_FACTORY) {
+		if(mode == SpectatorsManagerMode.GHOST_FACTORY) {
 			Set<OfflinePlayer> players = spectatorsTeam.getPlayers();
 			if(players != null) {
 				return players.toArray(new OfflinePlayer[0]);
