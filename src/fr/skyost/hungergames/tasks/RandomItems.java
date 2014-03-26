@@ -32,7 +32,7 @@ public class RandomItems extends BukkitRunnable {
 		for(final Entry<String, String> entry : HungerGames.config.Game_Random_Items.entrySet()) {
 			chance = chance + Integer.parseInt(entry.getKey());
 		}
-		final ItemStack item = JsonItemStack.fromJson(HungerGames.config.Game_Random_Items.get(new Random().nextInt(chance) + 1)).toItemStack();
+		final ItemStack item = JsonItemStack.fromJson(HungerGames.config.Game_Random_Items.get(random.nextInt(chance))).toItemStack();
 		if(HungerGames.config.Game_Random_Chests) {
 			final Block chestBlock = location.getBlock();
 			chestBlock.setType(Material.CHEST);
