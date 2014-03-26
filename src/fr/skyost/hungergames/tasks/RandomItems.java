@@ -1,7 +1,6 @@
 package fr.skyost.hungergames.tasks;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -9,14 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGamesAPI;
+import fr.skyost.hungergames.utils.JsonItemStack;
 
 public class RandomItems extends BukkitRunnable {
 	
@@ -30,20 +28,11 @@ public class RandomItems extends BukkitRunnable {
 		location.add(random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1, 0, random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1);
 		final int y = HungerGames.currentMap.getHighestBlockYAt(location);
 		location.setY(y);
-		final List<String> itemLore = HungerGames.config.Game_Random_Items.get(random.nextInt(HungerGames.config.Game_Random_Items.size()));
-		final ItemStack item = new ItemStack(Material.getMaterial(itemLore.get(0)));
-		if(itemLore.size() > 1) {
-			final ItemMeta meta = item.getItemMeta();
-			meta.setDisplayName(itemLore.get(1));
-			if(itemLore.size() > 2) {
-				meta.setLore(Arrays.asList(itemLore.get(2)));
-				if(itemLore.size() > 3) {
-					final Enchantment enchantment = Enchantment.getByName(itemLore.get(3));
-					meta.addEnchant(enchantment, itemLore.size() > 4 ? Integer.parseInt(itemLore.get(4)) : enchantment.getStartLevel(), true);
-				}
-			}
-			item.setItemMeta(meta);
+		int chance = 0;
+		for(final Entry<String, String> entry : HungerGames.config.Game_Random_Items.entrySet()) {
+			chance = chance + Integer.parseInt(entry.getKey());
 		}
+		final ItemStack item = JsonItemStack.fromJson(HungerGames.config.Game_Random_Items.get(new Random().nextInt(chance) + 1)).toItemStack();
 		if(HungerGames.config.Game_Random_Chests) {
 			final Block chestBlock = location.getBlock();
 			chestBlock.setType(Material.CHEST);

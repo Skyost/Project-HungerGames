@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
+
 import com.google.common.base.Throwables;
 
 import fr.skyost.hungergames.HungerGames;
@@ -48,26 +50,37 @@ public class ErrorSender {
 			@Override
 			public void run() {
 				try {
-					HungerGames.logsManager.log("[ErrorSender] Uploading your error to paste.skyost.eu...");
-					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "paste.skyost.eu", "/api/create").openConnection();
-					connection.setRequestMethod("POST");
-					connection.setRequestProperty("User-Agent", "Project HungerGames");
-					connection.setDoOutput(true);
-					final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream ());
-					outputStream.writeBytes("text=" + URLEncoder.encode(Throwables.getStackTraceAsString(throwable), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
-					outputStream.flush();
-					outputStream.close();
-					final StringBuilder builder = new StringBuilder();
-					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-					String inputLine;
-					while((inputLine = reader.readLine()) != null) {
-						builder.append(inputLine);
+					if(HungerGames.config.BugsReport_Enable) {
+						HungerGames.logsManager.log("[ErrorSender] Uploading your error on paste.skyost.eu...");
+						final HttpURLConnection connection = (HttpURLConnection)new URL("http", "paste.skyost.eu", "/api/create").openConnection();
+						connection.setRequestMethod("POST");
+						connection.setRequestProperty("User-Agent", "Project HungerGames");
+						connection.setDoOutput(true);
+						final String separator = System.lineSeparator();
+						final StringBuilder builder = new StringBuilder();
+						builder.append(Throwables.getStackTraceAsString(throwable));
+						builder.append(separator);
+						builder.append("Plugin version : '" + HungerGames.instance.getDescription().getVersion() + "'.");
+						builder.append(separator);
+						builder.append("Bukkit version : '" + Bukkit.getVersion() + "'.");
+						builder.append(separator);
+						builder.append("Java version : '" + System.getProperty("java.version") + "'.");
+						final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+						outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
+						outputStream.flush();
+						outputStream.close();
+						builder.setLength(0);
+						final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+						String inputLine;
+						while((inputLine = reader.readLine()) != null) {
+							builder.append(inputLine);
+						}
+						reader.close();
+						connection.disconnect();
+						HungerGames.logsManager.log("[ErrorSender] Done !");
+						final String message = builder.toString();
+						new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage()).report();
 					}
-					reader.close();
-					connection.disconnect();
-					HungerGames.logsManager.log("[ErrorSender] Done !");
-					final String message = builder.toString();
-					new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage()).report();
 				}
 				catch(Exception ex) {
 					ex.printStackTrace();

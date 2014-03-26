@@ -42,6 +42,7 @@ import fr.skyost.hungergames.utils.MetricsLite;
 import fr.skyost.hungergames.utils.MultiverseUtils;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Skyupdater;
+import fr.skyost.hungergames.utils.Utils;
 
 /**
  * The class where fields and others variables are stocked.
@@ -82,12 +83,13 @@ public class HungerGames extends JavaPlugin {
 	@Override
 	public final void onEnable() {
 		try {
+			final File dataFolder = this.getDataFolder();
 			instance = this;
-			config = new ConfigFile(this.getDataFolder());
+			config = new ConfigFile(dataFolder);
 			config.init();
-			messages = new MessagesFile(this.getDataFolder());
+			messages = new MessagesFile(dataFolder);
 			messages.init();
-			winners = new WinnersFile(this.getDataFolder());
+			winners = new WinnersFile(dataFolder);
 			winners.init();
 			if(config.Log_Console) {
 				logsManager.setLogger(new PluginLogger(this));
@@ -95,7 +97,17 @@ public class HungerGames extends JavaPlugin {
 			if(config.Log_File_Enable) {
 				logsManager.setLogsFolder(new File(config.Log_File_Directory));
 			}
+			final PluginManager manager = Bukkit.getPluginManager();
 			logsManager.log("Enabling plugin...");
+			if(config.VERSION < 2) {
+				logsManager.log("Updating your configuration file...");
+				final File configFile = new File(dataFolder, "config.yml");
+				Utils.copy(configFile, new File(configFile.getPath() + "-OLD"));
+				configFile.delete();
+				logsManager.log("Done ! Please re-enable your plugin !");
+				manager.disablePlugin(this);
+				return;
+			}
 			final int winnersSize = winners.Winners.size();
 			if(winnersSize != 0)  {
 				for(int i = 0; i != winnersSize; i++) {
@@ -114,7 +126,6 @@ public class HungerGames extends JavaPlugin {
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
 			}
-			final PluginManager manager = Bukkit.getPluginManager();
 			registerEvents(manager);
 			if(!checkConfig()) {
 				manager.disablePlugin(this);
@@ -126,7 +137,7 @@ public class HungerGames extends JavaPlugin {
 				logsManager.log("Multiverse hooked with success !");
 			}
 			currentMap = HungerGamesAPI.generateMap();
-			final PluginCommand command = this.getCommand("hunger-games");
+			final PluginCommand command = this.getCommand("hg");
 			command.setUsage(ChatColor.RED + "/hg join, /hg leave, /hg infos or /hg winners <page>.");
 			command.setExecutor(new HungerGamesCommand());
 		}

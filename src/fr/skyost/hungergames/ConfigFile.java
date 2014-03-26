@@ -1,10 +1,7 @@
 package fr.skyost.hungergames;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,11 +11,12 @@ import org.bukkit.enchantments.Enchantment;
 
 import fr.skyost.hungergames.SpectatorsManager.SpectatorsManagerMode;
 import fr.skyost.hungergames.utils.Config;
+import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.borders.Border.Type;
 
 public class ConfigFile extends Config {
 	
-	public int VERSION = 1;
+	public int VERSION = 2;
 	
 	public boolean EnableUpdater = true;
 	public boolean EnableMetrics = true;
@@ -28,7 +26,11 @@ public class ConfigFile extends Config {
 	public String BugsReport_Mail = "your@mail.com";
 	
 	public String Maps_Folder;
-	public HashMap<String, String> Maps_GameRules = new HashMap<String, String>();
+	public HashMap<String, String> Maps_GameRules = new HashMap<String, String>() {
+		private static final long serialVersionUID = 1L; {
+			put("naturalRegeneration", "false");
+		}
+	};
 	public int Maps_DefaultTime = 0;
 	public boolean Maps_Generate_Enable = false;
 	public String Maps_Generate_Name = "generated_map";
@@ -51,7 +53,13 @@ public class ConfigFile extends Config {
 	public int Game_SpawnDistance = 200;
 	public boolean Game_AutoSneak = true;
 	public int Game_Random_Delay = 1000;
-	public List<List<String>> Game_Random_Items = Arrays.asList(Arrays.asList(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), String.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())), Arrays.asList(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too."), Arrays.asList(Material.COAL.name()));
+	public HashMap<String, String> Game_Random_Items = new HashMap<String, String>() {
+		private static final long serialVersionUID = 1L; {
+			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Enchantment.DAMAGE_ALL.getMaxLevel()).toJson());
+			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null).toJson());
+			put("50", new JsonItemStack(Material.COAL.name(), null, null, null, null).toJson());
+		}
+	};
 	public boolean Game_Random_Chests = true;
 	public int Game_Random_Distance = 100;
 	public boolean Game_Random_Thundering = true;
@@ -77,8 +85,6 @@ public class ConfigFile extends Config {
 		CONFIG_HEADER = "Project HungerGames by Skyost";
 		
 		Maps_Folder = new File(dataFolder + File.separator + "maps").getPath();
-		
-		Maps_GameRules.put("naturalRegeneration", "false");
 		
 		HungerGames.lobby = Bukkit.getWorld(Lobby_World);
 		if(HungerGames.lobby == null) {
