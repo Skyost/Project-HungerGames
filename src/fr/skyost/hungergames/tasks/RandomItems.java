@@ -19,7 +19,7 @@ import fr.skyost.hungergames.utils.JsonItemStack;
 public class RandomItems extends BukkitRunnable {
 	
 	private final BukkitScheduler scheduler = Bukkit.getScheduler();
-	private final Random random = new Random();
+	private static final Random random = new Random();
 	private final int doubledRandomDistance = HungerGames.config.Game_Random_Distance * 2;
 	
 	@Override
@@ -28,11 +28,7 @@ public class RandomItems extends BukkitRunnable {
 		location.add(random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1, 0, random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1);
 		final int y = HungerGames.currentMap.getHighestBlockYAt(location);
 		location.setY(y);
-		int chance = 0;
-		for(final Entry<String, String> entry : HungerGames.config.Game_Random_Items.entrySet()) {
-			chance = chance + Integer.parseInt(entry.getKey());
-		}
-		final ItemStack item = JsonItemStack.fromJson(HungerGames.config.Game_Random_Items.get(random.nextInt(chance))).toItemStack();
+		final ItemStack item = pickRandomItem();
 		if(HungerGames.config.Game_Random_Chests) {
 			final Block chestBlock = location.getBlock();
 			chestBlock.setType(Material.CHEST);
@@ -51,6 +47,22 @@ public class RandomItems extends BukkitRunnable {
 			HungerGames.currentMap.strikeLightningEffect(location);
 		}
 		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.config.Game_Random_Delay * 20));
+	}
+	
+	public static final ItemStack pickRandomItem() {
+		int probability = 0;
+		for(final String key : HungerGames.config.Game_Random_Items.keySet()) {
+			probability += Integer.valueOf(key);
+		}
+		probability = random.nextInt(probability);
+		int cumulativeProbability = 0;
+		for(final Entry<String, String> entry : HungerGames.config.Game_Random_Items.entrySet()) {
+			cumulativeProbability += Integer.valueOf(entry.getKey());
+			if(probability <= cumulativeProbability) {
+				return JsonItemStack.fromJson(entry.getValue()).toItemStack();
+			}
+		}
+		return null;
 	}
 	
 }

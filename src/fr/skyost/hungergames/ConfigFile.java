@@ -1,7 +1,9 @@
 package fr.skyost.hungergames;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -55,9 +57,9 @@ public class ConfigFile extends Config {
 	public int Game_Random_Delay = 1000;
 	public HashMap<String, String> Game_Random_Items = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
-			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Enchantment.DAMAGE_ALL.getMaxLevel()).toJson());
+			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())).toJson());
 			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null).toJson());
-			put("50", new JsonItemStack(Material.COAL.name(), null, null, null, null).toJson());
+			put("50", new JsonItemStack(Material.COAL.name(), null, Arrays.asList("For Christmas.", "- Mom"), null).toJson());
 		}
 	};
 	public boolean Game_Random_Chests = true;
