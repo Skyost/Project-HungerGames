@@ -1,7 +1,7 @@
 name: Project HungerGames
 main: fr.skyost.hungergames.HungerGames
 description: May the odds be ever in your favour.
-version: 0.5.4
+version: 0.5.5
 softdepend: [WorldEdit, Multiverse-Core]
 author: Skyost
 website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/
@@ -23,3 +23,12 @@ permissions:
  hungergames.winners:
   default: true
   description: Allows you to view the winners.
+ hungergames.kits.create:
+  default: op
+  description: Allows you to create kits.
+ hungergames.kits.delete:
+  default: op
+  description: Allows you to delete kits.
+ hungergames.kits.use:
+  default: true
+  description: Allows you to use kits.

@@ -64,7 +64,8 @@ public class HungerGamesAPI {
 		inventory.setArmorContents(new ItemStack[]{null, null, null, null});
 		inventory.clear();
 		Utils.updateInventory(player);
-		player.setTotalExperience(0);
+		player.setLevel(0);
+		player.setExp(0f);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
 		if(setSpectator) {
@@ -72,6 +73,7 @@ public class HungerGamesAPI {
 			HungerGames.spectatorsManager.addSpectator(player);
 		}
 		else {
+			inventory.addItem(HungerGames.kitSelector);
 			player.teleport(new Location(HungerGames.lobby, HungerGames.config.Lobby_Spawn_X, HungerGames.config.Lobby_Spawn_Y, HungerGames.config.Lobby_Spawn_Z));
 			HungerGames.totalPlayers++;
 			broadcastMessage(HungerGames.messages.Messages_14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
@@ -181,8 +183,8 @@ public class HungerGamesAPI {
 	 */
 	
 	public static final void revertPlayer(final Player player, final HungerGamesProfile profile, final boolean clearInventory) {
+		player.teleport(profile.getPreviousLocation());
 		final PlayerInventory inventory = player.getInventory();
-		player.setTotalExperience(profile.getTotalExp());
 		if(clearInventory) {
 			inventory.setArmorContents(new ItemStack[]{null, null, null, null});
 			inventory.clear();
@@ -191,13 +193,14 @@ public class HungerGamesAPI {
 		inventory.setContents(profile.getInventoryContents());
 		inventory.setArmorContents(profile.getInventoryArmorContents());
 		Utils.updateInventory(player);
+		player.setLevel(profile.getExpLevel());
+		player.setExp(profile.getExp());
 		player.setGameMode(profile.getGameMode());
 		player.setAllowFlight(profile.getAllowFlight());
 		player.setSneaking(profile.isSneaking());
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);
 		player.setFireTicks(0);
-		player.teleport(profile.getPreviousLocation());
 	}
 	
 	/**

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -17,6 +18,9 @@ import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.PluginManager;
@@ -37,6 +41,7 @@ import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
 import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.LogsManager;
 import fr.skyost.hungergames.utils.MetricsLite;
 import fr.skyost.hungergames.utils.MultiverseUtils;
@@ -72,6 +77,8 @@ public class HungerGames extends JavaPlugin {
 	public static int totalPlayers = 0;
 	public static Step currentStep = Step.LOBBY;
 	public static Pages pages;
+	public static Inventory kitsMenu;
+	public static ItemStack kitSelector;
 	
 	public enum Step {
 		LOBBY,
@@ -136,9 +143,22 @@ public class HungerGames extends JavaPlugin {
 				multiverseUtils = new MultiverseUtils(multiverse);
 				logsManager.log("Multiverse hooked with success !");
 			}
+			kitSelector = new ItemStack(config.Kits_Selector_Material);
+			ItemMeta meta = kitSelector.getItemMeta();
+			meta.setDisplayName(config.Kits_Selector_Name);
+			kitSelector.setItemMeta(meta);
+			kitsMenu = Bukkit.createInventory(null, 9, config.Kits_Selector_Name);
+			ItemStack item;
+			for(final Entry<String, List<String>> entry : config.Kits_List.entrySet()) {
+				item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
+				meta = item.getItemMeta();
+				meta.setDisplayName(entry.getKey());
+				item.setItemMeta(meta);
+				kitsMenu.addItem(item);
+			}
 			currentMap = HungerGamesAPI.generateMap();
 			final PluginCommand command = this.getCommand("hg");
-			command.setUsage(ChatColor.RED + "/hg join, /hg leave, /hg infos or /hg winners <page>.");
+			command.setUsage(ChatColor.RED + command.getUsage());
 			command.setExecutor(new HungerGamesCommand());
 		}
 		catch(Exception ex) {
@@ -221,6 +241,10 @@ public class HungerGames extends JavaPlugin {
 		}
 		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
 			logsManager.log("SpawnDistance cannot be superior than BordersRadius !", Level.WARNING);
+			return false;
+		}
+		if(config.Kits_List.keySet().size() > 9) {
+			logsManager.log("The KitsList cannot be superior to nine !", Level.WARNING);
 			return false;
 		}
 		return true;

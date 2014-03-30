@@ -20,16 +20,16 @@ public class RandomItems extends BukkitRunnable {
 	
 	private final BukkitScheduler scheduler = Bukkit.getScheduler();
 	private static final Random random = new Random();
-	private final int doubledRandomDistance = HungerGames.config.Game_Random_Distance * 2;
+	private final int doubledRandomDistance = HungerGames.config.Game_RandomItems_Distance * 2;
 	
 	@Override
 	public void run() {
 		final Location location = HungerGames.currentMap.getSpawnLocation();
-		location.add(random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1, 0, random.nextInt(doubledRandomDistance) - HungerGames.config.Game_Random_Distance + 1);
+		location.add(random.nextInt(doubledRandomDistance) - HungerGames.config.Game_RandomItems_Distance + 1, 0, random.nextInt(doubledRandomDistance) - HungerGames.config.Game_RandomItems_Distance + 1);
 		final int y = HungerGames.currentMap.getHighestBlockYAt(location);
 		location.setY(y);
 		final ItemStack item = pickRandomItem();
-		if(HungerGames.config.Game_Random_Chests) {
+		if(HungerGames.config.Game_RandomItems_Chests) {
 			final Block chestBlock = location.getBlock();
 			chestBlock.setType(Material.CHEST);
 			final Chest chest = (Chest)chestBlock.getState();
@@ -43,10 +43,10 @@ public class RandomItems extends BukkitRunnable {
 			HungerGames.currentMap.dropItem(location, item);
 		}
 		HungerGamesAPI.broadcastMessage(HungerGames.messages.Messages_10.replaceAll("/x/", String.valueOf(location.getBlockX())).replaceAll("/y/", String.valueOf(y)).replaceAll("/z/", String.valueOf(location.getBlockZ())));
-		if(HungerGames.config.Game_Random_Thundering) {
+		if(HungerGames.config.Game_RandomItems_Thundering) {
 			HungerGames.currentMap.strikeLightningEffect(location);
 		}
-		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.config.Game_Random_Delay * 20));
+		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.config.Game_RandomItems_Delay * 20));
 	}
 	
 	public static final ItemStack pickRandomItem() {

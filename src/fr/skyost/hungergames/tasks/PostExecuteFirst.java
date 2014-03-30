@@ -24,6 +24,7 @@ public class PostExecuteFirst extends BukkitRunnable {
 			player.setSneaking(HungerGames.config.Game_AutoSneak);
 			player.setHealth(player.getMaxHealth());
 			player.setFoodLevel(20);
+			player.getInventory().removeItem(HungerGames.kitSelector);
 			player.sendMessage(message);
 		}
 		HungerGames.tasks.set(0, new Countdown(HungerGames.config.Game_Countdown_Time, HungerGames.config.Game_Countdown_ExpBarLevel, new PostExecuteSecond()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());

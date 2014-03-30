@@ -3,6 +3,7 @@ package fr.skyost.hungergames;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,7 +55,7 @@ public class ConfigFile extends Config {
 	public int Game_MaxPlayers = 8;
 	public int Game_SpawnDistance = 200;
 	public boolean Game_AutoSneak = true;
-	public int Game_Random_Delay = 1000;
+	public int Game_RandomItems_Delay = 1000;
 	public HashMap<String, String> Game_Random_Items = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())).toJson());
@@ -62,9 +63,9 @@ public class ConfigFile extends Config {
 			put("50", new JsonItemStack(Material.COAL.name(), null, Arrays.asList("For Christmas.", "- Mom"), null).toJson());
 		}
 	};
-	public boolean Game_Random_Chests = true;
-	public int Game_Random_Distance = 100;
-	public boolean Game_Random_Thundering = true;
+	public boolean Game_RandomItems_Chests = true;
+	public int Game_RandomItems_Distance = 100;
+	public boolean Game_RandomItems_Thundering = true;
 	public boolean Game_Motd_Change = false;
 	public int Game_Countdown_Time = 60;
 	public boolean Game_Countdown_ExpBarLevel = true;
@@ -77,6 +78,14 @@ public class ConfigFile extends Config {
 	public boolean Spectators_Permissions_Chat = false;
 	public boolean Spectators_Permissions_PickupItems = false;
 	public boolean Spectators_Permissions_Interact = false;
+	
+	public String Kits_Selector_Name = "§6Select a kit !";
+	public Material Kits_Selector_Material = Material.NETHER_STAR;
+	public HashMap<String, List<String>> Kits_List = new HashMap<String, List<String>>() {
+		private static final long serialVersionUID = 1L; {
+			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null).toJson()));
+		}
+	};
 	
 	public boolean Log_Console = true;
 	public boolean Log_File_Enable = false;

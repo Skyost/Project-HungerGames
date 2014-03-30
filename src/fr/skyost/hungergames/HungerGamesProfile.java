@@ -18,7 +18,8 @@ import org.bukkit.inventory.PlayerInventory;
 public class HungerGamesProfile {
 	
 	private final Location previousLocation;
-	private final int totalExp;
+	private final int expLevel;
+	private final float exp;
 	private final ItemStack[] items;
 	private final ItemStack[] armor;
 	private final GameMode gameMode;
@@ -35,7 +36,8 @@ public class HungerGamesProfile {
 	
 	public HungerGamesProfile(final Player player) {
 		previousLocation = player.getLocation();
-		totalExp = player.getTotalExperience();
+		expLevel = player.getLevel();
+		exp = player.getExp();
 		final PlayerInventory inventory = player.getInventory();
 		items = inventory.getContents();
 		armor = inventory.getArmorContents();
@@ -65,13 +67,23 @@ public class HungerGamesProfile {
 	}
 	
 	/**
-	 * Get the previous experience of the player.
+	 * Get the previous experience level of the player.
 	 * 
-	 * @return The previous experience of the player.
+	 * @return The previous experience level of the player.
 	 */
 	
-	public final int getTotalExp() {
-		return totalExp;
+	public final int getExpLevel() {
+		return expLevel;
+	}
+	
+	/**
+	 * Get the experience of the player.
+	 * 
+	 * @return The experience of the player.
+	 */
+	
+	public final float getExp() {
+		return exp;
 	}
 	
 	/**

@@ -21,6 +21,16 @@ public class JsonItemStack {
 	private final List<String> lore;
 	private final HashMap<String, Long> enchantments = new HashMap<String, Long>();
 	
+	public JsonItemStack(final ItemStack item) {
+		material = item.getType().name();
+		final ItemMeta meta = item.getItemMeta();
+		name = meta.getDisplayName();
+		lore = meta.getLore();
+		for(final Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
+			enchantments.put(entry.getKey().getName(), Long.valueOf(entry.getValue()));
+		}
+	}
+	
 	public JsonItemStack(final String material, final String name, final String lore, final String enchantment, final Long enchantmentLevel) {
 		this.material = material;
 		this.name = name;

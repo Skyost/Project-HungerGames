@@ -29,6 +29,9 @@ public class MessagesFile extends Config {
 	public String Messages_17 = "Page /n/ of /total-pages/. View the next page with /hg winners <page>./line-separator/The above list is scrollable.";
 	public String Messages_18 = "§cPlease enter a number between 1 and /total-pages/.";
 	public String Messages_19 = "§cYou cannot bypass the borders !";
+	public String Messages_20 = "§cThis kit already exists !";
+	public String Messages_21 = "§cThis kit does not exists !";
+	public String Messages_22 = "§2Success !";
 	
 	public String Motds_1 = "§cWe need /n/ more player(s) to start.";
 	public String Motds_2 = "§9The game starts in a few seconds. Join now !";
