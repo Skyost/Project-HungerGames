@@ -147,7 +147,7 @@ public class HungerGames extends JavaPlugin {
 			ItemMeta meta = kitSelector.getItemMeta();
 			meta.setDisplayName(config.Kits_Selector_Name);
 			kitSelector.setItemMeta(meta);
-			kitsMenu = Bukkit.createInventory(null, 9, config.Kits_Selector_Name);
+			kitsMenu = Bukkit.createInventory(null, Utils.round(config.Kits_List.size(), 9), config.Kits_Selector_Name);
 			ItemStack item;
 			for(final Entry<String, List<String>> entry : config.Kits_List.entrySet()) {
 				item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
@@ -241,10 +241,6 @@ public class HungerGames extends JavaPlugin {
 		}
 		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
 			logsManager.log("SpawnDistance cannot be superior than BordersRadius !", Level.WARNING);
-			return false;
-		}
-		if(config.Kits_List.keySet().size() > 9) {
-			logsManager.log("The KitsList cannot be superior to nine !", Level.WARNING);
 			return false;
 		}
 		return true;

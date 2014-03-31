@@ -42,7 +42,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				if(args.length < 3) {
 					return false;
 				}
-				final String kitName = Utils.colourize(Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length)));
+				final String kitName = Utils.colorize(Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length)));
 				if(args[1].equalsIgnoreCase("create")) {
 					if(!commandSender.hasPermission("hungergames.kits.create")) {
 						commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
@@ -54,16 +54,22 @@ public class HungerGamesCommand implements CommandExecutor {
 					}
 					final List<String> items = new ArrayList<String>();
 					final PlayerInventory inventory = player.getInventory();
+					if(Utils.isInventoryEmpty(inventory, HungerGames.kitSelector)) {
+						commandSender.sendMessage(HungerGames.messages.Messages_23);
+						return true;
+					}
 					ItemStack item;
 					Material material = null;
 					for(int i = 0, x = 0; i != inventory.getSize(); i++) {
 						item = inventory.getItem(i);
-						if(item != null && item.getType() != Material.AIR) {
-							items.add(new JsonItemStack(item).toJson());
-							x++;
-						}
-						if(x == 1) {
-							material = item.getType();
+						if(!item.equals(HungerGames.kitSelector)) {
+							if(item != null && item.getType() != Material.AIR) {
+								items.add(new JsonItemStack(item).toJson());
+								x++;
+							}
+							if(x == 1) {
+								material = item.getType();
+							}
 						}
 					}
 					HungerGames.config.Kits_List.put(kitName, items);
@@ -178,6 +184,7 @@ public class HungerGamesCommand implements CommandExecutor {
 			}
 		}
 		catch(Exception ex) {
+			ex.printStackTrace();
 			ErrorSender.uploadAndSend(ex);
 		}
 		return true;

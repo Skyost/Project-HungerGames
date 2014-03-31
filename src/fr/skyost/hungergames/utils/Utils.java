@@ -13,6 +13,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.google.common.primitives.Ints;
@@ -239,7 +241,7 @@ public class Utils {
 	 * @return The colorized String.
 	 */
 	
-	public static final String colourize(final String in) {
+	public static final String colorize(final String in) {
 		return (" " + in).replaceAll("([^\\\\](\\\\\\\\)*)&(.)", "$1§$3").replaceAll("([^\\\\](\\\\\\\\)*)&(.)", "$1§$3").replaceAll("(([^\\\\])\\\\((\\\\\\\\)*))&(.)", "$2$3&$5").replaceAll("\\\\\\\\", "\\\\").trim();
 	}
 	
@@ -250,8 +252,57 @@ public class Utils {
 	 * @return The Decolorized String.
 	 */
 	
-	public static final String decolourize(final String in) {
+	public static final String decolorize(final String in) {
 		return (" " + in).replaceAll("\\\\", "\\\\\\\\").replaceAll("&", "\\\\&").replaceAll("§", "&").trim();
+	}
+	
+	/**
+	 * Round a number to the next specified multiple.
+	 * 
+	 * @param number The number.
+	 * @param value The multiple.
+	 * @return The rounded int.
+	 * 
+	 * @author Arkia.
+	 */
+	
+	public static final int round(final double number, final int value) {
+		return (int) (Math.ceil(number / value) * value);
+	}
+	
+	/**
+	 * Used to check if an inventory is empty.
+	 * 
+	 * @param inventory The inventory.
+	 * @return <b>true</b> If the specified inventory is empty.
+	 * <br><b>false</b> If it not empty.
+	 */
+	
+	public static final boolean isInventoryEmpty(final Inventory inventory) {
+		for(final ItemStack item : inventory.getContents()) {
+			if(item != null) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Used to check if an inventory is empty and exclude a specified item from verification.
+	 * 
+	 * @param inventory The inventory.
+	 * @param exclude The item to exclude.
+	 * @return <b>true</b> If the specified inventory is empty.
+	 * <br><b>false</b> If it not empty.
+	 */
+	
+	public static final boolean isInventoryEmpty(final Inventory inventory, final ItemStack exclude) {
+		for(final ItemStack item : inventory.getContents()) {
+			if(item != null && (!item.equals(exclude))) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 }

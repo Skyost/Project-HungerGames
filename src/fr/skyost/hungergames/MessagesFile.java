@@ -32,6 +32,7 @@ public class MessagesFile extends Config {
 	public String Messages_20 = "§cThis kit already exists !";
 	public String Messages_21 = "§cThis kit does not exists !";
 	public String Messages_22 = "§2Success !";
+	public String Messages_23 = "§cYour inventory is empty or contains only the kit selector !";
 	
 	public String Motds_1 = "§cWe need /n/ more player(s) to start.";
 	public String Motds_2 = "§9The game starts in a few seconds. Join now !";
