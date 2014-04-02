@@ -62,7 +62,7 @@ public class HungerGamesCommand implements CommandExecutor {
 					Material material = null;
 					for(int i = 0, x = 0; i != inventory.getSize(); i++) {
 						item = inventory.getItem(i);
-						if(!item.equals(HungerGames.kitSelector)) {
+						if(item != null && !item.equals(HungerGames.kitSelector)) {
 							if(item != null && item.getType() != Material.AIR) {
 								items.add(new JsonItemStack(item).toJson());
 								x++;
