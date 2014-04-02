@@ -73,7 +73,9 @@ public class HungerGamesAPI {
 			HungerGames.spectatorsManager.addSpectator(player);
 		}
 		else {
-			inventory.addItem(HungerGames.kitSelector);
+			if(player.hasPermission("hungergames.kits.use")) {
+				inventory.addItem(HungerGames.kitSelector);
+			}
 			player.teleport(new Location(HungerGames.lobby, HungerGames.config.Lobby_Spawn_X, HungerGames.config.Lobby_Spawn_Y, HungerGames.config.Lobby_Spawn_Z));
 			HungerGames.totalPlayers++;
 			broadcastMessage(HungerGames.messages.Messages_14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
