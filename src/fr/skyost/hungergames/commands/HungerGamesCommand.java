@@ -45,7 +45,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				final String kitName = Utils.colorize(Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length)));
 				if(args[1].equalsIgnoreCase("create")) {
 					if(!commandSender.hasPermission("hungergames.kits.create")) {
-						commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 						return true;
 					}
 					if(HungerGames.config.Kits_List.get(kitName) != null) {
@@ -81,7 +81,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				}
 				else if(args[1].equalsIgnoreCase("delete")) {
 					if(!commandSender.hasPermission("hungergames.kits.delete")) {
-						commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 						return true;
 					}
 					if(HungerGames.config.Kits_List.get(kitName) == null) {
@@ -103,7 +103,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				break;
 			case "join":
 				if(!commandSender.hasPermission("hungergames.join")) {
-					commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 					return true;
 				}
 				if(HungerGames.players.get(player) != null) {
@@ -123,7 +123,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				break;
 			case "leave":
 				if(!commandSender.hasPermission("hungergames.leave")) {
-					commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 					return true;
 				}
 				if(HungerGames.players.get(player) == null) {
@@ -135,7 +135,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				break;
 			case "infos":
 				if(!commandSender.hasPermission("hungergames.infos")) {
-					commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 					return true;
 				}
 				final String players;
@@ -153,7 +153,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				break;
 			case "winners":
 				if(!commandSender.hasPermission("hungergames.winners")) {
-					commandSender.sendMessage(ChatColor.RED + "You do not have the permission to perform this command.");
+					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
 					return true;
 				}
 				if(HungerGames.winnersMap.size() == 0) {

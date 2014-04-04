@@ -39,6 +39,8 @@ public class MessagesFile extends Config {
 	public String Motds_3 = "§cThe game is started but damages are not enabled.";
 	public String Motds_4 = "§4Game started. Damages enabled. /n/ players remaining.";
 	
+	public String PermissionMessage = "§cYou do not have the permission to perform this action !";
+	
 	public boolean RandomMessages_Enable = true;
 	public int RandomMessages_Delay = 750;
 	public List<String> RandomMessages_Messages = Arrays.asList("§2This plugin has been coded with love by Skyost (http://www.skyost.eu).", "Are you enjoying this game ?", "You can add (or remove) any message(s) you want in the configuration file ! Be sure to stop your server before editing it.");

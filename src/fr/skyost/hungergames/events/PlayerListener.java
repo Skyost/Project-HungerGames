@@ -41,6 +41,9 @@ public class PlayerListener implements Listener {
 			if(player.hasPermission("hungergames.kits.use")) {
 				player.openInventory(HungerGames.kitsMenu);
 			}
+			else {
+				player.sendMessage(HungerGames.messages.PermissionMessage);
+			}
 			event.setCancelled(true);
 		}
 	}
