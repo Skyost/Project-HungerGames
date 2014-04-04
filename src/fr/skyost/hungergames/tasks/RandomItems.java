@@ -51,12 +51,12 @@ public class RandomItems extends BukkitRunnable {
 	
 	public static final ItemStack pickRandomItem() {
 		int probability = 0;
-		for(final String key : HungerGames.config.Game_Random_Items.keySet()) {
+		for(final String key : HungerGames.config.Game_RandomItem_Items.keySet()) {
 			probability += Integer.valueOf(key);
 		}
 		probability = random.nextInt(probability);
 		int cumulativeProbability = 0;
-		for(final Entry<String, String> entry : HungerGames.config.Game_Random_Items.entrySet()) {
+		for(final Entry<String, String> entry : HungerGames.config.Game_RandomItem_Items.entrySet()) {
 			cumulativeProbability += Integer.valueOf(entry.getKey());
 			if(probability <= cumulativeProbability) {
 				return JsonItemStack.fromJson(entry.getValue()).toItemStack();

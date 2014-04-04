@@ -56,7 +56,7 @@ public class ConfigFile extends Config {
 	public int Game_SpawnDistance = 200;
 	public boolean Game_AutoSneak = true;
 	public int Game_RandomItems_Delay = 1000;
-	public HashMap<String, String> Game_Random_Items = new HashMap<String, String>() {
+	public HashMap<String, String> Game_RandomItem_Items = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())).toJson());
 			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null).toJson());
