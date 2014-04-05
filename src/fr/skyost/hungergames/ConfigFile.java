@@ -58,9 +58,9 @@ public class ConfigFile extends Config {
 	public int Game_RandomItems_Delay = 1000;
 	public HashMap<String, String> Game_RandomItem_Items = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
-			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel())).toJson());
-			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null).toJson());
-			put("50", new JsonItemStack(Material.COAL.name(), null, Arrays.asList("For Christmas.", "- Mom"), null).toJson());
+			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel()), null).toJson());
+			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null, null).toJson());
+			put("50", new JsonItemStack(Material.COAL.name(), null, Arrays.asList("For Christmas.", "- Mom"), null, Long.valueOf(5)).toJson());
 		}
 	};
 	public boolean Game_RandomItems_Chests = true;
@@ -72,6 +72,12 @@ public class ConfigFile extends Config {
 	public Sound Game_DeathSound_Sound = Sound.WITHER_SPAWN;
 	public String Game_DeathSound_Volume = "1";
 	public String Game_DeathSound_Pitch = "0.75";
+	public HashMap<String, String> Game_Rewards = new HashMap<String, String>() {
+		private static final long serialVersionUID = 1L; {
+			put("1", new JsonItemStack(Material.GOLD_INGOT.name(), "§6Congracubations !", null, null, null, Long.valueOf(3)).toJson());
+		}
+	};
+	public boolean Game_Rewards_Enable = true;
 	
 	public boolean Spectators_Enable = true;
 	public SpectatorsManagerMode Spectators_Mode = SpectatorsManagerMode.GHOST_FACTORY;
@@ -83,7 +89,7 @@ public class ConfigFile extends Config {
 	public Material Kits_Selector_Material = Material.NETHER_STAR;
 	public HashMap<String, List<String>> Kits_List = new HashMap<String, List<String>>() {
 		private static final long serialVersionUID = 1L; {
-			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null).toJson()));
+			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null, null).toJson()));
 		}
 	};
 	

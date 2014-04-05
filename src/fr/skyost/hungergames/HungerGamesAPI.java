@@ -1,6 +1,7 @@
 package fr.skyost.hungergames;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -26,6 +27,7 @@ import fr.skyost.hungergames.tasks.BorderCreatorTask;
 import fr.skyost.hungergames.tasks.Countdown;
 import fr.skyost.hungergames.tasks.PostExecuteFirst;
 import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Utils;
 import fr.skyost.hungergames.utils.borders.Border.Type;
@@ -113,10 +115,15 @@ public class HungerGamesAPI {
 			if(setSpectator && HungerGames.totalPlayers > 2) {
 				HungerGames.spectatorsManager.addSpectator(player);
 				player.teleport(HungerGames.players.get(player).getGeneratedLocation());
+				player.setHealth(player.getMaxHealth());
+				player.setFoodLevel(20);
 			}
 			else {
 				revertPlayer(player, true);
 				HungerGames.players.remove(player);
+			}
+			if(HungerGames.config.Game_Rewards_Enable) {
+				giveReward(player, HungerGames.totalPlayers);
 			}
 			HungerGames.totalPlayers--;
 		}
@@ -151,6 +158,9 @@ public class HungerGamesAPI {
 			else {
 				player.sendMessage(message);
 				if(hasWinner) {
+					if(HungerGames.config.Game_Rewards_Enable) {
+						giveReward(player, HungerGames.totalPlayers);
+					}
 					HungerGames.winnersMap.put(HungerGames.winnersMap.size(), player.getName());
 					HungerGames.pages = new Pages(HungerGames.winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.Messages_17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.Messages_17));
 				}
@@ -161,6 +171,28 @@ public class HungerGamesAPI {
 		HungerGames.currentMap = generateMap();
 		HungerGames.totalPlayers = 0;
 		HungerGames.currentStep = Step.LOBBY;
+	}
+	
+	/**
+	 * Give the corresponding reward to the player.
+	 * 
+	 * @param player The player.
+	 * @param value The reward's value.
+	 */
+	
+	public static final void giveReward(final Player player, final int value) {
+		if(HungerGames.currentStep == Step.GAME || HungerGames.currentStep == Step.SECOND_COUNTDOWN) {
+			final String jsonItemStack = HungerGames.config.Game_Rewards.get(String.valueOf(value));
+			if(jsonItemStack != null) {
+				final ItemStack item = JsonItemStack.fromJson(jsonItemStack).toItemStack();
+				if(HungerGames.spectatorsManager.hasSpectator(player)) {
+					HungerGames.players.get(player).addReward(item);
+				}
+				else {
+					player.getInventory().addItem(item);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -191,7 +223,7 @@ public class HungerGamesAPI {
 			Utils.updateInventory(player);
 		}
 		inventory.setContents(profile.getInventoryContents());
-		inventory.setArmorContents(profile.getInventoryArmorContents());
+		inventory.setArmorContents(profile.getArmorContents());
 		Utils.updateInventory(player);
 		player.setLevel(profile.getExpLevel());
 		player.setExp(profile.getExp());
@@ -261,14 +293,22 @@ public class HungerGamesAPI {
 			}
 			else {
 				HungerGames.logsManager.log("Processing maps...");
-				final File[] maps = HungerGames.mapsFolder.listFiles();
-				if(maps.length == 0) {
+				final List<File> maps = new ArrayList<File>();
+				for(final File map : HungerGames.mapsFolder.listFiles()) {
+					if(map.isDirectory()) {
+						maps.add(map);
+					}
+					else {
+						HungerGames.logsManager.log(map.getName() + " is in the maps folder but is not a folder ! If it is an archive, you should unzip it.", Level.WARNING);
+					}
+				}
+				if(maps.size() == 0) {
 					HungerGames.logsManager.log("The maps folder is empty ! Creating a new map...", Level.WARNING);
 					world = createWorld(HungerGames.config.Maps_Generate_Name);
 					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
 				}
 				else {
-					final File currentWorld = maps[new Random().nextInt(maps.length)];
+					final File currentWorld = maps.get(new Random().nextInt(maps.size()));
 					final String currentWorldName = currentWorld.getName();
 					Utils.copy(currentWorld, new File(currentWorldName));
 					world = createWorld(currentWorldName);

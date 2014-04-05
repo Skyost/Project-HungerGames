@@ -1,10 +1,13 @@
 package fr.skyost.hungergames;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -20,7 +23,7 @@ public class HungerGamesProfile {
 	private final Location previousLocation;
 	private final int expLevel;
 	private final float exp;
-	private final ItemStack[] items;
+	private final List<ItemStack> items;
 	private final ItemStack[] armor;
 	private final GameMode gameMode;
 	private final boolean allowFlight;
@@ -39,7 +42,7 @@ public class HungerGamesProfile {
 		expLevel = player.getLevel();
 		exp = player.getExp();
 		final PlayerInventory inventory = player.getInventory();
-		items = inventory.getContents();
+		items = Arrays.asList(inventory.getContents());
 		armor = inventory.getArmorContents();
 		gameMode = player.getGameMode();
 		allowFlight = player.getAllowFlight();
@@ -54,7 +57,29 @@ public class HungerGamesProfile {
 		chunk.load(true);
 		HungerGames.generatedChunks.add(chunk);
 	}
-
+	
+	/**
+	 * Add a reward to the player's inventory.
+	 * 
+	 * @param reward The reward.
+	 */
+	
+	public final void addReward(final ItemStack reward) {
+		int index = -1;
+		ItemStack item;
+		for(int i = 0; i != items.size(); i++) {
+			item = items.get(i);
+			if(item == null || item.getType() == Material.AIR) {
+				index = i;
+			}
+		}
+		if(index != -1) {
+			items.set(index, reward);
+		}
+		else {
+			HungerGames.logsManager.log("Tried to add a reward to a player but he does not have enough space in his inventory.");
+		}
+	}
 	
 	/**
 	 * Get the previous location of the player.
@@ -93,7 +118,7 @@ public class HungerGamesProfile {
 	 */
 	
 	public final ItemStack[] getInventoryContents() {
-		return items;
+		return items.toArray(new ItemStack[items.size()]);
 	}
 	
 	/**
@@ -102,7 +127,7 @@ public class HungerGamesProfile {
 	 * @return The inventory armor contents of the player.
 	 */
 	
-	public final ItemStack[] getInventoryArmorContents() {
+	public final ItemStack[] getArmorContents() {
 		return armor;
 	}
 

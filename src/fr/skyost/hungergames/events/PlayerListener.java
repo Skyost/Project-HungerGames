@@ -1,5 +1,6 @@
 package fr.skyost.hungergames.events;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,15 +52,18 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	private final void onInventoryClick(final InventoryClickEvent event) {
 		if(event.getInventory().getName().equals(HungerGames.kitsMenu.getName())) {
-			final Player player = (Player)event.getWhoClicked();
-			final PlayerInventory inventory = player.getInventory();
-			inventory.clear();
-			inventory.addItem(HungerGames.kitSelector);
-			for(final String item : HungerGames.config.Kits_List.get(event.getCurrentItem().getItemMeta().getDisplayName())) {
-				inventory.addItem(JsonItemStack.fromJson(item).toItemStack());
+			final HumanEntity human = event.getWhoClicked();
+			if(human != null && human instanceof Player) {
+				final Player player = (Player)human;
+				final PlayerInventory inventory = player.getInventory();
+				inventory.clear();
+				inventory.addItem(HungerGames.kitSelector);
+				for(final String item : HungerGames.config.Kits_List.get(event.getCurrentItem().getItemMeta().getDisplayName())) {
+					inventory.addItem(JsonItemStack.fromJson(item).toItemStack());
+				}
+				event.setCancelled(true);
+				player.closeInventory();
 			}
-			event.setCancelled(true);
-			player.closeInventory();
 		}
 	}
 	
