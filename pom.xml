@@ -22,6 +22,9 @@
   </repositories>
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <includes>
+      <include>plugin.yml</include>
+    </includes>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
