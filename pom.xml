@@ -31,6 +31,7 @@
           <target>1.7</target>
           <resources>
             <resource>
+             <directory>${basedir}/</directory>
              <includes>
                <include>plugin.yml</include>
              </includes>
