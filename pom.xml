@@ -22,9 +22,6 @@
   </repositories>
   <build>
     <sourceDirectory>src</sourceDirectory>
-    <includes>
-      <include>plugin.yml</include>
-    </includes>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -32,6 +29,15 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
+          <resources>
+          <resource>
+            <directory>${basedir}</directory>
+            <filtering>false</filtering>
+            <includes>
+              <include>plugin.yml</include>
+            </includes>
+          </resource>
+    </resources>
         </configuration>
       </plugin>
     </plugins>
