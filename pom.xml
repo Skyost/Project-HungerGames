@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>fr.skyost.hungergames</groupId>
   <artifactId>project-hungergames</artifactId>
-  <version>DEV-BUILD</version>
+  <version>DEV</version>
   <packaging>jar</packaging>
   <name>Project HungerGames</name>
   <description>May the odds be ever in your favour.</description>
