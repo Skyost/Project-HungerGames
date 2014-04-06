@@ -29,17 +29,17 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
-          <resources>
-            <resource>
-             <directory>${basedir}/</directory>
-             <includes>
-               <include>plugin.yml</include>
-             </includes>
-            </resource>
-          </resources>
         </configuration>
       </plugin>
     </plugins>
+    <resources>
+      <resource>
+          <directory>/</directory>
+          <includes>
+            <include>plugin.yml</include>
+          </includes>
+      </resource>
+    </resources>
   </build>
   <dependencies>
   	<dependency>

@@ -23,6 +23,7 @@ public class ErrorSender {
 	private String name;
 	private String email;
 	private String message;
+	private String subject;
 	
 	/**
 	 * Create a new error report.
@@ -30,12 +31,14 @@ public class ErrorSender {
 	 * @param name The sender's name.
 	 * @param email The sender's email.
 	 * @param message The sender's message.
+	 * @param subject The subject. Please note that it must be already encoded.
 	 */
 	
-	public ErrorSender(final String name, final String email, final String message) {
+	public ErrorSender(final String name, final String email, final String message, final String subject) {
 		this.name = name;
 		this.email = email;
 		this.message = message;
+		this.subject = subject;
 	}
 	
 	/**
@@ -65,8 +68,9 @@ public class ErrorSender {
 						builder.append("Bukkit version : '" + Bukkit.getVersion() + "'.");
 						builder.append(separator);
 						builder.append("Java version : '" + System.getProperty("java.version") + "'.");
+						final String subject = URLEncoder.encode(throwable.getClass().getName(), "UTF-8");
 						final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-						outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + URLEncoder.encode(throwable.getClass().getName(), "UTF-8") + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
+						outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + subject + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
 						outputStream.flush();
 						outputStream.close();
 						builder.setLength(0);
@@ -79,7 +83,7 @@ public class ErrorSender {
 						connection.disconnect();
 						HungerGames.logsManager.log("[ErrorSender] Done !");
 						final String message = builder.toString();
-						new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage()).report();
+						new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage(), subject).report();
 					}
 				}
 				catch(Exception ex) {
@@ -104,7 +108,7 @@ public class ErrorSender {
 					final String encodedName = URLEncoder.encode(name, "UTF-8");
 					final String encodedEmail = URLEncoder.encode(email, "UTF-8");
 					final String encodedMessage = URLEncoder.encode(message, "UTF-8");
-					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.skyost.eu", "/sendmail.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage).openConnection();
+					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.skyost.eu", "/sendmail.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage + "&subject=" + subject).openConnection();
 					connection.setRequestMethod("GET");
 					connection.setRequestProperty("User-Agent", "Project HungerGames");
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -172,7 +176,7 @@ public class ErrorSender {
 	/**
 	 * Get the message.
 	 * 
-	 * @return The message
+	 * @return The message.
 	 */
 	
 	public final String getMessage() {
@@ -187,6 +191,26 @@ public class ErrorSender {
 	
 	public final void setMessage(final String message) {
 		this.message = message;
+	}
+	
+	/**
+	 * Get the subject.
+	 * 
+	 * @return The subject.
+	 */
+	
+	public final String getSubject() {
+		return subject;
+	}
+	
+	/**
+	 * Set the subject.
+	 * 
+	 * @param subject The subject to set.
+	 */
+	
+	public final void setSubject(final String subject) {
+		this.subject = subject;
 	}
 	
 }
