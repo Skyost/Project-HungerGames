@@ -34,7 +34,7 @@
     </plugins>
     <resources>
       <resource>
-          <directory>/</directory>
+          <directory>${project.basedir}</directory>
           <includes>
             <include>plugin.yml</include>
           </includes>
