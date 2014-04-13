@@ -24,6 +24,8 @@ public class ConfigFile extends Config {
 	public boolean EnableUpdater = true;
 	public boolean EnableMetrics = true;
 	
+	public String Bungee_ServerName = "srv001";
+	
 	public boolean BugsReport_Enable = true;
 	public String BugsReport_Name = "My Name";
 	public String BugsReport_Mail = "your@mail.com";
@@ -51,6 +53,7 @@ public class ConfigFile extends Config {
 	public boolean Lobby_Countdown_ExpBarLevel = true;
 	public boolean Lobby_Protect = false;
 	
+	public boolean Game_DedicatedServer = false;
 	public int Game_MinPlayers = 2;
 	public int Game_MaxPlayers = 8;
 	public int Game_SpawnDistance = 200;

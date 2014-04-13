@@ -16,6 +16,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -25,6 +26,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.util.ChatPaginator;
 
 import com.google.common.base.CharMatcher;
@@ -35,6 +37,7 @@ import fr.skyost.hungergames.events.EntityListener;
 import fr.skyost.hungergames.events.PlayerListener;
 import fr.skyost.hungergames.events.WorldListener;
 import fr.skyost.hungergames.events.configurable.AsyncChatListener;
+import fr.skyost.hungergames.events.configurable.AutoJoinListener;
 import fr.skyost.hungergames.events.configurable.InteractListener;
 import fr.skyost.hungergames.events.configurable.LobbyListener;
 import fr.skyost.hungergames.events.configurable.PickupItemListener;
@@ -157,9 +160,16 @@ public class HungerGames extends JavaPlugin {
 				kitsMenu.addItem(item);
 			}
 			currentMap = HungerGamesAPI.generateMap();
+			final Messenger messenger = Bukkit.getMessenger();
+			messenger.registerOutgoingPluginChannel(this, "BungeeCord");
+			messenger.registerIncomingPluginChannel(this, "BungeeCord", new BungeeMessageListener());
 			final PluginCommand command = this.getCommand("hg");
 			command.setUsage(ChatColor.RED + command.getUsage());
 			command.setExecutor(new HungerGamesCommand());
+		}
+		catch(InvalidConfigurationException ex) {
+			ex.printStackTrace();
+			logsManager.log("Check the documentation for the configurations files here : http://url.skyost.eu/caF.");
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -204,9 +214,6 @@ public class HungerGames extends JavaPlugin {
 		for(final Listener listener : new Listener[]{new DamageListener(), new EntityListener(), new PlayerListener(), new WorldListener()}) {
 			manager.registerEvents(listener, this);
 		}
-		if(config.Game_Motd_Change) {
-			manager.registerEvents(new ServerListPingListener(), this);
-		}
 		if(config.Spectators_Enable) {
 			if(!config.Spectators_Permissions_Chat) {
 				manager.registerEvents(new AsyncChatListener(), this);
@@ -218,11 +225,17 @@ public class HungerGames extends JavaPlugin {
 				manager.registerEvents(new PickupItemListener(), this);
 			}
 		}
+		if(config.Game_Motd_Change) {
+			manager.registerEvents(new ServerListPingListener(), this);
+		}
 		if(config.Game_AutoSneak) {
 			manager.registerEvents(new ToggleSneakListener(), this);
 		}
 		if(config.Lobby_Protect) {
 			manager.registerEvents(new LobbyListener(), this);
+		}
+		if(config.Game_DedicatedServer) {
+			manager.registerEvents(new AutoJoinListener(), this);
 		}
 	}
 	

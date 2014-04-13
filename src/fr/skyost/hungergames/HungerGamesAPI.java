@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.util.ChatPaginator;
 
@@ -171,6 +172,11 @@ public class HungerGamesAPI {
 		HungerGames.currentMap = generateMap();
 		HungerGames.totalPlayers = 0;
 		HungerGames.currentStep = Step.LOBBY;
+		if(HungerGames.config.Game_DedicatedServer) {
+			for(final Player player : Bukkit.getOnlinePlayers()) {
+				addPlayer(player, false);
+			}
+		}
 	}
 	
 	/**
@@ -215,6 +221,7 @@ public class HungerGamesAPI {
 	 */
 	
 	public static final void revertPlayer(final Player player, final HungerGamesProfile profile, final boolean clearInventory) {
+		player.setMetadata("Reverted", new FixedMetadataValue(HungerGames.instance, true));
 		player.teleport(profile.getPreviousLocation());
 		final PlayerInventory inventory = player.getInventory();
 		if(clearInventory) {
@@ -233,6 +240,7 @@ public class HungerGamesAPI {
 		player.setHealth(player.getMaxHealth());
 		player.setFoodLevel(20);
 		player.setFireTicks(0);
+		player.removeMetadata("Reverted", HungerGames.instance);
 	}
 	
 	/**

@@ -1,5 +1,8 @@
 package fr.skyost.hungergames.events;
 
+import java.util.List;
+
+import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,10 +11,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.HungerGamesAPI;
 import fr.skyost.hungergames.HungerGamesProfile;
 import fr.skyost.hungergames.utils.JsonItemStack;
@@ -31,6 +36,16 @@ public class PlayerListener implements Listener {
 		final HungerGamesProfile profile = HungerGames.players.get(event.getPlayer());
 		if(profile != null) {
 			event.setRespawnLocation(profile.getGeneratedLocation());
+		}
+	}
+	
+	@EventHandler
+	private final void onPlayerTeleport(final PlayerTeleportEvent event) {
+		final Player player = event.getPlayer();
+		final Location to = event.getTo();
+		if(HungerGames.players.get(player) != null && (HungerGames.currentStep == Step.GAME && !to.getWorld().equals(HungerGames.currentMap) && !player.hasMetadata("Reverted"))) {
+			HungerGamesAPI.removePlayer(player, false);
+			player.teleport(to);
 		}
 	}
 	
@@ -58,8 +73,11 @@ public class PlayerListener implements Listener {
 				final PlayerInventory inventory = player.getInventory();
 				inventory.clear();
 				inventory.addItem(HungerGames.kitSelector);
-				for(final String item : HungerGames.config.Kits_List.get(event.getCurrentItem().getItemMeta().getDisplayName())) {
-					inventory.addItem(JsonItemStack.fromJson(item).toItemStack());
+				final List<String> items = HungerGames.config.Kits_List.get(event.getCurrentItem().getItemMeta().getDisplayName());
+				if(items != null) {
+					for(final String item : items) {
+						inventory.addItem(JsonItemStack.fromJson(item).toItemStack());
+					}
 				}
 				event.setCancelled(true);
 				player.closeInventory();

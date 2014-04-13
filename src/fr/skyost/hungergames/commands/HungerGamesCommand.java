@@ -122,16 +122,21 @@ public class HungerGamesCommand implements CommandExecutor {
 				HungerGamesAPI.addPlayer(player, spectator);
 				break;
 			case "leave":
-				if(!commandSender.hasPermission("hungergames.leave")) {
-					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
-					return true;
+				if(HungerGames.config.Game_DedicatedServer) {
+					commandSender.sendMessage(HungerGames.messages.Messages_24);
 				}
-				if(HungerGames.players.get(player) == null) {
-					commandSender.sendMessage(HungerGames.messages.Messages_6);
-					return true;
+				else {
+					if(!commandSender.hasPermission("hungergames.leave")) {
+						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+						return true;
+					}
+					if(HungerGames.players.get(player) == null) {
+						commandSender.sendMessage(HungerGames.messages.Messages_6);
+						return true;
+					}
+					player.sendMessage(HungerGames.messages.Messages_11);
+					HungerGamesAPI.removePlayer(player, false);
 				}
-				player.sendMessage(HungerGames.messages.Messages_11);
-				HungerGamesAPI.removePlayer(player, false);
 				break;
 			case "infos":
 				if(!commandSender.hasPermission("hungergames.infos")) {
