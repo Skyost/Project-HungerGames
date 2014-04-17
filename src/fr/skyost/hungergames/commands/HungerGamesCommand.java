@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,6 +38,20 @@ public class HungerGamesCommand implements CommandExecutor {
 			}
 			final Player player = (Player)commandSender;
 			switch(args[0].toLowerCase()) {
+			case "setlobby":
+			case "set-lobby":
+				if(!commandSender.hasPermission("hungergames.lobby.set")) {
+					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+					return true;
+				}
+				final Location location = player.getLocation();
+				HungerGames.config.Lobby_World = location.getWorld().getName();
+				HungerGames.config.Lobby_Spawn_X = location.getX();
+				HungerGames.config.Lobby_Spawn_Y = location.getY();
+				HungerGames.config.Lobby_Spawn_Z = location.getZ();
+				HungerGames.config.save();
+				commandSender.sendMessage(HungerGames.messages.Messages_22);
+				break;
 			case "kits":
 			case "kit":
 				if(args.length < 3) {
@@ -191,6 +206,7 @@ public class HungerGamesCommand implements CommandExecutor {
 		catch(Exception ex) {
 			ex.printStackTrace();
 			ErrorSender.uploadAndSend(ex);
+			commandSender.sendMessage(ex.getClass().getName());
 		}
 		return true;
 	}

@@ -2,6 +2,7 @@ package fr.skyost.hungergames.events;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -70,10 +71,15 @@ public class PlayerListener implements Listener {
 			final HumanEntity human = event.getWhoClicked();
 			if(human != null && human instanceof Player) {
 				final Player player = (Player)human;
+				final String kitName = event.getCurrentItem().getItemMeta().getDisplayName();
+				if(HungerGames.config.Kits_Permissions && !player.hasPermission("hungergames.kits." + ChatColor.stripColor(kitName).toLowerCase())) {
+					player.sendMessage(HungerGames.messages.PermissionMessage);
+					return;
+				}
 				final PlayerInventory inventory = player.getInventory();
 				inventory.clear();
 				inventory.addItem(HungerGames.kitSelector);
-				final List<String> items = HungerGames.config.Kits_List.get(event.getCurrentItem().getItemMeta().getDisplayName());
+				final List<String> items = HungerGames.config.Kits_List.get(kitName);
 				if(items != null) {
 					for(final String item : items) {
 						inventory.addItem(JsonItemStack.fromJson(item).toItemStack());

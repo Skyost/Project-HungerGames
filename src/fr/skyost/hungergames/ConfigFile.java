@@ -95,6 +95,7 @@ public class ConfigFile extends Config {
 			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null, null).toJson()));
 		}
 	};
+	public boolean Kits_Permissions = false;
 	
 	public boolean Log_Console = true;
 	public boolean Log_File_Enable = false;
