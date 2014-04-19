@@ -51,6 +51,7 @@ public class ConfigFile extends Config {
 	public double Lobby_Spawn_Z;
 	public int Lobby_Countdown_Time = 30;
 	public boolean Lobby_Countdown_ExpBarLevel = true;
+	public boolean Lobby_Countdown_MobBar = false;
 	public boolean Lobby_Protect = false;
 	
 	public boolean Game_DedicatedServer = false;
@@ -72,6 +73,7 @@ public class ConfigFile extends Config {
 	public boolean Game_Motd_Change = false;
 	public int Game_Countdown_Time = 60;
 	public boolean Game_Countdown_ExpBarLevel = true;
+	public boolean Game_Countdown_MobBar = false;
 	public Sound Game_DeathSound_Sound = Sound.WITHER_SPAWN;
 	public String Game_DeathSound_Volume = "1";
 	public String Game_DeathSound_Pitch = "0.75";

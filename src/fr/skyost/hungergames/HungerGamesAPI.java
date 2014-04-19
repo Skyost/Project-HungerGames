@@ -84,7 +84,7 @@ public class HungerGamesAPI {
 				HungerGames.logsManager.log("Starting game...");
 				broadcastMessage(HungerGames.messages.Messages_3.replaceAll("/n/", String.valueOf(HungerGames.config.Lobby_Countdown_Time)));
 				HungerGames.currentStep = Step.FIRST_COUNTDOWN;
-				HungerGames.tasks.set(0, new Countdown(HungerGames.config.Lobby_Countdown_Time, HungerGames.config.Lobby_Countdown_ExpBarLevel, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
+				HungerGames.tasks.set(0, new Countdown(HungerGames.config.Lobby_Countdown_Time, HungerGames.config.Lobby_Countdown_ExpBarLevel, HungerGames.config.Lobby_Countdown_MobBar, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
 			}
 		}
 	}
