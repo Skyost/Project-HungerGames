@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -13,6 +14,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import com.google.common.primitives.Ints;
+
+import fr.skyost.hungergames.HungerGames;
 
 public class JsonItemStack {
 	
@@ -66,7 +69,7 @@ public class JsonItemStack {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			HungerGames.logsManager.log("This error has not been sent but you can send it manually.", Level.WARNING);
 		}
 		return null;
 	}
@@ -79,7 +82,7 @@ public class JsonItemStack {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			HungerGames.logsManager.log("This error has not been sent but you can send it manually.", Level.WARNING);
 		}
 		return null;
 	}
