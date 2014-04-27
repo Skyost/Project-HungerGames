@@ -45,7 +45,7 @@ public class Countdown extends BukkitRunnable {
 				player.setLevel(time);
 			}
 			if(mobBar) {
-				mobBarApi.setStatus(player, String.valueOf(time), (100 * time) / originalTime, true); // TODO: Fix, Mob bar does not disappears.
+				mobBarApi.setStatus(player, time > 0 ? String.valueOf(time) : "", (100 * time) / originalTime, true); // TODO: Fix, Mob bar does not disappears.
 			}
 		}
 		if(time == 0) {

@@ -267,7 +267,7 @@ public class Utils {
 	 */
 	
 	public static final int round(final double number, final int value) {
-		return (int) (Math.ceil(number / value) * value);
+		return (int)(Math.ceil(number / value) * value);
 	}
 	
 	/**
