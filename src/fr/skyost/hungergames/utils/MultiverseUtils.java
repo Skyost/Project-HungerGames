@@ -8,6 +8,8 @@ import org.bukkit.plugin.Plugin;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 
+import fr.skyost.hungergames.HungerGames;
+
 public class MultiverseUtils {
 	
 	private final MultiverseCore multiverse;
@@ -29,7 +31,13 @@ public class MultiverseUtils {
 	}
 	
 	public final boolean deleteWorld(final String world) {
-		return manager.deleteWorld(world);
+		try {
+			return manager.deleteWorld(world);
+		}
+		catch(Exception ex) {
+			HungerGames.logsManager.log("An error occured while deleting the world '" + world + "'. Mau=ybe it has been deleted manually ?");
+		}
+		return false;
 	}
 	
 	public final World getWorld(final String world) {

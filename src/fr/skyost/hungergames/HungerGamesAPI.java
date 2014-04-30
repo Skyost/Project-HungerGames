@@ -280,6 +280,9 @@ public class HungerGamesAPI {
 			}
 			HungerGames.logsManager.log("Done !");
 		}
+		catch(ClassNotFoundException ex) {
+			HungerGames.logsManager.log("You server version seems not compatible with reflection. Try downloading and installing Multiverse to fix this error.", Level.WARNING);
+		}
 		catch(Exception ex) {
 			ex.printStackTrace();
 			ErrorSender.uploadAndSend(ex);
