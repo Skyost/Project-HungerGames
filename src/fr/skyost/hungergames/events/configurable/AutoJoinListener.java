@@ -6,8 +6,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import fr.skyost.hungergames.HungerGames;
-import fr.skyost.hungergames.HungerGamesAPI;
 import fr.skyost.hungergames.HungerGames.Step;
+import fr.skyost.hungergames.HungerGamesAPI;
 
 public class AutoJoinListener implements Listener {
 	

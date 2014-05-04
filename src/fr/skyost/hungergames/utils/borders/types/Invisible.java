@@ -1,6 +1,7 @@
 package fr.skyost.hungergames.utils.borders.types;
 
 import org.bukkit.Bukkit;
+
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.tasks.InvisibleBorderChecker;
 import fr.skyost.hungergames.utils.borders.Border;

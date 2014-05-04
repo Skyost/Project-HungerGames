@@ -6,8 +6,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.utils.ErrorSender;
-import fr.skyost.hungergames.utils.borders.BorderParams;
 import fr.skyost.hungergames.utils.borders.BorderCreator;
+import fr.skyost.hungergames.utils.borders.BorderParams;
 
 public class BorderCreatorTask extends BukkitRunnable {
 	
@@ -25,7 +25,7 @@ public class BorderCreatorTask extends BukkitRunnable {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 			HungerGames.logsManager.log("Error while generating borders, please check the stacktrace above.", Level.SEVERE);
 		}
 	}

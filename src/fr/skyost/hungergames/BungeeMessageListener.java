@@ -30,7 +30,7 @@ public class BungeeMessageListener implements PluginMessageListener {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 		}
 	}
 	

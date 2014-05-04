@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -22,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.PluginManager;
@@ -47,7 +49,7 @@ import fr.skyost.hungergames.utils.ErrorSender;
 import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.LogsManager;
 import fr.skyost.hungergames.utils.MetricsLite;
-import fr.skyost.hungergames.utils.MultiverseUtils;
+import fr.skyost.hungergames.utils.MultiverseHook;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Skyupdater;
 import fr.skyost.hungergames.utils.Utils;
@@ -63,7 +65,7 @@ public class HungerGames extends JavaPlugin {
 	public static HungerGames instance;
 	public static SpectatorsManager spectatorsManager;
 	public static final LogsManager logsManager = new LogsManager();
-	public static MultiverseUtils multiverseUtils;
+	public static MultiverseHook multiverseUtils;
 	
 	public static ConfigFile config;
 	public static MessagesFile messages;
@@ -101,6 +103,10 @@ public class HungerGames extends JavaPlugin {
 			messages.init();
 			winners = new WinnersFile(dataFolder);
 			winners.init();
+			lobby = Bukkit.getWorld(config.Lobby_World);
+			if(lobby == null) {
+				lobby = Bukkit.createWorld(new WorldCreator(config.Lobby_World));
+			}
 			if(config.Log_Console) {
 				logsManager.setLogger(new PluginLogger(this));
 			}
@@ -143,8 +149,13 @@ public class HungerGames extends JavaPlugin {
 			}
 			final Plugin multiverse = manager.getPlugin("Multiverse-Core");
 			if(multiverse != null) {
-				multiverseUtils = new MultiverseUtils(multiverse);
+				multiverseUtils = new MultiverseHook(multiverse);
 				logsManager.log("Multiverse hooked with success !");
+			}
+			else if(Skyupdater.compareVersions(Utils.getMinecraftServerVersion(), "1.6.5")) {
+				logsManager.log("If you are using a server software which has a version lower than 1.7.3, please install Multiverse.", Level.SEVERE);
+				manager.disablePlugin(this);
+				return;
 			}
 			kitSelector = new ItemStack(config.Kits_Selector_Material);
 			ItemMeta meta = kitSelector.getItemMeta();
@@ -153,11 +164,15 @@ public class HungerGames extends JavaPlugin {
 			kitsMenu = Bukkit.createInventory(null, Utils.round(config.Kits_List.size(), 9), config.Kits_Selector_Name);
 			ItemStack item;
 			for(final Entry<String, List<String>> entry : config.Kits_List.entrySet()) {
+				final String itemName = entry.getKey();
 				item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
 				meta = item.getItemMeta();
-				meta.setDisplayName(entry.getKey());
+				meta.setDisplayName(itemName);
 				item.setItemMeta(meta);
 				kitsMenu.addItem(item);
+				if(config.Kits_Permissions) {
+					manager.addPermission(new Permission("hungergames.kits." + ChatColor.stripColor(itemName).toLowerCase()));
+				}
 			}
 			currentMap = HungerGamesAPI.generateMap();
 			final Messenger messenger = Bukkit.getMessenger();
@@ -173,7 +188,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 			logsManager.log("Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
@@ -205,7 +220,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 			logsManager.log("Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}
@@ -248,13 +263,16 @@ public class HungerGames extends JavaPlugin {
 			logsManager.log("MinPlayers cannot be inferior than MaxPlayers !", Level.WARNING);
 			return false;
 		}
-		if(config.Maps_Borders_Meta < 0) {
-			logsManager.log("Borders_Meta cannot be inferior than zero !", Level.WARNING);
+		if(config.Maps_Borders_Meta < 0 || config.Maps_Borders_Meta > 15) {
+			logsManager.log("Borders_Meta cannot be inferior than zero and cannot be superior than fifteen !", Level.WARNING);
 			return false;
 		}
 		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
 			logsManager.log("SpawnDistance cannot be superior than BordersRadius !", Level.WARNING);
 			return false;
+		}
+		if(config.Lobby_Spawn_X == 0 && config.Lobby_Spawn_Y == 0 && config.Lobby_Spawn_Z == 0) {
+			logsManager.log("The coords of the lobby's spawn are invalid.", Level.WARNING);
 		}
 		return true;
 	}

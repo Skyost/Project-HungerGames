@@ -46,10 +46,8 @@ public class MobBarAPI {
 				sendPacket(player, mobPacket);
 				dragonMap.put(player.getName(), dragon);
 			}
-			if(text == "") {
-				Object destroyPacket = dragon.getDestroyPacket();
-				sendPacket(player, destroyPacket);
-				dragonMap.remove(player.getName());
+			if(text == null) {
+				removeStatus(dragon, player);
 			}
 			else {
 				dragon.setName(text);
@@ -62,8 +60,18 @@ public class MobBarAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 		}
+	}
+	
+	public void removeStatus(Player player) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException {
+		removeStatus(dragonMap.get(player.getName()), player);
+	}
+	
+	public void removeStatus(Dragon dragon, Player player) throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, NoSuchFieldException {
+		Object destroyPacket = dragon.getDestroyPacket();
+		sendPacket(player, destroyPacket);
+		dragonMap.remove(player.getName());
 	}
 	
 	private void sendPacket(Player player, Object packet) {

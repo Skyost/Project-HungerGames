@@ -5,11 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.WorldCreator;
 import org.bukkit.enchantments.Enchantment;
 
 import fr.skyost.hungergames.SpectatorsManager.SpectatorsManagerMode;
@@ -46,9 +43,9 @@ public class ConfigFile extends Config {
 	public int Maps_Borders_Meta = 0;
 	
 	public String Lobby_World = "hungergames_lobby";
-	public double Lobby_Spawn_X;
-	public double Lobby_Spawn_Y;
-	public double Lobby_Spawn_Z;
+	public double Lobby_Spawn_X = 0;
+	public double Lobby_Spawn_Y = 0;
+	public double Lobby_Spawn_Z = 0;
 	public int Lobby_Countdown_Time = 30;
 	public boolean Lobby_Countdown_ExpBarLevel = true;
 	public boolean Lobby_Countdown_MobBar = false;
@@ -97,7 +94,7 @@ public class ConfigFile extends Config {
 			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null, null).toJson()));
 		}
 	};
-	public boolean Kits_Permissions = false;
+	public boolean Kits_Permissions = true;
 	
 	public boolean Log_Console = true;
 	public boolean Log_File_Enable = false;
@@ -108,15 +105,6 @@ public class ConfigFile extends Config {
 		CONFIG_HEADER = "Project HungerGames by Skyost";
 		
 		Maps_Folder = new File(dataFolder + File.separator + "maps").getPath();
-		
-		HungerGames.lobby = Bukkit.getWorld(Lobby_World);
-		if(HungerGames.lobby == null) {
-			HungerGames.lobby = Bukkit.createWorld(new WorldCreator(Lobby_World));
-		}
-		final Location spawn = HungerGames.lobby.getSpawnLocation();
-		Lobby_Spawn_X = spawn.getX();
-		Lobby_Spawn_Y = spawn.getY();
-		Lobby_Spawn_Z = spawn.getZ();
 		
 		Log_File_Directory = new File(dataFolder + File.separator + "logs").getPath();
 	}

@@ -37,13 +37,11 @@ public class JsonItemStack {
 	}
 	
 	public JsonItemStack(final String material, final String name, final String lore, final String enchantment, final Long enchantmentLevel, final Long amount) {
-		this.material = material;
-		this.name = name;
-		this.lore = Arrays.asList(lore);
-		if(enchantment != null) {
-			enchantments.put(enchantment, enchantmentLevel == null ? 1L : enchantmentLevel);
-		}
-		this.amount = amount == null ? 1 : amount;
+		this(material, name, Arrays.asList(lore), new HashMap<String, Long>() {
+			private static final long serialVersionUID = 1L; {
+				put(enchantment, enchantmentLevel);
+			}
+		}, amount);
 	}
 	
 	public JsonItemStack(final String material, final String name, final List<String> lore, final HashMap<String, Long> enchantments, final Long amount) {
@@ -57,7 +55,7 @@ public class JsonItemStack {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String toJson() {
+	public final String toJson() {
 		try {
 			final JSONObject object = new JSONObject();
 			object.put("material", material);
@@ -75,7 +73,7 @@ public class JsonItemStack {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JsonItemStack fromJson(final String jsonItemStack) {
+	public static final JsonItemStack fromJson(final String jsonItemStack) {
 		try {
 			final JSONObject array = (JSONObject)JSONValue.parse(jsonItemStack);
 			return new JsonItemStack((String)array.get("material"), (String)array.get("name"), (List<String>)array.get("lore"), (HashMap<String, Long>)array.get("enchantments"), (Long)array.get("amount"));
@@ -87,7 +85,7 @@ public class JsonItemStack {
 		return null;
 	}
 	
-	public ItemStack toItemStack() {
+	public final ItemStack toItemStack() {
 		final ItemStack itemStack = new ItemStack(material == null ? Material.GRASS : Material.valueOf(material));
 		final ItemMeta meta = itemStack.getItemMeta();
 		boolean applyMeta = false;

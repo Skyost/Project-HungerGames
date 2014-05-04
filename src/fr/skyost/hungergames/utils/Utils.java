@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -267,7 +266,7 @@ public class Utils {
 	 */
 	
 	public static final int round(final double number, final int value) {
-		return (int)(Math.ceil(number / value) * value);
+		return (int)Math.ceil(number / value) * value;
 	}
 	
 	/**
@@ -303,6 +302,16 @@ public class Utils {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	* Get the Minecraft server version.
+	* 
+	* @return The <b>Minecraft server version</b>.
+	*/
+	public static final String getMinecraftServerVersion() {
+		final String version = Bukkit.getVersion().split("\\(MC\\: ")[1];
+		return version.substring(0, version.length() - 1);
 	}
 	
 }

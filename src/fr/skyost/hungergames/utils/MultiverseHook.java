@@ -10,12 +10,12 @@ import com.onarandombox.MultiverseCore.api.MVWorldManager;
 
 import fr.skyost.hungergames.HungerGames;
 
-public class MultiverseUtils {
+public class MultiverseHook {
 	
 	private final MultiverseCore multiverse;
 	private final MVWorldManager manager;
 	
-	public MultiverseUtils(final Plugin multiverse) {
+	public MultiverseHook(final Plugin multiverse) {
 		this.multiverse = (MultiverseCore)multiverse;
 		manager = this.multiverse.getMVWorldManager();
 		manager.getDefaultWorldGenerators();
@@ -35,7 +35,7 @@ public class MultiverseUtils {
 			return manager.deleteWorld(world);
 		}
 		catch(Exception ex) {
-			HungerGames.logsManager.log("An error occured while deleting the world '" + world + "'. Mau=ybe it has been deleted manually ?");
+			HungerGames.logsManager.log("An error occured while deleting the world '" + world + "'. Maybe it has been deleted manually ?");
 		}
 		return false;
 	}

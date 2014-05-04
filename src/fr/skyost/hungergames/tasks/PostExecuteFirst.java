@@ -5,9 +5,10 @@ import java.util.Map.Entry;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
 import fr.skyost.hungergames.HungerGames;
-import fr.skyost.hungergames.HungerGamesProfile;
 import fr.skyost.hungergames.HungerGames.Step;
+import fr.skyost.hungergames.HungerGamesProfile;
 
 public class PostExecuteFirst extends BukkitRunnable {
 	

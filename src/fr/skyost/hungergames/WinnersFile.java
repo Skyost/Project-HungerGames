@@ -3,6 +3,7 @@ package fr.skyost.hungergames;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import fr.skyost.hungergames.utils.Config;
 
 public class WinnersFile extends Config {

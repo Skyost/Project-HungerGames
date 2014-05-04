@@ -28,7 +28,7 @@ public class PlayerListener implements Listener {
 	private final void onPlayerQuit(final PlayerQuitEvent event) {
 		final Player player = event.getPlayer();
 		if(HungerGames.players.get(player) != null) {
-			HungerGamesAPI.removePlayer(player, false);
+			HungerGamesAPI.removePlayer(player, true);
 		}
 	}
 	
@@ -44,8 +44,8 @@ public class PlayerListener implements Listener {
 	private final void onPlayerTeleport(final PlayerTeleportEvent event) {
 		final Player player = event.getPlayer();
 		final Location to = event.getTo();
-		if(HungerGames.players.get(player) != null && (HungerGames.currentStep == Step.GAME && !to.getWorld().equals(HungerGames.currentMap) && !player.hasMetadata("Reverted"))) {
-			HungerGamesAPI.removePlayer(player, false);
+		if(HungerGames.players.get(player) != null && ((HungerGames.currentStep == Step.GAME || HungerGames.currentStep == Step.SECOND_COUNTDOWN) && !to.getWorld().equals(HungerGames.currentMap) && !player.hasMetadata("Reverted"))) {
+			HungerGamesAPI.removePlayer(player, true);
 			player.teleport(to);
 		}
 	}
@@ -73,7 +73,7 @@ public class PlayerListener implements Listener {
 				final Player player = (Player)human;
 				final ItemStack itemSelected = event.getCurrentItem();
 				if(itemSelected != null) {
-					final String kitName = event.getCurrentItem().getItemMeta().getDisplayName();
+					final String kitName = itemSelected.getItemMeta().getDisplayName();
 					if(HungerGames.config.Kits_Permissions && !player.hasPermission("hungergames.kits." + ChatColor.stripColor(kitName).toLowerCase())) {
 						player.sendMessage(HungerGames.messages.PermissionMessage);
 						return;

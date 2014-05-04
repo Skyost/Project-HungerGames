@@ -77,7 +77,14 @@ public class HungerGamesAPI {
 		}
 		else {
 			inventory.addItem(HungerGames.kitSelector);
-			player.teleport(new Location(HungerGames.lobby, HungerGames.config.Lobby_Spawn_X, HungerGames.config.Lobby_Spawn_Y, HungerGames.config.Lobby_Spawn_Z));
+			final Location spawn;
+			if(HungerGames.config.Lobby_Spawn_X == 0 && HungerGames.config.Lobby_Spawn_Y == 0 && HungerGames.config.Lobby_Spawn_Z == 0) {
+				spawn = HungerGames.lobby.getSpawnLocation();
+			}
+			else {
+				spawn = new Location(HungerGames.lobby, HungerGames.config.Lobby_Spawn_X, HungerGames.config.Lobby_Spawn_Y, HungerGames.config.Lobby_Spawn_Z);
+			}
+			player.teleport(spawn);
 			HungerGames.totalPlayers++;
 			broadcastMessage(HungerGames.messages.Messages_14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
 			if(HungerGames.totalPlayers == HungerGames.config.Game_MinPlayers) {
@@ -123,7 +130,7 @@ public class HungerGamesAPI {
 				revertPlayer(player, true);
 				HungerGames.players.remove(player);
 			}
-			if(HungerGames.config.Game_Rewards_Enable) {
+			if(HungerGames.currentStep == Step.GAME && HungerGames.config.Game_Rewards_Enable) {
 				giveReward(player, HungerGames.totalPlayers);
 			}
 			HungerGames.totalPlayers--;
@@ -285,7 +292,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 			HungerGames.logsManager.log("Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
@@ -344,7 +351,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.uploadAndSend(ex);
+			ErrorSender.createReport(ex).report();
 			HungerGames.logsManager.log("Error while processing maps... Check the stacktrace above.");
 			Bukkit.getPluginManager().disablePlugin(HungerGames.instance);
 		}

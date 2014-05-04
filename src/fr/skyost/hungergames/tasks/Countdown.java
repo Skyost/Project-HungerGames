@@ -45,10 +45,20 @@ public class Countdown extends BukkitRunnable {
 				player.setLevel(time);
 			}
 			if(mobBar) {
-				mobBarApi.setStatus(player, time > 0 ? String.valueOf(time) : "", (100 * time) / originalTime, true); // TODO: Fix, Mob bar does not disappears.
+				mobBarApi.setStatus(player, String.valueOf(time), (100 * time) / originalTime, false);
 			}
 		}
 		if(time == 0) {
+			if(mobBar) {
+				try {
+					for(final Player player : players) {
+						mobBarApi.removeStatus(player);
+					}
+				}
+				catch(Exception ex) {
+					
+				}
+			}
 			HungerGames.tasks.set(0, -1);
 			HungerGames.tasks.set(1, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, postExecute));
 			this.cancel();
