@@ -1,6 +1,7 @@
 package fr.skyost.hungergames;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -98,47 +99,38 @@ public class HungerGames extends JavaPlugin {
 			final File dataFolder = this.getDataFolder();
 			instance = this;
 			config = new ConfigFile(dataFolder);
-			config.init();
+			config.load();
 			messages = new MessagesFile(dataFolder);
-			messages.init();
+			messages.load();
 			winners = new WinnersFile(dataFolder);
-			winners.init();
-			lobby = Bukkit.getWorld(config.Lobby_World);
+			winners.load();
+			lobby = Bukkit.getWorld(config.lobbyWorld);
 			if(lobby == null) {
-				lobby = Bukkit.createWorld(new WorldCreator(config.Lobby_World));
+				lobby = Bukkit.createWorld(new WorldCreator(config.lobbyWorld));
 			}
-			if(config.Log_Console) {
+			if(config.logConsole) {
 				logsManager.setLogger(new PluginLogger(this));
 			}
-			if(config.Log_File_Enable) {
-				logsManager.setLogsFolder(new File(config.Log_File_Directory));
+			if(config.logFileEnable) {
+				logsManager.setLogsFolder(new File(config.logFileDirectory));
 			}
 			final PluginManager manager = Bukkit.getPluginManager();
 			logsManager.log("Enabling plugin...");
-			if(config.VERSION < 2) {
-				logsManager.log("Updating your configuration file...");
-				final File configFile = new File(dataFolder, "config.yml");
-				Utils.copy(configFile, new File(configFile.getPath() + "-OLD"));
-				configFile.delete();
-				logsManager.log("Done ! Please re-enable your plugin !");
-				manager.disablePlugin(this);
-				return;
-			}
-			final int winnersSize = winners.Winners.size();
+			final int winnersSize = winners.winners.size();
 			if(winnersSize != 0)  {
 				for(int i = 0; i != winnersSize; i++) {
-					winnersMap.put(i, winners.Winners.get(i));
+					winnersMap.put(i, winners.winners.get(i));
 				}
-				pages = new Pages(winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.Messages_17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.Messages_17));
+				pages = new Pages(winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
 			}
-			if(config.EnableUpdater) {
+			if(config.enableUpdater) {
 				new Skyupdater(this, 75831, this.getDataFolder(), true, true);
 			}
-			if(config.EnableMetrics) {
+			if(config.enableMetrics) {
 				new MetricsLite(this).start();
 			}
-			spectatorsManager = new SpectatorsManager(this, config.Spectators_Mode);
-			mapsFolder = new File(config.Maps_Folder);
+			spectatorsManager = new SpectatorsManager(this, config.spectatorsMode);
+			mapsFolder = new File(config.mapsFolder);
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
 			}
@@ -157,20 +149,20 @@ public class HungerGames extends JavaPlugin {
 				manager.disablePlugin(this);
 				return;
 			}
-			kitSelector = new ItemStack(config.Kits_Selector_Material);
+			kitSelector = new ItemStack(config.kitsSelectorMaterial);
 			ItemMeta meta = kitSelector.getItemMeta();
-			meta.setDisplayName(config.Kits_Selector_Name);
+			meta.setDisplayName(config.kitsSelectorName);
 			kitSelector.setItemMeta(meta);
-			kitsMenu = Bukkit.createInventory(null, Utils.round(config.Kits_List.size(), 9), config.Kits_Selector_Name);
+			kitsMenu = Bukkit.createInventory(null, Utils.round(config.kitsList.size(), 9), config.kitsSelectorName);
 			ItemStack item;
-			for(final Entry<String, List<String>> entry : config.Kits_List.entrySet()) {
+			for(final Entry<String, List<String>> entry : config.kitsList.entrySet()) {
 				final String itemName = entry.getKey();
 				item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
 				meta = item.getItemMeta();
 				meta.setDisplayName(itemName);
 				item.setItemMeta(meta);
 				kitsMenu.addItem(item);
-				if(config.Kits_Permissions) {
+				if(config.kitsPermissions) {
 					manager.addPermission(new Permission("hungergames.kits." + ChatColor.stripColor(itemName).toLowerCase()));
 				}
 			}
@@ -184,7 +176,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(InvalidConfigurationException ex) {
 			ex.printStackTrace();
-			logsManager.log("Check the documentation for the configurations files here : http://url.skyost.eu/caF.");
+			logsManager.log("Check the documentation for the configurations files here : http://url.skyost.eu/caF.", Level.SEVERE);
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -205,14 +197,14 @@ public class HungerGames extends JavaPlugin {
 					}
 				}
 			}
-			final int winnersSize = winners.Winners.size();
+			final int winnersSize = winners.winners.size();
 			final int winnersMapSize = winnersMap.size();
 			if(winnersMapSize > winnersSize) {
 				for(int i = winnersSize; i != winnersMapSize; i++) {
-					winners.Winners.add(i, winnersMap.get(i));
+					winners.winners.add(i, winnersMap.get(i));
 				}
+				winners.save();
 			}
-			winners.save();
 			players.clear();
 			if(currentMap != null) {
 				HungerGamesAPI.deleteMap(currentMap);
@@ -229,49 +221,75 @@ public class HungerGames extends JavaPlugin {
 		for(final Listener listener : new Listener[]{new DamageListener(), new EntityListener(), new PlayerListener(), new WorldListener()}) {
 			manager.registerEvents(listener, this);
 		}
-		if(config.Spectators_Enable) {
-			if(!config.Spectators_Permissions_Chat) {
+		if(config.spectatorsEnable) {
+			if(!config.spectatorsPermissionsChat) {
 				manager.registerEvents(new AsyncChatListener(), this);
 			}
-			if(!config.Spectators_Permissions_Interact) {
+			if(!config.spectatorsPermissionsInteract) {
 				manager.registerEvents(new InteractListener(), this);
 			}
-			if(!config.Spectators_Permissions_PickupItems) {
+			if(!config.spectatorsPermissionsPickupItems) {
 				manager.registerEvents(new PickupItemListener(), this);
 			}
 		}
-		if(config.Game_Motd_Change) {
+		if(config.gameMotdChange) {
 			manager.registerEvents(new ServerListPingListener(), this);
 		}
-		if(config.Game_AutoSneak) {
+		if(config.gameAutoSneak) {
 			manager.registerEvents(new ToggleSneakListener(), this);
 		}
-		if(config.Lobby_Protect) {
+		if(config.lobbyProtect) {
 			manager.registerEvents(new LobbyListener(), this);
 		}
-		if(config.Game_DedicatedServer) {
+		if(config.gameDedicatedServer) {
 			manager.registerEvents(new AutoJoinListener(), this);
 		}
 	}
 	
-	private final boolean checkConfig() {
-		if(config.Game_MinPlayers < 2) {
+	private final boolean checkConfig() throws IOException {
+		boolean configDeleted = false;
+		if(config.VERSION < 2) {
+			final File configFile = config.getFile();
+			Utils.copy(configFile, new File(configFile.getPath() + "-OLD"));
+			configFile.delete();
+			logsManager.log("Your winners file had a wrong version. It has been deleted (but backed up).");
+			configDeleted = true;
+		}
+		if(messages.VERSION < 2) {
+			final File messagesFile = messages.getFile();
+			Utils.copy(messagesFile, new File(messagesFile.getPath() + "-OLD"));
+			messagesFile.delete();
+			logsManager.log("Your winners file had a wrong version. It has been deleted (but backed up).");
+			configDeleted = true;
+		}
+		if(winners.VERSION < 2) {
+			final File winnersFile = winners.getFile();
+			Utils.copy(winnersFile, new File(winnersFile.getPath() + "-OLD"));
+			winnersFile.delete();
+			logsManager.log("Your winners file had a wrong version. It has been deleted (but backed up).");
+			configDeleted = true;
+		}
+		if(configDeleted) {
+			logsManager.log("Please restart the plugin.");
+			return false;
+		}
+		if(config.gameMinPlayers < 2) {
 			logsManager.log("MinPlayers cannot be inferior than two !", Level.WARNING);
 			return false;
 		}
-		if(config.Game_MaxPlayers < config.Game_MinPlayers) {
+		if(config.gameMaxPlayers < config.gameMinPlayers) {
 			logsManager.log("MinPlayers cannot be inferior than MaxPlayers !", Level.WARNING);
 			return false;
 		}
-		if(config.Maps_Borders_Meta < 0 || config.Maps_Borders_Meta > 15) {
+		if(config.mapsBordersMeta < 0 || config.mapsBordersMeta > 15) {
 			logsManager.log("Borders_Meta cannot be inferior than zero and cannot be superior than fifteen !", Level.WARNING);
 			return false;
 		}
-		if(config.Maps_Borders_Enable && config.Game_SpawnDistance > config.Maps_Borders_Radius) {
+		if(config.mapsBordersEnable && config.gameSpawnDistance > config.mapsBordersRadius) {
 			logsManager.log("SpawnDistance cannot be superior than BordersRadius !", Level.WARNING);
 			return false;
 		}
-		if(config.Lobby_Spawn_X == 0 && config.Lobby_Spawn_Y == 0 && config.Lobby_Spawn_Z == 0) {
+		if(config.lobbySpawnX == 0 && config.lobbySpawnY == 0 && config.lobbySpawnZ == 0) {
 			logsManager.log("The coords of the lobby's spawn are invalid.", Level.WARNING);
 		}
 		return true;

@@ -25,7 +25,7 @@ public class BungeeMessageListener implements PluginMessageListener {
 		try {
 			final DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
 			if(in.readUTF().equals(CHANNEL)) {
-				sendRequest("Forward", in.readUTF(), "ALL", null, HungerGames.config.Bungee_ServerName + " " + HungerGames.currentStep, Bukkit.getServer());
+				sendRequest("Forward", in.readUTF(), "ALL", null, HungerGames.config.bungeeServerName + " " + HungerGames.currentStep, Bukkit.getServer());
 			}
 		}
 		catch(Exception ex) {

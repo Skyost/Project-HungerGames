@@ -15,20 +15,20 @@ public class PostExecuteFirst extends BukkitRunnable {
 	@Override
 	public void run() {
 		HungerGames.currentStep = Step.SECOND_COUNTDOWN;
-		final String message = HungerGames.messages.Messages_4.replaceAll("/n/", String.valueOf(HungerGames.config.Game_Countdown_Time));
+		final String message = HungerGames.messages.message4.replaceAll("/n/", String.valueOf(HungerGames.config.gameCountdownTime));
 		Player player;
 		for(final Entry<Player, HungerGamesProfile> entry : HungerGames.players.entrySet()) {
 			player = entry.getKey();
 			player.teleport(entry.getValue().getGeneratedLocation());
 			player.setGameMode(GameMode.SURVIVAL);
 			player.setAllowFlight(false);
-			player.setSneaking(HungerGames.config.Game_AutoSneak);
+			player.setSneaking(HungerGames.config.gameAutoSneak);
 			player.setHealth(player.getMaxHealth());
 			player.setFoodLevel(20);
 			player.getInventory().removeItem(HungerGames.kitSelector);
 			player.sendMessage(message);
 		}
-		HungerGames.tasks.set(0, new Countdown(HungerGames.config.Game_Countdown_Time, HungerGames.config.Game_Countdown_ExpBarLevel, HungerGames.config.Game_Countdown_MobBar, new PostExecuteSecond()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
+		HungerGames.tasks.set(0, new Countdown(HungerGames.config.gameCountdownTime, HungerGames.config.gameCountdownExpBarLevel, HungerGames.config.gameCountdownMobBar, new PostExecuteSecond()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
 		HungerGames.tasks.set(1, -1);
 	}
 	

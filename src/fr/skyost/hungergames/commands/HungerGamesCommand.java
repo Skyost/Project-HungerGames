@@ -41,16 +41,16 @@ public class HungerGamesCommand implements CommandExecutor {
 			case "setlobby":
 			case "set-lobby":
 				if(!commandSender.hasPermission("hungergames.lobby.set")) {
-					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+					commandSender.sendMessage(HungerGames.messages.messagePermission);
 					return true;
 				}
 				final Location location = player.getLocation();
-				HungerGames.config.Lobby_World = location.getWorld().getName();
-				HungerGames.config.Lobby_Spawn_X = location.getX();
-				HungerGames.config.Lobby_Spawn_Y = location.getY();
-				HungerGames.config.Lobby_Spawn_Z = location.getZ();
+				HungerGames.config.lobbyWorld = location.getWorld().getName();
+				HungerGames.config.lobbySpawnX = location.getX();
+				HungerGames.config.lobbySpawnY = location.getY();
+				HungerGames.config.lobbySpawnZ = location.getZ();
 				HungerGames.config.save();
-				commandSender.sendMessage(HungerGames.messages.Messages_22);
+				commandSender.sendMessage(HungerGames.messages.message22);
 				break;
 			case "kits":
 			case "kit":
@@ -60,17 +60,17 @@ public class HungerGamesCommand implements CommandExecutor {
 				final String kitName = Utils.colorize(Joiner.on(' ').join(Arrays.copyOfRange(args, 2, args.length)));
 				if(args[1].equalsIgnoreCase("create")) {
 					if(!commandSender.hasPermission("hungergames.kits.create")) {
-						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+						commandSender.sendMessage(HungerGames.messages.messagePermission);
 						return true;
 					}
-					if(HungerGames.config.Kits_List.get(kitName) != null) {
-						commandSender.sendMessage(HungerGames.messages.Messages_20);
+					if(HungerGames.config.kitsList.get(kitName) != null) {
+						commandSender.sendMessage(HungerGames.messages.message20);
 						return true;
 					}
 					final List<String> items = new ArrayList<String>();
 					final PlayerInventory inventory = player.getInventory();
 					if(Utils.isInventoryEmpty(inventory, HungerGames.kitSelector)) {
-						commandSender.sendMessage(HungerGames.messages.Messages_23);
+						commandSender.sendMessage(HungerGames.messages.message23);
 						return true;
 					}
 					ItemStack item;
@@ -87,7 +87,7 @@ public class HungerGamesCommand implements CommandExecutor {
 							}
 						}
 					}
-					HungerGames.config.Kits_List.put(kitName, items);
+					HungerGames.config.kitsList.put(kitName, items);
 					item = new ItemStack(material);
 					final ItemMeta meta = item.getItemMeta();
 					meta.setDisplayName(kitName);
@@ -96,14 +96,14 @@ public class HungerGamesCommand implements CommandExecutor {
 				}
 				else if(args[1].equalsIgnoreCase("delete")) {
 					if(!commandSender.hasPermission("hungergames.kits.delete")) {
-						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+						commandSender.sendMessage(HungerGames.messages.messagePermission);
 						return true;
 					}
-					if(HungerGames.config.Kits_List.get(kitName) == null) {
-						commandSender.sendMessage(HungerGames.messages.Messages_21);
+					if(HungerGames.config.kitsList.get(kitName) == null) {
+						commandSender.sendMessage(HungerGames.messages.message21);
 						return true;
 					}
-					HungerGames.config.Kits_List.remove(kitName);
+					HungerGames.config.kitsList.remove(kitName);
 					for(final ItemStack item : HungerGames.kitsMenu.getContents()) {
 						if(item != null && item.getType() != Material.AIR && item.getItemMeta().getDisplayName().equals(kitName)) {
 							HungerGames.kitsMenu.remove(item);
@@ -114,48 +114,48 @@ public class HungerGamesCommand implements CommandExecutor {
 					return false;
 				}
 				HungerGames.config.save();
-				commandSender.sendMessage(HungerGames.messages.Messages_22);
+				commandSender.sendMessage(HungerGames.messages.message22);
 				break;
 			case "join":
 				if(!commandSender.hasPermission("hungergames.join")) {
-					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+					commandSender.sendMessage(HungerGames.messages.messagePermission);
 					return true;
 				}
 				if(HungerGames.players.get(player) != null) {
-					commandSender.sendMessage(HungerGames.messages.Messages_2);
+					commandSender.sendMessage(HungerGames.messages.message2);
 					return true;
 				}
-				if(!HungerGames.config.Spectators_Enable && (HungerGames.totalPlayers == HungerGames.config.Game_MaxPlayers || (HungerGames.currentStep != Step.LOBBY && HungerGames.currentStep != Step.FIRST_COUNTDOWN))) {
-					commandSender.sendMessage(HungerGames.messages.Messages_1);
+				if(!HungerGames.config.spectatorsEnable && (HungerGames.totalPlayers == HungerGames.config.gameMaxPlayers || (HungerGames.currentStep != Step.LOBBY && HungerGames.currentStep != Step.FIRST_COUNTDOWN))) {
+					commandSender.sendMessage(HungerGames.messages.message1);
 					return true;
 				}
 				boolean spectator = false;
 				if(HungerGames.currentStep == Step.SECOND_COUNTDOWN || HungerGames.currentStep == Step.GAME) {
-					player.sendMessage(HungerGames.messages.Messages_12);
+					player.sendMessage(HungerGames.messages.message12);
 					spectator = true;
 				}
 				HungerGamesAPI.addPlayer(player, spectator);
 				break;
 			case "leave":
-				if(HungerGames.config.Game_DedicatedServer) {
-					commandSender.sendMessage(HungerGames.messages.Messages_24);
+				if(HungerGames.config.gameDedicatedServer) {
+					commandSender.sendMessage(HungerGames.messages.message24);
 				}
 				else {
 					if(!commandSender.hasPermission("hungergames.leave")) {
-						commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+						commandSender.sendMessage(HungerGames.messages.messagePermission);
 						return true;
 					}
 					if(HungerGames.players.get(player) == null) {
-						commandSender.sendMessage(HungerGames.messages.Messages_6);
+						commandSender.sendMessage(HungerGames.messages.message6);
 						return true;
 					}
-					player.sendMessage(HungerGames.messages.Messages_11);
+					player.sendMessage(HungerGames.messages.message11);
 					HungerGamesAPI.removePlayer(player, false);
 				}
 				break;
 			case "infos":
 				if(!commandSender.hasPermission("hungergames.infos")) {
-					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+					commandSender.sendMessage(HungerGames.messages.messagePermission);
 					return true;
 				}
 				final String players;
@@ -169,11 +169,11 @@ public class HungerGamesCommand implements CommandExecutor {
 					}
 					players = builder.toString();
 				}
-				commandSender.sendMessage(HungerGames.messages.Messages_13.replaceAll("/n/", String.valueOf(HungerGames.players.size())).replaceAll("/players/", players).replaceAll("/map/", HungerGames.currentMap.getName()).replaceAll("/status/", HungerGamesAPI.getCurrentMotd()).replaceAll("/line-separator/", "\n"));
+				commandSender.sendMessage(HungerGames.messages.message13.replaceAll("/n/", String.valueOf(HungerGames.players.size())).replaceAll("/players/", players).replaceAll("/map/", HungerGames.currentMap.getName()).replaceAll("/status/", HungerGamesAPI.getCurrentMotd()).replaceAll("/line-separator/", "\n"));
 				break;
 			case "winners":
 				if(!commandSender.hasPermission("hungergames.winners")) {
-					commandSender.sendMessage(HungerGames.messages.PermissionMessage);
+					commandSender.sendMessage(HungerGames.messages.messagePermission);
 					return true;
 				}
 				if(HungerGames.winnersMap.size() == 0) {
@@ -194,7 +194,7 @@ public class HungerGamesCommand implements CommandExecutor {
 				}
 				final int pages = HungerGames.pages.getTotalPages();
 				if(page < 1 || page > pages) {
-					commandSender.sendMessage(HungerGames.messages.Messages_18.replaceAll("/total-pages/", String.valueOf(pages)));
+					commandSender.sendMessage(HungerGames.messages.message18.replaceAll("/total-pages/", String.valueOf(pages)));
 					return true;
 				}
 				commandSender.sendMessage(HungerGames.pages.getPage(page));

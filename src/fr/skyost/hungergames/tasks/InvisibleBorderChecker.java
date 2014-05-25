@@ -24,7 +24,7 @@ public class InvisibleBorderChecker extends BukkitRunnable {
 	public void run() {
 		for(final Player player : HungerGames.players.keySet()) {
 			if(correctLocation(player)) {
-				player.sendMessage(HungerGames.messages.Messages_19);
+				player.sendMessage(HungerGames.messages.message19);
 			}
 		}
 	}

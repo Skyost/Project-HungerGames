@@ -1,7 +1,6 @@
 package fr.skyost.hungergames.utils;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -41,6 +40,15 @@ public class ErrorSender {
 		this.subject = subject;
 	}
 	
+	
+	/**
+	 * Creates a report for the selected Throwable.
+	 * 
+	 * @param throwable The Throwable.
+	 * 
+	 * @return A report.
+	 */
+	
 	public static final ErrorSender createReport(final Throwable throwable) {
 		final String separator = System.lineSeparator();
 		final StringBuilder builder = new StringBuilder();
@@ -51,65 +59,11 @@ public class ErrorSender {
 		builder.append("Bukkit version : '" + Bukkit.getVersion() + "'.");
 		builder.append(separator);
 		builder.append("Java version : '" + System.getProperty("java.version") + "'.");
-		return new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, builder.toString(), throwable.getClass().getName());
+		return new ErrorSender(HungerGames.config.bugsReportName, HungerGames.config.bugsReportMail, builder.toString(), throwable.getClass().getName());
 	}
 	
 	/**
-	 * Upload the Throwable on paste.skyost.eu and send it to me.
-	 * 
-	 * @param throwable The Throwable.
-	 * @deprecated You should use createReport(...) instead.
-	 */
-	
-	public static final void uploadAndSend(final Throwable throwable) {
-		new Thread() {
-			
-			@Override
-			public void run() {
-				try {
-					if(HungerGames.config.BugsReport_Enable) {
-						HungerGames.logsManager.log("[ErrorSender] Uploading your error on paste.skyost.eu...");
-						final HttpURLConnection connection = (HttpURLConnection)new URL("http", "paste.skyost.eu", "/api/create").openConnection();
-						connection.setRequestMethod("POST");
-						connection.setRequestProperty("User-Agent", "Project HungerGames");
-						connection.setDoOutput(true);
-						final String separator = System.lineSeparator();
-						final StringBuilder builder = new StringBuilder();
-						builder.append(Throwables.getStackTraceAsString(throwable));
-						builder.append(separator);
-						builder.append("Plugin version : '" + HungerGames.instance.getDescription().getVersion() + "'.");
-						builder.append(separator);
-						builder.append("Bukkit version : '" + Bukkit.getVersion() + "'.");
-						builder.append(separator);
-						builder.append("Java version : '" + System.getProperty("java.version") + "'.");
-						final String subject = URLEncoder.encode(throwable.getClass().getName(), "UTF-8");
-						final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-						outputStream.writeBytes("text=" + URLEncoder.encode(builder.toString(), "UTF-8") + "&title=" + subject + "&name=" + URLEncoder.encode(HungerGames.config.BugsReport_Name, "UTF-8"));
-						outputStream.flush();
-						outputStream.close();
-						builder.setLength(0);
-						final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-						String inputLine;
-						while((inputLine = reader.readLine()) != null) {
-							builder.append(inputLine);
-						}
-						reader.close();
-						connection.disconnect();
-						HungerGames.logsManager.log("[ErrorSender] Done !");
-						final String message = builder.toString();
-						new ErrorSender(HungerGames.config.BugsReport_Name, HungerGames.config.BugsReport_Mail, message.startsWith("http") ? message : throwable.getMessage(), subject).report();
-					}
-				}
-				catch(Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-			
-		}.start();
-	}
-	
-	/**
-	 * Send the email.
+	 * Sends the email.
 	 */
 	
 	public final void report() {
@@ -147,7 +101,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Get the sender's name.
+	 * Gets the sender's name.
 	 * 
 	 * @return His name.
 	 */
@@ -157,7 +111,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Set the name.
+	 * Sets the name.
 	 * 
 	 * @param name The name to set
 	 */
@@ -168,7 +122,7 @@ public class ErrorSender {
 
 	
 	/**
-	 * Get the email address.
+	 * Gets the email address.
 	 * 
 	 * @return The email address.
 	 */
@@ -178,7 +132,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Set the email address.
+	 * Sets the email address.
 	 * 
 	 * @param email The email address to set.
 	 */
@@ -188,7 +142,7 @@ public class ErrorSender {
 	}
 
 	/**
-	 * Get the message.
+	 * Gets the message.
 	 * 
 	 * @return The message.
 	 */
@@ -198,7 +152,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Set the message.
+	 * Sets the message.
 	 * 
 	 * @param message The message to set.
 	 */
@@ -208,7 +162,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Get the subject.
+	 * Gets the subject.
 	 * 
 	 * @return The subject.
 	 */
@@ -218,7 +172,7 @@ public class ErrorSender {
 	}
 	
 	/**
-	 * Set the subject.
+	 * Sets the subject.
 	 * 
 	 * @param subject The subject to set.
 	 */

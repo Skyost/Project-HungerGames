@@ -2,19 +2,19 @@ package fr.skyost.hungergames;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import fr.skyost.hungergames.utils.Config;
+import fr.skyost.hungergames.utils.Skyoconfig;
 
-public class WinnersFile extends Config {
+public class WinnersFile extends Skyoconfig {
 	
-	public int VERSION = 1;
+	public int VERSION = 2;
 	
-	public List<String> Winners = new ArrayList<String>();
+	public List<String> winners = new ArrayList<String>();
 
 	public WinnersFile(final File dataFolder) {
-		CONFIG_FILE = new File(dataFolder, "winners.yml");
-		CONFIG_HEADER = "Project HungerGames by Skyost";
+		super(new File(dataFolder, "winners.yml"), Arrays.asList("Project HungerGames - By Skyost"));
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -165,9 +166,9 @@ public class Utils {
 		case 11:
 		case 12:
 		case 13:
-			return HungerGames.messages.OrdinalSuffixes.get(0);
+			return HungerGames.messages.ordinalSuffixes.get(0);
 		default:
-			return HungerGames.messages.OrdinalSuffixes.get(i % 10);
+			return HungerGames.messages.ordinalSuffixes.get(i % 10);
 		}
 	}
 	

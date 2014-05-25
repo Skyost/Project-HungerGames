@@ -49,9 +49,9 @@ public class HungerGamesProfile {
 		generatedLocation = HungerGames.currentMap.getSpawnLocation();
 		isSneaking = player.isSneaking();
 		final Random random = new Random();
-		final int doubledDistance = HungerGames.config.Game_SpawnDistance * 2;
-		final int x = random.nextInt(doubledDistance) - HungerGames.config.Game_SpawnDistance + 1;
-		final int z = random.nextInt(doubledDistance) - HungerGames.config.Game_SpawnDistance + 1;
+		final int doubledDistance = HungerGames.config.gameSpawnDistance * 2;
+		final int x = random.nextInt(doubledDistance) - HungerGames.config.gameSpawnDistance + 1;
+		final int z = random.nextInt(doubledDistance) - HungerGames.config.gameSpawnDistance + 1;
 		generatedLocation.add(x, 100, z);
 		final Chunk chunk = HungerGames.currentMap.getChunkAt(x, z);
 		chunk.load(true);

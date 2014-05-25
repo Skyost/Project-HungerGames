@@ -16,8 +16,8 @@ public class RandomMessages extends BukkitRunnable {
 	
 	@Override
 	public void run() {
-		HungerGamesAPI.broadcastMessage(HungerGames.messages.RandomMessages_Messages.get(random.nextInt(HungerGames.messages.RandomMessages_Messages.size())));
-		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.messages.RandomMessages_Delay * 20));
+		HungerGamesAPI.broadcastMessage(HungerGames.messages.randomMessagesMessages.get(random.nextInt(HungerGames.messages.randomMessagesMessages.size())));
+		scheduler.scheduleSyncDelayedTask(HungerGames.instance, this, random.nextInt(HungerGames.messages.randomMessagesDelay * 20));
 	}
 	
 }

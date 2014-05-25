@@ -5,108 +5,160 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 
 import fr.skyost.hungergames.SpectatorsManager.SpectatorsManagerMode;
-import fr.skyost.hungergames.utils.Config;
 import fr.skyost.hungergames.utils.JsonItemStack;
+import fr.skyost.hungergames.utils.Skyoconfig;
 import fr.skyost.hungergames.utils.borders.Border.Type;
 
-public class ConfigFile extends Config {
+public class ConfigFile extends Skyoconfig {
 	
-	public int VERSION = 2;
+	public int VERSION = 3;
 	
-	public boolean EnableUpdater = true;
-	public boolean EnableMetrics = true;
+	@ConfigOptions(name = "enable.updater")
+	public boolean enableUpdater = true;
+	@ConfigOptions(name = "enable.metrics")
+	public boolean enableMetrics = true;
 	
-	public String Bungee_ServerName = "srv001";
+	@ConfigOptions(name = "bungee.server-name")
+	public String bungeeServerName = "srv001";
 	
-	public boolean BugsReport_Enable = true;
-	public String BugsReport_Name = "My Name";
-	public String BugsReport_Mail = "your@mail.com";
+	@ConfigOptions(name = "bugs-report.enable")
+	public boolean bugsReportEnable = true;
+	@ConfigOptions(name = "bugs-report.your-name")
+	public String bugsReportName = Bukkit.getServerName();
+	@ConfigOptions(name = "bugs-report.your-mail")
+	public String bugsReportMail = "your@mail.com";
 	
-	public String Maps_Folder;
-	public HashMap<String, String> Maps_GameRules = new HashMap<String, String>() {
+	@ConfigOptions(name = "maps.folder")
+	public String mapsFolder;
+	public HashMap<String, String> mapsGameRules = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("naturalRegeneration", "false");
 		}
 	};
-	public int Maps_DefaultTime = 0;
-	public boolean Maps_Generate_Enable = false;
-	public String Maps_Generate_Name = "generated_map";
-	public boolean Maps_Borders_Enable = true;
-	public int Maps_Borders_Radius = 1000;
-	public Type Maps_Borders_Type = Type.INVISIBLE;
-	public Material Maps_Borders_Material = Material.BEDROCK;
-	public int Maps_Borders_Meta = 0;
+	@ConfigOptions(name = "maps.default-time")
+	public int mapsDefaultTime = 0;
+	@ConfigOptions(name = "maps.generate.enable")
+	public boolean mapsGenerateEnable = false;
+	@ConfigOptions(name = "maps.generate.map-name")
+	public String mapsGenerateName = "generated_map";
+	@ConfigOptions(name = "maps.borders.enable")
+	public boolean mapsBordersEnable = true;
+	@ConfigOptions(name = "maps.borders.radius")
+	public int mapsBordersRadius = 1000;
+	@ConfigOptions(name = "maps.borders.type")
+	public Type mapsBordersType = Type.INVISIBLE;
+	@ConfigOptions(name = "maps.borders.material")
+	public Material mapsBordersMaterial = Material.BEDROCK;
+	@ConfigOptions(name = "maps.borders.meta")
+	public int mapsBordersMeta = 0;
 	
-	public String Lobby_World = "hungergames_lobby";
-	public double Lobby_Spawn_X = 0;
-	public double Lobby_Spawn_Y = 0;
-	public double Lobby_Spawn_Z = 0;
-	public int Lobby_Countdown_Time = 30;
-	public boolean Lobby_Countdown_ExpBarLevel = true;
-	public boolean Lobby_Countdown_MobBar = false;
-	public boolean Lobby_Protect = false;
+	@ConfigOptions(name = "lobby.world")
+	public String lobbyWorld = "hungergames_lobby";
+	@ConfigOptions(name = "lobby.spawn.x")
+	public double lobbySpawnX = 0;
+	@ConfigOptions(name = "lobby.spawn.y")
+	public double lobbySpawnY = 0;
+	@ConfigOptions(name = "lobby.spawn.z")
+	public double lobbySpawnZ = 0;
+	@ConfigOptions(name = "lobby.countdown.time")
+	public int lobbyCountdownTime = 30;
+	@ConfigOptions(name = "lobby.countdown.exp-bar-level")
+	public boolean lobbyCountdownExpBarLevel = true;
+	@ConfigOptions(name = "lobby.countdown.mob-bar")
+	public boolean lobbyCountdownMobBar = false;
+	@ConfigOptions(name = "lobby.protect")
+	public boolean lobbyProtect = false;
 	
-	public boolean Game_DedicatedServer = false;
-	public int Game_MinPlayers = 2;
-	public int Game_MaxPlayers = 8;
-	public int Game_SpawnDistance = 200;
-	public boolean Game_AutoSneak = true;
-	public int Game_RandomItems_Delay = 1000;
-	public HashMap<String, String> Game_RandomItem_Items = new HashMap<String, String>() {
+	@ConfigOptions(name = "game.dedicated-server")
+	public boolean gameDedicatedServer = false;
+	@ConfigOptions(name = "game.min-players")
+	public int gameMinPlayers = 2;
+	@ConfigOptions(name = "game.max-players")
+	public int gameMaxPlayers = 8;
+	@ConfigOptions(name = "game.spawn-distance")
+	public int gameSpawnDistance = 200;
+	@ConfigOptions(name = "game.auto-sneak")
+	public boolean gameAutoSneak = true;
+	@ConfigOptions(name = "game.random-items.delay")
+	public int gameRandomItemsDelay = 1000;
+	@ConfigOptions(name = "game.random-items.items")
+	public HashMap<String, String> gameRandomItemItems = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("10", new JsonItemStack(Material.GOLD_SWORD.name(), "§6Gold sword", "§oCan be useful.", Enchantment.DAMAGE_ALL.getName(), Long.valueOf(Enchantment.DAMAGE_ALL.getMaxLevel()), null).toJson());
 			put("20", new JsonItemStack(Material.EMERALD.name(), "§aEmerald", "§oI know you love it too.", null, null, null).toJson());
 			put("50", new JsonItemStack(Material.COAL.name(), null, Arrays.asList("For Christmas.", "- Mom"), null, Long.valueOf(5)).toJson());
 		}
 	};
-	public boolean Game_RandomItems_Chests = true;
-	public int Game_RandomItems_Distance = 100;
-	public boolean Game_RandomItems_Thundering = true;
-	public boolean Game_Motd_Change = false;
-	public int Game_Countdown_Time = 60;
-	public boolean Game_Countdown_ExpBarLevel = true;
-	public boolean Game_Countdown_MobBar = false;
-	public Sound Game_DeathSound_Sound = Sound.WITHER_SPAWN;
-	public String Game_DeathSound_Volume = "1";
-	public String Game_DeathSound_Pitch = "0.75";
-	public HashMap<String, String> Game_Rewards = new HashMap<String, String>() {
+	@ConfigOptions(name = "game.random-items.chests")
+	public boolean gameRandomItemsChests = true;
+	@ConfigOptions(name = "game.random-items.distance")
+	public int gameRandomItemsDistance = 100;
+	@ConfigOptions(name = "game.random-items.thundering")
+	public boolean gameRandomItemsThundering = true;
+	@ConfigOptions(name = "game.motd-change")
+	public boolean gameMotdChange = false;
+	@ConfigOptions(name = "game.countdown.time")
+	public int gameCountdownTime = 60;
+	@ConfigOptions(name = "game.countdown.exp-bar-level")
+	public boolean gameCountdownExpBarLevel = true;
+	@ConfigOptions(name = "game.countdown.mob-bar")
+	public boolean gameCountdownMobBar = false;
+	@ConfigOptions(name = "game.death-sound.sound")
+	public Sound gameDeathSoundSound = Sound.WITHER_SPAWN;
+	@ConfigOptions(name = "game.death-sound.volume")
+	public float gameDeathSoundVolume = 1f;
+	@ConfigOptions(name = "game.death-sound.pitch")
+	public float gameDeathSoundPitch = 0.75f;
+	@ConfigOptions(name = "game.rewards.rewards")
+	public HashMap<String, String> gameRewards = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("1", new JsonItemStack(Material.GOLD_INGOT.name(), "§6Congracubations !", null, null, null, Long.valueOf(3)).toJson());
 		}
 	};
-	public boolean Game_Rewards_Enable = true;
+	@ConfigOptions(name = "game.rewards.enable")
+	public boolean gameRewardsEnable = true;
 	
-	public boolean Spectators_Enable = true;
-	public SpectatorsManagerMode Spectators_Mode = SpectatorsManagerMode.GHOST_FACTORY;
-	public boolean Spectators_Permissions_Chat = false;
-	public boolean Spectators_Permissions_PickupItems = false;
-	public boolean Spectators_Permissions_Interact = false;
+	@ConfigOptions(name = "spectators.enable")
+	public boolean spectatorsEnable = true;
+	@ConfigOptions(name = "spectators.mode")
+	public SpectatorsManagerMode spectatorsMode = SpectatorsManagerMode.GHOST_FACTORY;
+	@ConfigOptions(name = "spectators.permissions.chat")
+	public boolean spectatorsPermissionsChat = false;
+	@ConfigOptions(name = "spectators.permissions.pickup-items")
+	public boolean spectatorsPermissionsPickupItems = false;
+	@ConfigOptions(name = "spectators.permissions.interact")
+	public boolean spectatorsPermissionsInteract = false;
 	
-	public String Kits_Selector_Name = "§6Select a kit !";
-	public Material Kits_Selector_Material = Material.NETHER_STAR;
-	public HashMap<String, List<String>> Kits_List = new HashMap<String, List<String>>() {
+	@ConfigOptions(name = "kits.selector.name")
+	public String kitsSelectorName = "§6Select a kit !";
+	@ConfigOptions(name = "kits.selector.material")
+	public Material kitsSelectorMaterial = Material.NETHER_STAR;
+	@ConfigOptions(name = "kits.list")
+	public HashMap<String, List<String>> kitsList = new HashMap<String, List<String>>() {
 		private static final long serialVersionUID = 1L; {
 			put("§7Iron", Arrays.asList(new JsonItemStack(Material.IRON_INGOT.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_HELMET.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_CHESTPLATE.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_LEGGINGS.name(), null, null, null, null).toJson(), new JsonItemStack(Material.IRON_BOOTS.name(), null, null, null, null).toJson()));
 		}
 	};
-	public boolean Kits_Permissions = true;
+	@ConfigOptions(name = "kits.permissions")
+	public boolean kitsPermissions = true;
 	
-	public boolean Log_Console = true;
-	public boolean Log_File_Enable = false;
-	public String Log_File_Directory;
+	@ConfigOptions(name = "logs.console")
+	public boolean logConsole = true;
+	@ConfigOptions(name = "logs.file.enable")
+	public boolean logFileEnable = false;
+	@ConfigOptions(name = "logs.file.directory")
+	public String logFileDirectory;
 	
 	public ConfigFile(final File dataFolder) {
-		CONFIG_FILE = new File(dataFolder, "config.yml");
-		CONFIG_HEADER = "Project HungerGames by Skyost";
-		
-		Maps_Folder = new File(dataFolder + File.separator + "maps").getPath();
-		
-		Log_File_Directory = new File(dataFolder + File.separator + "logs").getPath();
+		super(new File(dataFolder, "config.yml"), Arrays.asList("Project HungerGames - By Skyost", "A documentation is available here : http://url.skyost.eu/caF."));
+		mapsFolder = new File(dataFolder + File.separator + "maps").getPath();
+		logFileDirectory = new File(dataFolder + File.separator + "logs").getPath();
 	}
 	
 }

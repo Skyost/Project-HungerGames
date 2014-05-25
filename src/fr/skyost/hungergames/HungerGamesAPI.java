@@ -44,7 +44,7 @@ import fr.skyost.hungergames.utils.borders.BorderParams;
 public class HungerGamesAPI {
 	
 	/**
-	 * Add a player without adding him to the spectators manager.
+	 * Adds a player without adding him to the spectators manager.
 	 * 
 	 * @param player The player to add.
 	 */
@@ -54,7 +54,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Add a player.
+	 * Adds a player.
 	 * 
 	 * @param player The player to add.
 	 * @param setSpectator If you want to add the player to the spectators manager.
@@ -78,36 +78,36 @@ public class HungerGamesAPI {
 		else {
 			inventory.addItem(HungerGames.kitSelector);
 			final Location spawn;
-			if(HungerGames.config.Lobby_Spawn_X == 0 && HungerGames.config.Lobby_Spawn_Y == 0 && HungerGames.config.Lobby_Spawn_Z == 0) {
+			if(HungerGames.config.lobbySpawnX == 0 && HungerGames.config.lobbySpawnY == 0 && HungerGames.config.lobbySpawnZ == 0) {
 				spawn = HungerGames.lobby.getSpawnLocation();
 			}
 			else {
-				spawn = new Location(HungerGames.lobby, HungerGames.config.Lobby_Spawn_X, HungerGames.config.Lobby_Spawn_Y, HungerGames.config.Lobby_Spawn_Z);
+				spawn = new Location(HungerGames.lobby, HungerGames.config.lobbySpawnX, HungerGames.config.lobbySpawnY, HungerGames.config.lobbySpawnZ);
 			}
 			player.teleport(spawn);
 			HungerGames.totalPlayers++;
-			broadcastMessage(HungerGames.messages.Messages_14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.Game_MaxPlayers)).replaceAll("/player/", player.getName()));
-			if(HungerGames.totalPlayers == HungerGames.config.Game_MinPlayers) {
+			broadcastMessage(HungerGames.messages.message14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.gameMaxPlayers)).replaceAll("/player/", player.getName()));
+			if(HungerGames.totalPlayers == HungerGames.config.gameMinPlayers) {
 				HungerGames.logsManager.log("Starting game...");
-				broadcastMessage(HungerGames.messages.Messages_3.replaceAll("/n/", String.valueOf(HungerGames.config.Lobby_Countdown_Time)));
+				broadcastMessage(HungerGames.messages.message3.replaceAll("/n/", String.valueOf(HungerGames.config.lobbyCountdownTime)));
 				HungerGames.currentStep = Step.FIRST_COUNTDOWN;
-				HungerGames.tasks.set(0, new Countdown(HungerGames.config.Lobby_Countdown_Time, HungerGames.config.Lobby_Countdown_ExpBarLevel, HungerGames.config.Lobby_Countdown_MobBar, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
+				HungerGames.tasks.set(0, new Countdown(HungerGames.config.lobbyCountdownTime, HungerGames.config.lobbyCountdownExpBarLevel, HungerGames.config.lobbyCountdownMobBar, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
 			}
 		}
 	}
 	
 	/**
-	 * Remove a player and add it to the spectator manager if it has been set into the config file.
+	 * Removes a player and add it to the spectator manager if it has been set into the config file.
 	 * 
 	 * @param player The player to remove.
 	 */
 	
 	public static final void removePlayer(final Player player) {
-		removePlayer(player, HungerGames.config.Spectators_Enable);
+		removePlayer(player, HungerGames.config.spectatorsEnable);
 	}
 	
 	/**
-	 * Remove a player.
+	 * Removes a player.
 	 * 
 	 * @param player The player to remove.
 	 * @param setSpectator If you want to add the player to the spectators manager.
@@ -130,16 +130,16 @@ public class HungerGamesAPI {
 				revertPlayer(player, true);
 				HungerGames.players.remove(player);
 			}
-			if(HungerGames.currentStep == Step.GAME && HungerGames.config.Game_Rewards_Enable) {
+			if(HungerGames.currentStep == Step.GAME && HungerGames.config.gameRewardsEnable) {
 				giveReward(player, HungerGames.totalPlayers);
 			}
 			HungerGames.totalPlayers--;
 		}
 		if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
-			finishGame(HungerGames.messages.Messages_8, true);
+			finishGame(HungerGames.messages.message8, true);
 		}
-		else if(HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.Game_MinPlayers) {
-			finishGame(HungerGames.messages.Messages_7, false);
+		else if(HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.gameMinPlayers) {
+			finishGame(HungerGames.messages.message7, false);
 		}
 	}
 	
@@ -166,11 +166,11 @@ public class HungerGamesAPI {
 			else {
 				player.sendMessage(message);
 				if(hasWinner) {
-					if(HungerGames.config.Game_Rewards_Enable) {
+					if(HungerGames.config.gameRewardsEnable) {
 						giveReward(player, HungerGames.totalPlayers);
 					}
 					HungerGames.winnersMap.put(HungerGames.winnersMap.size(), player.getName());
-					HungerGames.pages = new Pages(HungerGames.winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.Messages_17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.Messages_17));
+					HungerGames.pages = new Pages(HungerGames.winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
 				}
 			}
 		}
@@ -179,7 +179,7 @@ public class HungerGamesAPI {
 		HungerGames.currentMap = generateMap();
 		HungerGames.totalPlayers = 0;
 		HungerGames.currentStep = Step.LOBBY;
-		if(HungerGames.config.Game_DedicatedServer) {
+		if(HungerGames.config.gameDedicatedServer) {
 			for(final Player player : Bukkit.getOnlinePlayers()) {
 				addPlayer(player, false);
 			}
@@ -187,7 +187,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Give the corresponding reward to the player.
+	 * Gives the corresponding reward to the player.
 	 * 
 	 * @param player The player.
 	 * @param value The reward's value.
@@ -195,7 +195,7 @@ public class HungerGamesAPI {
 	
 	public static final void giveReward(final Player player, final int value) {
 		if(HungerGames.currentStep == Step.GAME || HungerGames.currentStep == Step.SECOND_COUNTDOWN) {
-			final String jsonItemStack = HungerGames.config.Game_Rewards.get(String.valueOf(value));
+			final String jsonItemStack = HungerGames.config.gameRewards.get(String.valueOf(value));
 			if(jsonItemStack != null) {
 				final ItemStack item = JsonItemStack.fromJson(jsonItemStack).toItemStack();
 				if(HungerGames.spectatorsManager.hasSpectator(player)) {
@@ -209,7 +209,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Revert a player back with his Hunger Games profile but does not remove it from the game.
+	 * Reverts a player back with his Hunger Games profile but does not remove it from the game.
 	 * 
 	 * @param player The player.
 	 * @param clearInventory Clear the current player inventory.
@@ -220,7 +220,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Revert a player back but does not remove it from the game.
+	 * Reverts a player back but does not remove it from the game.
 	 * 
 	 * @param player The player.
 	 * @param profile The Hunger Games profile used to restore the player's settings.
@@ -251,7 +251,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Broadcast a message to the current players (including spectators).
+	 * Broadcasts a message to the current players (including spectators).
 	 * 
 	 * @param message The message.
 	 */
@@ -263,7 +263,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Delete a world. NMS is used but with reflection.
+	 * Deletes a world. NMS is used but with reflection if Multiverse is not presents.
 	 * 
 	 * @param world The map to be deleted.
 	 */
@@ -298,7 +298,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Generate a new map or chose it from the maps folder.
+	 * Generates a new map or chose it from the maps folder.
 	 * 
 	 * @return The world which is generated (or chosed).
 	 */
@@ -306,8 +306,8 @@ public class HungerGamesAPI {
 	public static final World generateMap() {
 		try {
 			final World world;
-			if(HungerGames.config.Maps_Generate_Enable) {
-				world = createWorld(HungerGames.config.Maps_Generate_Name);
+			if(HungerGames.config.mapsGenerateEnable) {
+				world = createWorld(HungerGames.config.mapsGenerateName);
 			}
 			else {
 				HungerGames.logsManager.log("Processing maps...");
@@ -322,8 +322,8 @@ public class HungerGamesAPI {
 				}
 				if(maps.size() == 0) {
 					HungerGames.logsManager.log("The maps folder is empty ! Creating a new map...", Level.WARNING);
-					world = createWorld(HungerGames.config.Maps_Generate_Name);
-					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.Maps_Generate_Name));
+					world = createWorld(HungerGames.config.mapsGenerateName);
+					Utils.copy(world.getWorldFolder(), new File(HungerGames.mapsFolder, HungerGames.config.mapsGenerateName));
 				}
 				else {
 					final File currentWorld = maps.get(new Random().nextInt(maps.size()));
@@ -333,11 +333,11 @@ public class HungerGamesAPI {
 				}
 				HungerGames.logsManager.log("Done ! The selected map is : '" + world.getName() + "'.");
 			}
-			if(HungerGames.config.Maps_Borders_Enable) {
+			if(HungerGames.config.mapsBordersEnable) {
 				HungerGamesAPI.addBorders(world);
 			}
 			String gameRule;
-			for(final Entry<String, String> entry : HungerGames.config.Maps_GameRules.entrySet()) {
+			for(final Entry<String, String> entry : HungerGames.config.mapsGameRules.entrySet()) {
 				gameRule = entry.getKey();
 				if(world.isGameRule(gameRule)) {
 					world.setGameRuleValue(gameRule, entry.getValue());
@@ -346,7 +346,7 @@ public class HungerGamesAPI {
 					HungerGames.logsManager.log("'" + gameRule + "' is not a valid game rule !", Level.WARNING);
 				}
 			}
-			world.setTime(HungerGames.config.Maps_DefaultTime);
+			world.setTime(HungerGames.config.mapsDefaultTime);
 			return world;
 		}
 		catch(Exception ex) {
@@ -359,7 +359,7 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Create a new world with or without Multiverse.
+	 * Creates a new world with or without Multiverse.
 	 * 
 	 * @param name The world name.
 	 * 
@@ -377,22 +377,22 @@ public class HungerGamesAPI {
 	}
 	
 	/**
-	 * Add configured borders to the specified world.
+	 * Adds configured borders to the specified world.
 	 * 
 	 * @param world The world.
 	 */
 	
 	public static final void addBorders(final World world) {
-		if(HungerGames.config.Maps_Borders_Type != Type.INVISIBLE && Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
+		if(HungerGames.config.mapsBordersType != Type.INVISIBLE && Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
 			HungerGames.logsManager.log("WorldEdit was not found !", Level.WARNING);
 			return;
 		}
 		final Location spawn = world.getSpawnLocation();
-		HungerGames.tasks.set(4, new BorderCreatorTask(new BorderParams(world.getName(), spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.Maps_Borders_Radius, HungerGames.config.Maps_Borders_Type, Utils.getId(HungerGames.config.Maps_Borders_Material), HungerGames.config.Maps_Borders_Meta)).runTask(HungerGames.instance).getTaskId());
+		HungerGames.tasks.set(4, new BorderCreatorTask(new BorderParams(world.getName(), spawn.getBlockX(), spawn.getBlockZ(), HungerGames.config.mapsBordersRadius, HungerGames.config.mapsBordersType, Utils.getId(HungerGames.config.mapsBordersMaterial), HungerGames.config.mapsBordersMeta)).runTask(HungerGames.instance).getTaskId());
 	}
 	
 	/**
-	 * Get the current Hunger Games motd.
+	 * Gets the current Hunger Games motd.
 	 * 
 	 * @return The current Hunger Games motd.
 	 */
@@ -401,16 +401,16 @@ public class HungerGamesAPI {
 		String motd = null;
 		switch(HungerGames.currentStep) {
 		case LOBBY:
-			motd = HungerGames.messages.Motds_1.replaceAll("/n/", String.valueOf(HungerGames.config.Game_MinPlayers - HungerGames.totalPlayers));
+			motd = HungerGames.messages.motd1.replaceAll("/n/", String.valueOf(HungerGames.config.gameMinPlayers - HungerGames.totalPlayers));
 			break;
 		case FIRST_COUNTDOWN:
-			motd = HungerGames.messages.Motds_2;
+			motd = HungerGames.messages.motd2;
 			break;
 		case SECOND_COUNTDOWN:
-			motd = HungerGames.messages.Motds_3;
+			motd = HungerGames.messages.motd3;
 			break;
 		case GAME:
-			motd = HungerGames.messages.Motds_4.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers));
+			motd = HungerGames.messages.motd4.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers));
 			break;
 		}
 		return motd;

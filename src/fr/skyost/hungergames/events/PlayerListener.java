@@ -59,7 +59,7 @@ public class PlayerListener implements Listener {
 				player.openInventory(HungerGames.kitsMenu);
 			}
 			else {
-				player.sendMessage(HungerGames.messages.PermissionMessage);
+				player.sendMessage(HungerGames.messages.messagePermission);
 			}
 			event.setCancelled(true);
 		}
@@ -74,15 +74,15 @@ public class PlayerListener implements Listener {
 				final ItemStack itemSelected = event.getCurrentItem();
 				if(itemSelected != null) {
 					final String kitName = itemSelected.getItemMeta().getDisplayName();
-					if(HungerGames.config.Kits_Permissions && !player.hasPermission("hungergames.kits." + ChatColor.stripColor(kitName).toLowerCase())) {
-						player.sendMessage(HungerGames.messages.PermissionMessage);
+					if(HungerGames.config.kitsPermissions && !player.hasPermission("hungergames.kits." + ChatColor.stripColor(kitName).toLowerCase())) {
+						player.sendMessage(HungerGames.messages.messagePermission);
 						return;
 					}
 					final PlayerInventory inventory = player.getInventory();
 					inventory.clear();
 					inventory.setArmorContents(new ItemStack[]{null, null, null, null});
 					inventory.addItem(HungerGames.kitSelector);
-					final List<String> items = HungerGames.config.Kits_List.get(kitName);
+					final List<String> items = HungerGames.config.kitsList.get(kitName);
 					if(items != null) {
 						for(final String item : items) {
 							inventory.addItem(JsonItemStack.fromJson(item).toItemStack());

@@ -15,10 +15,10 @@ public class PostExecuteSecond extends BukkitRunnable {
 	public void run() {
 		HungerGames.currentStep = Step.GAME;
 		final Random random = new Random();
-		HungerGamesAPI.broadcastMessage(HungerGames.messages.Messages_5);
+		HungerGamesAPI.broadcastMessage(HungerGames.messages.message5);
 		HungerGames.tasks.set(1, -1);
-		HungerGames.tasks.set(2, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, new RandomItems(), random.nextInt(HungerGames.config.Game_RandomItems_Delay) * 20));
-		HungerGames.tasks.set(3, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, new RandomMessages(), random.nextInt(HungerGames.messages.RandomMessages_Delay) * 20));
+		HungerGames.tasks.set(2, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, new RandomItems(), random.nextInt(HungerGames.config.gameRandomItemsDelay) * 20));
+		HungerGames.tasks.set(3, Bukkit.getScheduler().scheduleSyncDelayedTask(HungerGames.instance, new RandomMessages(), random.nextInt(HungerGames.messages.randomMessagesDelay) * 20));
 	}
 	
 }

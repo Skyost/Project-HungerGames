@@ -43,7 +43,7 @@ public class DamageListener implements Listener {
 						final Player killerPlayer = (Player)killer;
 						final int exp = Utils.getPlayerXP(player);
 						killerPlayer.setTotalExperience(killerPlayer.getTotalExperience() + exp);
-						killerPlayer.sendMessage(HungerGames.messages.Messages_15.replaceAll("/n/", String.valueOf(exp)).replaceAll("/player/", player.getName()));
+						killerPlayer.sendMessage(HungerGames.messages.message15.replaceAll("/n/", String.valueOf(exp)).replaceAll("/player/", player.getName()));
 					}
 					final PlayerInventory inventory = player.getInventory();
 					for(final ItemStack item : inventory.getContents()) {
@@ -60,10 +60,10 @@ public class DamageListener implements Listener {
 					inventory.setArmorContents(new ItemStack[]{null, null, null, null});
 					Utils.updateInventory(player);
 					for(final Player playerKey : HungerGames.players.keySet()) {
-						playerKey.sendMessage(HungerGames.messages.DeathMessages.get(new Random().nextInt(HungerGames.messages.DeathMessages.size())).replaceAll("/player/", player.getName()));
-						world.playSound(playerKey.getLocation(), HungerGames.config.Game_DeathSound_Sound, Float.parseFloat(HungerGames.config.Game_DeathSound_Volume), Float.parseFloat(HungerGames.config.Game_DeathSound_Pitch));
+						playerKey.sendMessage(HungerGames.messages.deathMessages.get(new Random().nextInt(HungerGames.messages.deathMessages.size())).replaceAll("/player/", player.getName()));
+						world.playSound(playerKey.getLocation(), HungerGames.config.gameDeathSoundSound, HungerGames.config.gameDeathSoundVolume, HungerGames.config.gameDeathSoundPitch);
 					}
-					player.sendMessage(HungerGames.config.Spectators_Enable ? HungerGames.messages.Messages_9 + (HungerGames.totalPlayers <= 2 ? "" : "\n" + HungerGames.messages.Messages_12) : HungerGames.messages.Messages_9);
+					player.sendMessage(HungerGames.config.spectatorsEnable ? HungerGames.messages.message9 + (HungerGames.totalPlayers <= 2 ? "" : "\n" + HungerGames.messages.message12) : HungerGames.messages.message9);
 					HungerGamesAPI.removePlayer(player);
 				}
 			}

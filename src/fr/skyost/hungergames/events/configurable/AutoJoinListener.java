@@ -16,7 +16,7 @@ public class AutoJoinListener implements Listener {
 		final Player player = event.getPlayer();
 		boolean spectator = false;
 		if(HungerGames.currentStep == Step.SECOND_COUNTDOWN || HungerGames.currentStep == Step.GAME) {
-			player.sendMessage(HungerGames.messages.Messages_12);
+			player.sendMessage(HungerGames.messages.message12);
 			spectator = true;
 		}
 		HungerGamesAPI.addPlayer(player, spectator);
