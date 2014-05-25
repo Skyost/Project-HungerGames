@@ -138,7 +138,7 @@ public class HungerGamesAPI {
 		if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
 			finishGame(HungerGames.messages.message8, true);
 		}
-		else if(HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.gameMinPlayers) {
+		else if((HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.gameMinPlayers) || Bukkit.getOnlinePlayers().length <= 1) {
 			finishGame(HungerGames.messages.message7, false);
 		}
 	}

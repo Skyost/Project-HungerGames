@@ -50,7 +50,7 @@ public class Skyupdater {
 	private String response;
 	private Thread updaterThread;
 	
-	private static final String SKYUPDATER_VERSION = "0.3.7";
+	private static final String SKYUPDATER_VERSION = "0.4";
 	
 	public enum Result {
 		
@@ -88,38 +88,38 @@ public class Skyupdater {
 	public enum InfoType {
 		
 		/**
-		 * Get the download URL.
+		 * Gets the download URL.
 		 */
 		
 		DOWNLOAD_URL,
 		
 		/**
-		 * Get the file name.
+		 * Gets the file name.
 		 */
 		
 		FILE_NAME,
 		
 		/**
-		 * Get the game version.
+		 * Gets the game version.
 		 */
 		
 		GAME_VERSION,
 		
 		/**
-		 * Get the file title.
+		 * Gets the file's title.
 		 */
 		
 		FILE_TITLE,
 		
 		/**
-		 * Get the release type.
+		 * Gets the release type.
 		 */
 		
 		RELEASE_TYPE;
 	}
 	
 	/**
-	 * Initialize Skyupdater.
+	 * Initializes Skyupdater.
 	 * 
 	 * @param plugin Your plugin.
 	 * @param id Your plugin ID on BukkitDev (you can get it here : https://api.curseforge.com/servermods/projects?search=your+plugin).
@@ -208,7 +208,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Get the version of Skyupdater.
+	 * Gets the version of Skyupdater.
 	 * 
 	 * @return The version of Skyupdater.
 	 */
@@ -218,7 +218,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Get the result of Skyupdater.
+	 * Gets the result of Skyupdater.
 	 * 
 	 * @return The result of the update process.
 	 */
@@ -229,7 +229,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Get informations about the latest file.
+	 * Gets informations about the latest file.
 	 * 
 	 * @param type The type of information you want.
 	 * 
@@ -254,7 +254,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Get raw data about the latest file.
+	 * Gets raw data about the latest file.
 	 * 
 	 * @return An array string which contains every of the update process.
 	 */
@@ -265,7 +265,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Download a file.
+	 * Downloads a file.
 	 * 
 	 * @param site The URL of the file you want to download.
 	 * @param pathTo The path where you want the file to be downloaded.
@@ -322,7 +322,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Compare two versions.
+	 * Compares two versions.
 	 * 
 	 * @param version1 The version you want to compare to.
 	 * @param version2 The version you want to compare with.
@@ -336,7 +336,7 @@ public class Skyupdater {
 	}
 	
 	/**
-	 * Get the formatted name of a version.
+	 * Gets the formatted name of a version.
 	 * <br>Used for the method <b>compareVersions(...)</b> of this class.
 	 * 
 	 * @param version The version you want to format.
@@ -389,7 +389,7 @@ public class Skyupdater {
 					response = con.getResponseCode() + " " + con.getResponseMessage();
 					if(!response.startsWith("2")) {
 						if(announce) {
-							logger.log(Level.INFO, "[Skyupdater] Bad response : '" + response + (response.startsWith("402") ? "'." : "'. Maybe your API Key is invalid ?"));
+							logger.log(Level.INFO, "[Skyupdater] Bad response : '" + response + (response.startsWith("402") ? "'. Maybe your API Key is invalid ?" : "'."));
 						}
 						result = Result.ERROR;
 						return;
@@ -400,8 +400,8 @@ public class Skyupdater {
 					if(response != null && !response.equals("[]")) {
 						final JSONArray jsonArray = (JSONArray)JSONValue.parseWithException(response);
 						final JSONObject jsonObject = (JSONObject)jsonArray.get(jsonArray.size() - 1);
-						updateData = new String[] {String.valueOf(jsonObject.get("downloadUrl")), String.valueOf(jsonObject.get("fileName")), String.valueOf(jsonObject.get("gameVersion")), String.valueOf(jsonObject.get("name")), String.valueOf(jsonObject.get("releaseType"))};
-						if(compareVersions(updateData[3].split(" v")[1], plugin.getDescription().getVersion()) && updateData[0].toLowerCase().endsWith(".jar")) {
+						updateData = new String[]{String.valueOf(jsonObject.get("downloadUrl")), String.valueOf(jsonObject.get("fileName")), String.valueOf(jsonObject.get("gameVersion")), String.valueOf(jsonObject.get("name")), String.valueOf(jsonObject.get("releaseType"))};
+						if(compareVersions(updateData[3].split("^v|[\\s_-]v")[1].split(" ")[0], plugin.getDescription().getVersion()) && updateData[0].toLowerCase().endsWith(".jar")) {
 							result = Result.UPDATE_AVAILABLE;
 							if(download) {
 								if(announce) {

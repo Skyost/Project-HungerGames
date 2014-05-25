@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,14 +24,13 @@ import org.bukkit.util.Vector;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.base.Joiner;
 
 /**
  * <h1>Skyoconfig</h1>
  * <p><i>Handle configurations with ease !</i></p>
- * <p><b>Current version :</b> v0.2.
+ * <p><b>Current version :</b> v0.3.
  * 
  * @author <b>Skyost</b> (<a href="http://www.skyost.eu">www.skyost.eu</a>).
  * <br>Inspired from <a href="https://forums.bukkit.org/threads/lib-supereasyconfig-v1-2-based-off-of-codename_bs-awesome-easyconfig-v2-1.100569/">SuperEasyConfig</a>.</br>
@@ -44,14 +44,13 @@ public class Skyoconfig {
 	
 	private static final HashMap<Class<?>, Class<?>> primitivesClass = new HashMap<Class<?>, Class<?>>();{
 		primitivesClass.put(int.class, Integer.class);
-		primitivesClass.put(long.class, Integer.class);
-		primitivesClass.put(double.class, Integer.class);
-		primitivesClass.put(float.class, Integer.class);
-		primitivesClass.put(boolean.class, Integer.class);
-		primitivesClass.put(char.class, Integer.class);
-		primitivesClass.put(byte.class, Integer.class);
-		primitivesClass.put(void.class, Integer.class);
-		primitivesClass.put(short.class, Integer.class);
+		primitivesClass.put(long.class, Long.class);
+		primitivesClass.put(double.class, Double.class);
+		primitivesClass.put(float.class, Float.class);
+		primitivesClass.put(boolean.class, Boolean.class);
+		primitivesClass.put(byte.class, Byte.class);
+		primitivesClass.put(void.class, Void.class);
+		primitivesClass.put(short.class, Short.class);
 	}
 	
 	private transient File configFile;
@@ -205,6 +204,9 @@ public class Skyoconfig {
 		if(Map.class.isAssignableFrom(clazz)) {
 			return deserializeMap(config.getConfigurationSection(path));
 		}
+		if(List.class.isAssignableFrom(clazz)) {
+			return deserializeList(config.getConfigurationSection(path));
+		}
 		final Object value = config.get(path);
 		if(value == null || Modifier.isTransient(field.getModifiers())) {
 			return null;
@@ -214,9 +216,6 @@ public class Skyoconfig {
 		}
 		if(clazz.isEnum()) {
 			return Enum.valueOf((Class<? extends Enum>)clazz, value.toString());
-		}
-		if(List.class.isAssignableFrom(clazz)) {
-			return (List<?>)new Yaml().load(value.toString());
 		}
 		if(Location.class.isAssignableFrom(clazz)) {
 			final JSONObject object = (JSONObject)new JSONParser().parse(value.toString());
@@ -241,11 +240,28 @@ public class Skyoconfig {
 		if(section == null) {
 			return null;
 		}
-		final Map<String, Object> result = new HashMap<String, Object>();
+		final Map<String, Object> map = new HashMap<String, Object>();
 		for(final String key : section.getKeys(false)) {
-			result.put(key, section.get(key));
+			map.put(key, section.get(key));
 		}
-		return result;
+		return map;
+	}
+	
+	/**
+	 * Deserializes a <b>List</b> from a <b>ConfigurationSection</b>.
+	 * 
+	 * @param section The specified <b>ConfigurationSection</b>.
+	 * 
+	 * @return The deserialied <b>List</b>.
+	 */
+	
+	private final List<?> deserializeList(final ConfigurationSection section) {
+		if(section == null) {
+			return null;
+		}
+		final List<Object> list = new ArrayList<Object>();
+		list.addAll(section.getKeys(false));
+		return list;
 	}
 	
 	/**
@@ -263,11 +279,14 @@ public class Skyoconfig {
 	private final Object serializeField(final Field field, final YamlConfiguration config) throws IllegalAccessException {
 		final Class<?> clazz = field.getType();
 		final Object value = field.get(this);
-		if(clazz.isAnnotation()) {
+		if(clazz.isAnnotation() || Modifier.isTransient(field.getModifiers())) {
 			return null;
 		}
 		if(Map.class.isAssignableFrom(clazz)) {
 			return serializeMap(config, (Map<?, ?>)value);
+		}
+		if(List.class.isAssignableFrom(clazz)) {
+			return serializeList(config, (List<?>)value);
 		}
 		if(Location.class.isAssignableFrom(clazz)) {
 			final Location location = (Location)value;
@@ -303,6 +322,24 @@ public class Skyoconfig {
 		final ConfigurationSection section = config.createSection(TEMP_CONFIG_SECTION);
 		for(final Entry<?, ?> entry : map.entrySet()) {
 			section.set(entry.getKey().toString(), entry.getValue());
+		}
+		config.set(TEMP_CONFIG_SECTION, null);
+		return section;
+	}
+	
+	/**
+	 * Serializes a <b>List</b> to a <b>ConfigurationSection</b>.
+	 * 
+	 * @param config The <b>YamlConfiguration</b>.
+	 * @param list The specified <b>List</b>.
+	 * 
+	 * @return The serialized <b>List</b> contained into a <b>ConfigurationSection</b>.
+	 */
+	
+	private final ConfigurationSection serializeList(final YamlConfiguration config, final List<?> list) {
+		final ConfigurationSection section = config.createSection(TEMP_CONFIG_SECTION);
+		for(int i = 1; i < list.size(); i++) {
+			section.set(String.valueOf(i), list.get(i - 1));
 		}
 		config.set(TEMP_CONFIG_SECTION, null);
 		return section;

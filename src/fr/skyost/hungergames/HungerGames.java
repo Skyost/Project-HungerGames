@@ -134,11 +134,11 @@ public class HungerGames extends JavaPlugin {
 			if(!mapsFolder.exists()) {
 				mapsFolder.mkdir();
 			}
-			registerEvents(manager);
 			if(!checkConfig()) {
 				manager.disablePlugin(this);
 				return;
 			}
+			registerEvents(manager);
 			final Plugin multiverse = manager.getPlugin("Multiverse-Core");
 			if(multiverse != null) {
 				multiverseUtils = new MultiverseHook(multiverse);
@@ -197,15 +197,17 @@ public class HungerGames extends JavaPlugin {
 					}
 				}
 			}
-			final int winnersSize = winners.winners.size();
-			final int winnersMapSize = winnersMap.size();
-			if(winnersMapSize > winnersSize) {
-				for(int i = winnersSize; i != winnersMapSize; i++) {
-					winners.winners.add(i, winnersMap.get(i));
+			if(winners != null) {
+				final int winnersSize = winners.winners.size();
+				final int winnersMapSize = winnersMap.size();
+				if(winnersMapSize > winnersSize) {
+					for(int i = winnersSize; i != winnersMapSize; i++) {
+						winners.winners.add(i, winnersMap.get(i));
+					}
+					winners.save();
 				}
-				winners.save();
+				players.clear();
 			}
-			players.clear();
 			if(currentMap != null) {
 				HungerGamesAPI.deleteMap(currentMap);
 			}
@@ -248,18 +250,18 @@ public class HungerGames extends JavaPlugin {
 	
 	private final boolean checkConfig() throws IOException {
 		boolean configDeleted = false;
-		if(config.VERSION < 2) {
+		if(config.VERSION < 3) {
 			final File configFile = config.getFile();
 			Utils.copy(configFile, new File(configFile.getPath() + "-OLD"));
 			configFile.delete();
-			logsManager.log("Your winners file had a wrong version. It has been deleted (but backed up).");
+			logsManager.log("Your configuration file had a wrong version. It has been deleted (but backed up).");
 			configDeleted = true;
 		}
 		if(messages.VERSION < 2) {
 			final File messagesFile = messages.getFile();
 			Utils.copy(messagesFile, new File(messagesFile.getPath() + "-OLD"));
 			messagesFile.delete();
-			logsManager.log("Your winners file had a wrong version. It has been deleted (but backed up).");
+			logsManager.log("Your messages file had a wrong version. It has been deleted (but backed up).");
 			configDeleted = true;
 		}
 		if(winners.VERSION < 2) {
@@ -291,6 +293,9 @@ public class HungerGames extends JavaPlugin {
 		}
 		if(config.lobbySpawnX == 0 && config.lobbySpawnY == 0 && config.lobbySpawnZ == 0) {
 			logsManager.log("The coords of the lobby's spawn are invalid.", Level.WARNING);
+		}
+		if(config.gameDedicatedServer && !config.spectatorsEnable) {
+			logsManager.log("You must enable spectators to use the dedicated mode.", Level.WARNING);
 		}
 		return true;
 	}

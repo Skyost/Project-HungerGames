@@ -76,7 +76,7 @@ public class ErrorSender {
 					final String encodedName = URLEncoder.encode(name, "UTF-8");
 					final String encodedEmail = URLEncoder.encode(email, "UTF-8");
 					final String encodedMessage = URLEncoder.encode(message, "UTF-8");
-					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.project-hungergames.ml.eu", "/bug.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage + "&subject=" + subject).openConnection();
+					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.project-hungergames.ml", "/bug.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage + "&subject=" + subject).openConnection();
 					connection.setRequestMethod("GET");
 					connection.setRequestProperty("User-Agent", "Project HungerGames");
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
