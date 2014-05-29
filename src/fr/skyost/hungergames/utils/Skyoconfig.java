@@ -30,7 +30,7 @@ import com.google.common.base.Joiner;
 /**
  * <h1>Skyoconfig</h1>
  * <p><i>Handle configurations with ease !</i></p>
- * <p><b>Current version :</b> v0.3.
+ * <p><b>Current version :</b> v0.3.1.
  * 
  * @author <b>Skyost</b> (<a href="http://www.skyost.eu">www.skyost.eu</a>).
  * <br>Inspired from <a href="https://forums.bukkit.org/threads/lib-supereasyconfig-v1-2-based-off-of-codename_bs-awesome-easyconfig-v2-1.100569/">SuperEasyConfig</a>.</br>
@@ -107,10 +107,7 @@ public class Skyoconfig {
 		try {
 			final YamlConfiguration config = YamlConfiguration.loadConfiguration(configFile);
 			for(final Field field : getClass().getFields()) {
-				final String fieldName = getFieldName(field);
-				if(config.get(fieldName) == null) {
-					saveField(field, fieldName, config);
-				}
+				saveField(field, getFieldName(field), config);
 			}
 			saveConfig(config);
 		}

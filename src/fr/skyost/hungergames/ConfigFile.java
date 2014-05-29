@@ -36,6 +36,7 @@ public class ConfigFile extends Skyoconfig {
 	
 	@ConfigOptions(name = "maps.folder")
 	public String mapsFolder;
+	@ConfigOptions(name = "maps.game-rules")
 	public HashMap<String, String> mapsGameRules = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L; {
 			put("naturalRegeneration", "false");
