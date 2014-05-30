@@ -20,7 +20,7 @@ import com.google.common.base.Joiner;
 import fr.skyost.hungergames.HungerGames;
 import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.HungerGamesAPI;
-import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.ErrorReport;
 import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.Utils;
 
@@ -205,7 +205,7 @@ public class HungerGamesCommand implements CommandExecutor {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 			commandSender.sendMessage(ex.getClass().getName());
 		}
 		return true;

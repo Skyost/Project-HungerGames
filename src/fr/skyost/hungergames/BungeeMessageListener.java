@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.plugin.messaging.PluginMessageRecipient;
 
-import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.ErrorReport;
 
 public class BungeeMessageListener implements PluginMessageListener {
 	
@@ -30,7 +30,7 @@ public class BungeeMessageListener implements PluginMessageListener {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 		}
 	}
 	

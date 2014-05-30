@@ -60,7 +60,7 @@ public class MobBarAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 		}
 	}
 	

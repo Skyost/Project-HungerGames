@@ -17,7 +17,7 @@ import fr.skyost.hungergames.HungerGames;
  * Used to send reports.
  */
 
-public class ErrorSender {
+public class ErrorReport {
 	
 	private String name;
 	private String email;
@@ -33,7 +33,7 @@ public class ErrorSender {
 	 * @param subject The subject. Please note that it must be already encoded.
 	 */
 	
-	public ErrorSender(final String name, final String email, final String message, final String subject) {
+	public ErrorReport(final String name, final String email, final String message, final String subject) {
 		this.name = name;
 		this.email = email;
 		this.message = message;
@@ -49,7 +49,7 @@ public class ErrorSender {
 	 * @return A report.
 	 */
 	
-	public static final ErrorSender createReport(final Throwable throwable) {
+	public static final ErrorReport createReport(final Throwable throwable) {
 		final String separator = System.lineSeparator();
 		final StringBuilder builder = new StringBuilder();
 		builder.append(Throwables.getStackTraceAsString(throwable));
@@ -59,7 +59,7 @@ public class ErrorSender {
 		builder.append("Bukkit version : '" + Bukkit.getVersion() + "'.");
 		builder.append(separator);
 		builder.append("Java version : '" + System.getProperty("java.version") + "'.");
-		return new ErrorSender(HungerGames.config.bugsReportName, HungerGames.config.bugsReportMail, builder.toString(), throwable.getClass().getName());
+		return new ErrorReport(HungerGames.config.bugsReportName, HungerGames.config.bugsReportMail, builder.toString(), throwable.getClass().getName());
 	}
 	
 	/**

@@ -46,7 +46,7 @@ import fr.skyost.hungergames.events.configurable.LobbyListener;
 import fr.skyost.hungergames.events.configurable.PickupItemListener;
 import fr.skyost.hungergames.events.configurable.ServerListPingListener;
 import fr.skyost.hungergames.events.configurable.ToggleSneakListener;
-import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.ErrorReport;
 import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.LogsManager;
 import fr.skyost.hungergames.utils.MetricsLite;
@@ -154,10 +154,9 @@ public class HungerGames extends JavaPlugin {
 			meta.setDisplayName(config.kitsSelectorName);
 			kitSelector.setItemMeta(meta);
 			kitsMenu = Bukkit.createInventory(null, Utils.round(config.kitsList.size(), 9), config.kitsSelectorName);
-			ItemStack item;
 			for(final Entry<String, List<String>> entry : config.kitsList.entrySet()) {
 				final String itemName = entry.getKey();
-				item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
+				final ItemStack item = new ItemStack(JsonItemStack.fromJson(entry.getValue().get(0)).toItemStack().getType());
 				meta = item.getItemMeta();
 				meta.setDisplayName(itemName);
 				item.setItemMeta(meta);
@@ -180,7 +179,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 			logsManager.log("Error while enabling the plugin... Check the stacktrace above.");
 		}
 	}
@@ -214,7 +213,7 @@ public class HungerGames extends JavaPlugin {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 			logsManager.log("Error while disabling the plugin... Check the stacktrace above.");
 		}
 	}

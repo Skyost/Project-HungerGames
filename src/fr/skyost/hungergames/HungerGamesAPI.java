@@ -27,7 +27,7 @@ import fr.skyost.hungergames.HungerGames.Step;
 import fr.skyost.hungergames.tasks.BorderCreatorTask;
 import fr.skyost.hungergames.tasks.Countdown;
 import fr.skyost.hungergames.tasks.PostExecuteFirst;
-import fr.skyost.hungergames.utils.ErrorSender;
+import fr.skyost.hungergames.utils.ErrorReport;
 import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.Pages;
 import fr.skyost.hungergames.utils.Utils;
@@ -292,7 +292,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 			HungerGames.logsManager.log("Error while deleting the current map... Check the stacktrace above.");
 		}
 	}
@@ -351,7 +351,7 @@ public class HungerGamesAPI {
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
-			ErrorSender.createReport(ex).report();
+			ErrorReport.createReport(ex).report();
 			HungerGames.logsManager.log("Error while processing maps... Check the stacktrace above.");
 			Bukkit.getPluginManager().disablePlugin(HungerGames.instance);
 		}

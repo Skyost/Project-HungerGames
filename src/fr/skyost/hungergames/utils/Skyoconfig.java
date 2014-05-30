@@ -30,7 +30,7 @@ import com.google.common.base.Joiner;
 /**
  * <h1>Skyoconfig</h1>
  * <p><i>Handle configurations with ease !</i></p>
- * <p><b>Current version :</b> v0.3.1.
+ * <p><b>Current version :</b> v0.4.
  * 
  * @author <b>Skyost</b> (<a href="http://www.skyost.eu">www.skyost.eu</a>).
  * <br>Inspired from <a href="https://forums.bukkit.org/threads/lib-supereasyconfig-v1-2-based-off-of-codename_bs-awesome-easyconfig-v2-1.100569/">SuperEasyConfig</a>.</br>
@@ -151,18 +151,22 @@ public class Skyoconfig {
 	 * @param name The <b>Field</b>'s name. Will be the path.
 	 * @param config The <b>YamlConfiguration</b>.
 	 * 
+	 * @throws ParseException If the JSON parser fails to parse a <b>Location</b> or a <b>Vector</b>.
 	 * @throws IllegalAccessException If <b>Skyoconfig</b> does not have access to the <b>Field</b> or the <b>Method</b> <b>valueOf</b> of a <b>Primitive</b>.
 	 * @throws InvocationTargetException Invoked if the <b>Skyoconfig</b> fails to use <b>valueOf</b> for a <b>Primitive</b>.
 	 * @throws NoSuchMethodException Same as <b>InvocationTargetException</b>.
 	 */
 	
 	private final void loadField(final Field field, final String name, final YamlConfiguration config) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, ParseException {
-		final Object value = deserializeField(field, getFieldName(field), config);
-		if(value == null) {
+		if(Modifier.isTransient(field.getModifiers())) {
+			return;
+		}
+		final Object configValue = config.get(getFieldName(field));
+		if(configValue == null) {
 			saveField(field, name, config);
 		}
 		else {
-			field.set(this, value);
+			field.set(this, deserializeObject(field.getType(), configValue));
 		}
 	}
 	
@@ -177,17 +181,19 @@ public class Skyoconfig {
 	 */
 	
 	private final void saveField(final Field field, final String name, final YamlConfiguration config) throws IllegalAccessException {
-		config.set(name, serializeField(field, config));
+		if(Modifier.isTransient(field.getModifiers())) {
+			return;
+		}
+		config.set(name, serializeObject(field.get(this), config));
 	}
 	
 	/**
-	 * Deserializes a <b>Field</b> from the configuration.
+	 * Deserializes an <b>Object</b> from the configuration.
 	 * 
-	 * @param field The specified <b>Field</b>.
-	 * @param path The <b>Field</b>'s path in the config.
-	 * @param config The <b>YamlConfiguration</b>.
+	 * @param clazz The object's <b>Type</b>.
+	 * @param object The <b>Object</b>'s.
 	 * 
-	 * @return The deserialied value of the field.
+	 * @return The deserialized value of the specified <b>Object</b>.
 	 * 
 	 * @throws ParseException If the JSON parser fails to parse a <b>Location</b> or a <b>Vector</b>.
 	 * @throws IllegalAccessException If <b>Skyoconfig</b> does not have access to the <b>Field</b> or the <b>Method</b> <b>valueOf</b> of a <b>Primitive</b>.
@@ -196,150 +202,88 @@ public class Skyoconfig {
 	 */
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	private final Object deserializeField(final Field field, final String path, final YamlConfiguration config) throws ParseException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		final Class<?> clazz = field.getType();
-		if(Map.class.isAssignableFrom(clazz)) {
-			return deserializeMap(config.getConfigurationSection(path));
+	private final Object deserializeObject(final Class<?> clazz, final Object object) throws ParseException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		if(primitivesClass.containsValue(clazz) || clazz.isPrimitive()) {
+			return primitivesClass.get(clazz).getMethod("valueOf", String.class).invoke(this, object.toString());
 		}
-		if(List.class.isAssignableFrom(clazz)) {
-			return deserializeList(config.getConfigurationSection(path));
+		if(clazz.isEnum() || object instanceof Enum<?>) {
+			return Enum.valueOf((Class<? extends Enum>)clazz, object.toString());
 		}
-		final Object value = config.get(path);
-		if(value == null || Modifier.isTransient(field.getModifiers())) {
-			return null;
+		if(Map.class.isAssignableFrom(clazz) || object instanceof Map) {
+			final ConfigurationSection section = (ConfigurationSection)object;
+			final Map<Object, Object> map = new HashMap<Object, Object>();
+			for(final String key : section.getKeys(false)) {
+				final Object value = section.get(key);
+				map.put(key, deserializeObject(value.getClass(), value));
+			}
+			return map;
 		}
-		if(clazz.isPrimitive()) {
-			return primitivesClass.get(clazz).getMethod("valueOf", String.class).invoke(this, value.toString());
+		if(List.class.isAssignableFrom(clazz) || object instanceof List) {
+			final List<Object> result = new ArrayList<Object>();
+			for(final Object value : (List<?>)object) {
+				result.add(deserializeObject(value.getClass(), value));
+			}
+			return result;
 		}
-		if(clazz.isEnum()) {
-			return Enum.valueOf((Class<? extends Enum>)clazz, value.toString());
+		if(Location.class.isAssignableFrom(clazz) || object instanceof Location) {
+			final JSONObject jsonObject = (JSONObject)new JSONParser().parse(object.toString());
+			return new Location(Bukkit.getWorld(jsonObject.get("world").toString()), Double.parseDouble(jsonObject.get("x").toString()), Double.parseDouble(jsonObject.get("y").toString()), Double.parseDouble(jsonObject.get("z").toString()), Float.parseFloat(jsonObject.get("yaw").toString()), Float.parseFloat(jsonObject.get("pitch").toString()));
 		}
-		if(Location.class.isAssignableFrom(clazz)) {
-			final JSONObject object = (JSONObject)new JSONParser().parse(value.toString());
-			return new Location(Bukkit.getWorld(object.get("world").toString()), Double.parseDouble(object.get("x").toString()), Double.parseDouble(object.get("y").toString()), Double.parseDouble(object.get("z").toString()), Float.parseFloat(object.get("yaw").toString()), Float.parseFloat(object.get("pitch").toString()));
+		if(Vector.class.isAssignableFrom(clazz) || object instanceof Vector) {
+			final JSONObject jsonObject = (JSONObject)new JSONParser().parse(object.toString());
+			return new Vector(Double.parseDouble(jsonObject.get("x").toString()), Double.parseDouble(jsonObject.get("y").toString()), Double.parseDouble(jsonObject.get("z").toString()));
 		}
-		if(Vector.class.isAssignableFrom(clazz)) {
-			final JSONObject object = (JSONObject)new JSONParser().parse(value.toString());
-			return new Vector(Double.parseDouble(object.get("x").toString()), Double.parseDouble(object.get("y").toString()), Double.parseDouble(object.get("z").toString()));
-		}
-		return config.get(path);
+		return object.toString();
 	}
 	
 	/**
-	 * Deserializes a <b>Map</b> from a <b>ConfigurationSection</b>.
+	 * Serializes an <b>Object</b> to the configuration.
 	 * 
-	 * @param section The specified <b>ConfigurationSection</b>.
+	 * @param object The specified <b>Object</b>.
+	 * @param config The <b>YamlConfiguration</b>. Used to temporally save <b>Map</b>s.
 	 * 
-	 * @return The deserialied <b>Map</b>.
-	 */
-	
-	private final Map<?, ?> deserializeMap(final ConfigurationSection section) {
-		if(section == null) {
-			return null;
-		}
-		final Map<String, Object> map = new HashMap<String, Object>();
-		for(final String key : section.getKeys(false)) {
-			map.put(key, section.get(key));
-		}
-		return map;
-	}
-	
-	/**
-	 * Deserializes a <b>List</b> from a <b>ConfigurationSection</b>.
-	 * 
-	 * @param section The specified <b>ConfigurationSection</b>.
-	 * 
-	 * @return The deserialied <b>List</b>.
-	 */
-	
-	private final List<?> deserializeList(final ConfigurationSection section) {
-		if(section == null) {
-			return null;
-		}
-		final List<Object> list = new ArrayList<Object>();
-		list.addAll(section.getKeys(false));
-		return list;
-	}
-	
-	/**
-	 * Serializes a <b>Field</b> to the configuration.
-	 * 
-	 * @param field The specified <b>Field</b>.
-	 * @param config The <b>YamlConfiguration</b>.
-	 * 
-	 * @return The serialized <b>Field</b>.
-	 * 
-	 * @throws IllegalAccessException If <b>Skyoconfig</b> does not have access to the <b>Field</b>.
+	 * @return The serialized <b>Object</b>.
 	 */
 	
 	@SuppressWarnings("unchecked")
-	private final Object serializeField(final Field field, final YamlConfiguration config) throws IllegalAccessException {
-		final Class<?> clazz = field.getType();
-		final Object value = field.get(this);
-		if(clazz.isAnnotation() || Modifier.isTransient(field.getModifiers())) {
-			return null;
+	private final Object serializeObject(final Object object, final YamlConfiguration config) {
+		if(object instanceof Enum) {
+			return ((Enum<?>)object).name();
 		}
-		if(Map.class.isAssignableFrom(clazz)) {
-			return serializeMap(config, (Map<?, ?>)value);
+		if(object instanceof Map) {
+			final ConfigurationSection section = config.createSection(TEMP_CONFIG_SECTION);
+			for(final Entry<?, ?> entry : ((Map<?, ?>)object).entrySet()) {
+				section.set(entry.getKey().toString(), serializeObject(entry.getValue(), config));
+			}
+			config.set(TEMP_CONFIG_SECTION, null);
+			return section;
 		}
-		if(List.class.isAssignableFrom(clazz)) {
-			return serializeList(config, (List<?>)value);
+		if(object instanceof List) {
+			final List<Object> result = new ArrayList<Object>();
+			for(final Object value : (List<?>)object) {
+				result.add(serializeObject(value, config));
+			}
+			return result;
 		}
-		if(Location.class.isAssignableFrom(clazz)) {
-			final Location location = (Location)value;
-			final JSONObject object = new JSONObject();
-			object.put("x", location.getX());
-			object.put("y", location.getY());
-			object.put("z", location.getZ());
-			object.put("yaw", location.getYaw());
-			object.put("pitch", location.getPitch());
-			return object.toJSONString();
+		if(object instanceof Location) {
+			final Location location = (Location)object;
+			final JSONObject jsonObject = new JSONObject();
+			jsonObject.put("x", location.getX());
+			jsonObject.put("y", location.getY());
+			jsonObject.put("z", location.getZ());
+			jsonObject.put("yaw", location.getYaw());
+			jsonObject.put("pitch", location.getPitch());
+			return jsonObject.toJSONString();
 		}
-		if(Vector.class.isAssignableFrom(clazz)) {
-			final Vector vector = (Vector)value;
-			final JSONObject object = new JSONObject();
-			object.put("x", vector.getX());
-			object.put("y", vector.getY());
-			object.put("z", vector.getZ());
-			return object.toJSONString();
+		if(object instanceof Vector) {
+			final Vector vector = (Vector)object;
+			final JSONObject jsonObject = new JSONObject();
+			jsonObject.put("x", vector.getX());
+			jsonObject.put("y", vector.getY());
+			jsonObject.put("z", vector.getZ());
+			return jsonObject.toJSONString();
 		}
-		return value.toString();
-	}
-	
-	/**
-	 * Serializes a <b>Map</b> to a <b>ConfigurationSection</b>.
-	 * 
-	 * @param config The <b>YamlConfiguration</b>.
-	 * @param map The specified <b>Map</b>.
-	 * 
-	 * @return The serialized <b>Map</b> contained into a <b>ConfigurationSection</b>.
-	 */
-	
-	private final ConfigurationSection serializeMap(final YamlConfiguration config, final Map<?, ?> map) {
-		final ConfigurationSection section = config.createSection(TEMP_CONFIG_SECTION);
-		for(final Entry<?, ?> entry : map.entrySet()) {
-			section.set(entry.getKey().toString(), entry.getValue());
-		}
-		config.set(TEMP_CONFIG_SECTION, null);
-		return section;
-	}
-	
-	/**
-	 * Serializes a <b>List</b> to a <b>ConfigurationSection</b>.
-	 * 
-	 * @param config The <b>YamlConfiguration</b>.
-	 * @param list The specified <b>List</b>.
-	 * 
-	 * @return The serialized <b>List</b> contained into a <b>ConfigurationSection</b>.
-	 */
-	
-	private final ConfigurationSection serializeList(final YamlConfiguration config, final List<?> list) {
-		final ConfigurationSection section = config.createSection(TEMP_CONFIG_SECTION);
-		for(int i = 1; i < list.size(); i++) {
-			section.set(String.valueOf(i), list.get(i - 1));
-		}
-		config.set(TEMP_CONFIG_SECTION, null);
-		return section;
+		return object.toString();
 	}
 	
 	/**
