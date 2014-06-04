@@ -14,6 +14,7 @@ import fr.skyost.hungergames.utils.borders.types.Cylinder;
 import fr.skyost.hungergames.utils.borders.types.Invisible;
 import fr.skyost.hungergames.utils.borders.types.Roof;
 import fr.skyost.hungergames.utils.borders.types.Square;
+import fr.skyost.hungergames.utils.borders.types.Void;
 
 /**
  * The border creator.
@@ -25,10 +26,10 @@ import fr.skyost.hungergames.utils.borders.types.Square;
 public class BorderCreator {
 	
 	/**
-	 * Build a border using the specified params.
+	 * Builds a border using the specified params.
 	 * 
 	 * @param params The border params.
-	 * @throws WorldEditMaxChangedBlocksException If an error occured with WorldEdit (if it is a <b>WorldEditBorder</b>).
+	 * @throws WorldEditMaxChangedBlocksException If an error occurred with WorldEdit (if it is a <b>WorldEditBorder</b>).
 	 * @throws WorldNotFoundException If the world was not found.
 	 * @throws BorderTypeNotFoundException If the specified type was not found.
 	 */
@@ -46,7 +47,7 @@ public class BorderCreator {
 	}
 	
 	/**
-	 * Get available border types.
+	 * Gets availables border types.
 	 * 
 	 * @return Available border types.
 	 */
@@ -60,11 +61,11 @@ public class BorderCreator {
 	}
 	
 	/**
-	 * Get a border by its type.
+	 * Gets a border by its type.
 	 * 
 	 * @param type The border's type.
 	 * 
-	 * @return Your border. Not a <b>WorldEditBorder</b>.
+	 * @return Your border.
 	 */
 	
 	public static final Border getBorderByType(final Type type) {
@@ -77,6 +78,8 @@ public class BorderCreator {
 			return new Square();
 		case INVISIBLE:
 			return new Invisible();
+		case VOID:
+			return new Void();
 		default:
 			return null;
 		}

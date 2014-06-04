@@ -22,7 +22,7 @@ public abstract class WorldEditBorder extends Border {
 	 * @param params The border params.
 	 */
 	
-	public static final EditSession newEditSession(final BorderParams params) {
+	public final EditSession newEditSession(final BorderParams params) {
 		final String worldName = params.getWorldName();
 		LinkedList<EditSession> linkedList;
 		if(sessions.get(worldName) == null) {

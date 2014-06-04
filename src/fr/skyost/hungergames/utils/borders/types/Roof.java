@@ -12,9 +12,9 @@ import fr.skyost.hungergames.utils.borders.exceptions.WorldEditMaxChangedBlocksE
 public class Roof extends WorldEditBorder {
 	
 	@Override
-	protected void createBorder(BorderParams bp) throws WorldEditMaxChangedBlocksException {
+	protected void createBorder(final BorderParams params) throws WorldEditMaxChangedBlocksException {
 		try {
-			newEditSession(bp).makeCylinder(new Vector(bp.getX(), 255, bp.getZ()), new SingleBlockPattern(new BaseBlock(bp.getBlockID(), bp.getBlockMeta())), bp.getRadius(), bp.getRadius(), 1, true);
+			this.newEditSession(params).makeCylinder(new Vector(params.getX(), 255, params.getZ()), new SingleBlockPattern(new BaseBlock(params.getBlockID(), params.getBlockMeta())), params.getRadius(), params.getRadius(), 1, true);
 		}
 		catch(MaxChangedBlocksException ex) {
 			new WorldEditMaxChangedBlocksException();

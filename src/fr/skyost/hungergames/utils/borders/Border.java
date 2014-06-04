@@ -8,7 +8,8 @@ public abstract class Border {
 		CYLINDER,
 		ROOF,
 		SQUARE,
-		INVISIBLE;
+		INVISIBLE,
+		VOID;
 	}
 	
 	/**

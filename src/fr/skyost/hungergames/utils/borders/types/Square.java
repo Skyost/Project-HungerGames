@@ -13,11 +13,11 @@ import fr.skyost.hungergames.utils.borders.exceptions.WorldEditMaxChangedBlocksE
 public class Square extends WorldEditBorder {
 	
 	@Override
-	protected void createBorder(BorderParams bp) throws WorldEditMaxChangedBlocksException {
+	protected void createBorder(final BorderParams params) throws WorldEditMaxChangedBlocksException {
 		try {
-			Vector pos1 = new Vector(bp.getX() + bp.getRadius(), 256, bp.getZ() + bp.getRadius());
-			Vector pos2 = new Vector(bp.getX() - bp.getRadius(), 0, bp.getZ() - bp.getRadius());
-			newEditSession(bp).makeCuboidWalls(new CuboidRegion(pos1, pos2), new SingleBlockPattern(new BaseBlock(bp.getBlockID(), bp.getBlockMeta())));
+			Vector pos1 = new Vector(params.getX() + params.getRadius(), 256, params.getZ() + params.getRadius());
+			Vector pos2 = new Vector(params.getX() - params.getRadius(), 0, params.getZ() - params.getRadius());
+			this.newEditSession(params).makeCuboidWalls(new CuboidRegion(pos1, pos2), new SingleBlockPattern(new BaseBlock(params.getBlockID(), params.getBlockMeta())));
 		}
 		catch(MaxChangedBlocksException ex) {
 			new WorldEditMaxChangedBlocksException();
