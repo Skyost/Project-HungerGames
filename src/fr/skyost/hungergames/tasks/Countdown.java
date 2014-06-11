@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.utils.ErrorReport;
 import fr.skyost.hungergames.utils.MobBarAPI;
 
 public class Countdown extends BukkitRunnable {
@@ -55,8 +56,9 @@ public class Countdown extends BukkitRunnable {
 						mobBarApi.removeStatus(player);
 					}
 				}
-				catch(Exception ex) {
-					
+				catch(final Exception ex) {
+					ex.printStackTrace();
+					ErrorReport.createReport(ex).report();
 				}
 			}
 			HungerGames.tasks.set(0, -1);
