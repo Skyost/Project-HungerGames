@@ -30,7 +30,7 @@ import com.google.common.base.Joiner;
 /**
  * <h1>Skyoconfig</h1>
  * <p><i>Handle configurations with ease !</i></p>
- * <p><b>Current version :</b> v0.4.
+ * <p><b>Current version :</b> v0.4.1.
  * 
  * @author <b>Skyost</b> (<a href="http://www.skyost.eu">www.skyost.eu</a>).
  * <br>Inspired from <a href="https://forums.bukkit.org/threads/lib-supereasyconfig-v1-2-based-off-of-codename_bs-awesome-easyconfig-v2-1.100569/">SuperEasyConfig</a>.</br>
@@ -41,17 +41,18 @@ public class Skyoconfig {
 	private static final transient char DEFAULT_SEPARATOR = '_';
 	private static final transient String LINE_SEPARATOR = System.lineSeparator();
 	private static final transient String TEMP_CONFIG_SECTION = "temp";
-	
-	private static final HashMap<Class<?>, Class<?>> primitivesClass = new HashMap<Class<?>, Class<?>>();{
-		primitivesClass.put(int.class, Integer.class);
-		primitivesClass.put(long.class, Long.class);
-		primitivesClass.put(double.class, Double.class);
-		primitivesClass.put(float.class, Float.class);
-		primitivesClass.put(boolean.class, Boolean.class);
-		primitivesClass.put(byte.class, Byte.class);
-		primitivesClass.put(void.class, Void.class);
-		primitivesClass.put(short.class, Short.class);
-	}
+	public static final HashMap<Class<?>, Class<?>> PRIMITIVES_CLASS = new HashMap<Class<?>, Class<?>>() {
+		private static final long serialVersionUID = 1L; {
+			put(int.class, Integer.class);
+			put(long.class, Long.class);
+			put(double.class, Double.class);
+			put(float.class, Float.class);
+			put(boolean.class, Boolean.class);
+			put(byte.class, Byte.class);
+			put(void.class, Void.class);
+			put(short.class, Short.class);
+		}
+	};
 	
 	private transient File configFile;
 	private transient List<String> header;
@@ -203,8 +204,8 @@ public class Skyoconfig {
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private final Object deserializeObject(final Class<?> clazz, final Object object) throws ParseException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		if(primitivesClass.containsValue(clazz) || clazz.isPrimitive()) {
-			return primitivesClass.get(clazz).getMethod("valueOf", String.class).invoke(this, object.toString());
+		if(PRIMITIVES_CLASS.containsValue(clazz) || clazz.isPrimitive()) {
+			return PRIMITIVES_CLASS.get(clazz).getMethod("valueOf", String.class).invoke(this, object.toString());
 		}
 		if(clazz.isEnum() || object instanceof Enum<?>) {
 			return Enum.valueOf((Class<? extends Enum>)clazz, object.toString());
