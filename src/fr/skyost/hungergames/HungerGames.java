@@ -68,8 +68,8 @@ public class HungerGames extends JavaPlugin {
 	public static final LogsManager logsManager = new LogsManager();
 	public static MultiverseHook multiverseUtils;
 	
-	public static ConfigFile config;
-	public static MessagesFile messages;
+	public static PluginConfig config;
+	public static PluginMessages messages;
 	public static WinnersFile winners;
 	
 	public static final List<Integer> tasks = Arrays.asList(-1, -1, -1, -1, -1, -1);
@@ -98,9 +98,9 @@ public class HungerGames extends JavaPlugin {
 		try {
 			final File dataFolder = this.getDataFolder();
 			instance = this;
-			config = new ConfigFile(dataFolder);
+			config = new PluginConfig(dataFolder);
 			config.load();
-			messages = new MessagesFile(dataFolder);
+			messages = new PluginMessages(dataFolder);
 			messages.load();
 			winners = new WinnersFile(dataFolder);
 			winners.load();

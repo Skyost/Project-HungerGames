@@ -15,7 +15,7 @@ import fr.skyost.hungergames.utils.JsonItemStack;
 import fr.skyost.hungergames.utils.Skyoconfig;
 import fr.skyost.hungergames.utils.borders.Border.Type;
 
-public class ConfigFile extends Skyoconfig {
+public class PluginConfig extends Skyoconfig {
 	
 	public int VERSION = 3;
 	
@@ -156,7 +156,7 @@ public class ConfigFile extends Skyoconfig {
 	@ConfigOptions(name = "logs.file.directory")
 	public String logFileDirectory;
 	
-	public ConfigFile(final File dataFolder) {
+	public PluginConfig(final File dataFolder) {
 		super(new File(dataFolder, "config.yml"), Arrays.asList("Project HungerGames - By Skyost", "A documentation is available here : http://url.skyost.eu/caF."));
 		mapsFolder = new File(dataFolder + File.separator + "maps").getPath();
 		logFileDirectory = new File(dataFolder + File.separator + "logs").getPath();

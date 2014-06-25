@@ -6,7 +6,7 @@ import java.util.List;
 
 import fr.skyost.hungergames.utils.Skyoconfig;
 
-public class MessagesFile extends Skyoconfig {
+public class PluginMessages extends Skyoconfig {
 	
 	public int VERSION = 2;
 	
@@ -83,7 +83,7 @@ public class MessagesFile extends Skyoconfig {
 	@ConfigOptions(name = "ordinal-suffixes")
 	public List<String> ordinalSuffixes = Arrays.asList("th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th");
 
-	public MessagesFile(final File dataFolder) {
+	public PluginMessages(final File dataFolder) {
 		super(new File(dataFolder, "messages.yml"), Arrays.asList("Project HungerGames - By Skyost"));
 	}
 	
