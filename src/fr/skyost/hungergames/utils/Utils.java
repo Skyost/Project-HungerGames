@@ -96,20 +96,7 @@ public class Utils {
 	
 	public static final int getPlayerXP(final Player player) {
 		final double userLevel = player.getLevel() + player.getExp();
-		return safeLongToInt(Math.round((1.75D * Math.pow(userLevel, 2.0D) + 5.0D * userLevel)));
-	}
-	
-	/**
-	 * Used to cast a long to an int in a safely way.
-	 * 
-	 * @param l The long.
-	 * @return An int.
-	 * 
-	 * @author Jon Skeet.
-	 */
-	
-	public static final int safeLongToInt(final long l) {
-		return Ints.checkedCast(l);
+		return Ints.checkedCast(Math.round((1.75D * Math.pow(userLevel, 2.0D) + 5.0D * userLevel)));
 	}
 	
 	/**
@@ -132,24 +119,6 @@ public class Utils {
 	@SuppressWarnings("deprecation")
 	public static final int getId(final Material material) {
 		return material.getId();
-	}
-	
-	/**
-	 * Test if a String is numeric.
-	 * 
-	 * @param string The String to test.
-	 * @return <b>true></b>If the String is numeric.
-	 * <br><b>false</b> If the String is not numeric.
-	 */
-	
-	public static final boolean isNumeric(final String string) {
-		try {
-			Integer.parseInt(string);
-			return true;
-		}
-		catch(Exception ex) {
-			return false;
-		}
 	}
 	
 	/**

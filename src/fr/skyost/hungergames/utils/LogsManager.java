@@ -77,7 +77,7 @@ public class LogsManager {
 				printWriter.close();
 				fileWriter.close();
 			}
-			catch(Exception ex) {
+			catch(final Exception ex) {
 				ex.printStackTrace();
 			}
 		}

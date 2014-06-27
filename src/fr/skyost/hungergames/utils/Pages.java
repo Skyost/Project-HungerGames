@@ -42,7 +42,7 @@ public class Pages implements Serializable {
 			int page;
 			for(Entry<Integer, String> entry : unpaginatedText.entrySet()) {
 				page = entry.getKey() + 1;
-				stringBuilder.append(HungerGames.messages.message16.replaceAll("/n/", String.valueOf(page)).replaceAll("/ordinal-suffix/", Utils.getOrdinalSuffix(page)).replaceAll("/player/", entry.getValue()) + "\n");
+				stringBuilder.append(HungerGames.messages.message16.replace("/n/", String.valueOf(page)).replace("/ordinal-suffix/", Utils.getOrdinalSuffix(page)).replace("/player/", entry.getValue()) + "\n");
 			}
 			pages = Arrays.asList(stringBuilder.toString());
 		}
@@ -58,7 +58,7 @@ public class Pages implements Serializable {
 				final int number = e.getKey() + 1;
 				if((((l * length) + i + 1) == k) && (k != ((l * length) + length + 1))) {
 					i++;
-					stringBuilder.append(HungerGames.messages.message16.replaceAll("/n/", String.valueOf(number)).replaceAll("/ordinal-suffix/", Utils.getOrdinalSuffix(number)).replaceAll("/player/", e.getValue()) + "\n");
+					stringBuilder.append(HungerGames.messages.message16.replace("/n/", String.valueOf(number)).replace("/ordinal-suffix/", Utils.getOrdinalSuffix(number)).replace("/player/", e.getValue()) + "\n");
 				}
 			}
 			pages.add(stringBuilder.toString());
@@ -71,7 +71,7 @@ public class Pages implements Serializable {
 	}
 	
 	public final String getPage(final int page) {
-		return pages.get(page - 1) + (bottomText == null ? "" : "\n" + bottomText.replaceAll("/n/", String.valueOf(page)).replaceAll("/total-pages/", String.valueOf(pages.size())));
+		return pages.get(page - 1) + (bottomText == null ? "" : "\n" + bottomText.replace("/n/", String.valueOf(page)).replace("/total-pages/", String.valueOf(pages.size())));
 	}
 	
 	public final int getTotalPages() {

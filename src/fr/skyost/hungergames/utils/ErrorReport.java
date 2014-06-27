@@ -91,7 +91,7 @@ public class ErrorReport {
 					final boolean success = response.equals("1");
 					HungerGames.logsManager.log("[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
 				}
-				catch(Exception ex) {
+				catch(final Exception ex) {
 					ex.printStackTrace();
 					HungerGames.logsManager.log("[ErrorSender] Error while sending error report.");
 				}

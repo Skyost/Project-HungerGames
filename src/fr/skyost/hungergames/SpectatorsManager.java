@@ -14,7 +14,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 /**
- * Based on SpectatorFactory.
+ * Based on GhostFactory.
  * 
  * @author Original : <b>lenis0012</b>.
  * <br>Modified version : <b>Comphenix</b>.

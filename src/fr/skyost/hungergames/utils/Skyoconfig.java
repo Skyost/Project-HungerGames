@@ -30,7 +30,7 @@ import com.google.common.base.Joiner;
 /**
  * <h1>Skyoconfig</h1>
  * <p><i>Handle configurations with ease !</i></p>
- * <p><b>Current version :</b> v0.4.1.
+ * <p><b>Current version :</b> v0.4.2.
  * 
  * @author <b>Skyost</b> (<a href="http://www.skyost.eu">www.skyost.eu</a>).
  * <br>Inspired from <a href="https://forums.bukkit.org/threads/lib-supereasyconfig-v1-2-based-off-of-codename_bs-awesome-easyconfig-v2-1.100569/">SuperEasyConfig</a>.</br>
@@ -41,7 +41,7 @@ public class Skyoconfig {
 	private static final transient char DEFAULT_SEPARATOR = '_';
 	private static final transient String LINE_SEPARATOR = System.lineSeparator();
 	private static final transient String TEMP_CONFIG_SECTION = "temp";
-	public static final HashMap<Class<?>, Class<?>> PRIMITIVES_CLASS = new HashMap<Class<?>, Class<?>>() {
+	public static final transient HashMap<Class<?>, Class<?>> PRIMITIVES_CLASS = new HashMap<Class<?>, Class<?>>() {
 		private static final long serialVersionUID = 1L; {
 			put(int.class, Integer.class);
 			put(long.class, Long.class);

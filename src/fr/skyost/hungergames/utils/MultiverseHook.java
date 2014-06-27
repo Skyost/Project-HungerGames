@@ -34,7 +34,7 @@ public class MultiverseHook {
 		try {
 			return manager.deleteWorld(world);
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			HungerGames.logsManager.log("An error occured while deleting the world '" + world + "'. Maybe it has been deleted manually ?");
 		}
 		return false;

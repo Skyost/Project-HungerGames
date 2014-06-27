@@ -15,7 +15,7 @@ public class PostExecuteFirst extends BukkitRunnable {
 	@Override
 	public void run() {
 		HungerGames.currentStep = Step.SECOND_COUNTDOWN;
-		final String message = HungerGames.messages.message4.replaceAll("/n/", String.valueOf(HungerGames.config.gameCountdownTime));
+		final String message = HungerGames.messages.message4.replace("/n/", String.valueOf(HungerGames.config.gameCountdownTime));
 		Player player;
 		for(final Entry<Player, HungerGamesProfile> entry : HungerGames.players.entrySet()) {
 			player = entry.getKey();

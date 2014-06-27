@@ -50,7 +50,7 @@ public class Skyupdater {
 	private String response;
 	private Thread updaterThread;
 	
-	private static final String SKYUPDATER_VERSION = "0.4";
+	private static final String SKYUPDATER_VERSION = "0.4.1";
 	
 	public enum Result {
 		
@@ -380,7 +380,7 @@ public class Skyupdater {
 		public void run() {
 			if(isEnabled) {
 				try {
-					final String pluginName = plugin.getName().replaceAll("_", " ");
+					final String pluginName = plugin.getName().replace("_", " ");
 					final HttpURLConnection con = (HttpURLConnection)url.openConnection();
 					con.addRequestProperty("User-Agent", "Skyupdater v" + SKYUPDATER_VERSION);
 					if(apiKey != null) {

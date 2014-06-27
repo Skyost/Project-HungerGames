@@ -65,7 +65,7 @@ public class JsonItemStack {
 			object.put("amount", amount);
 			return object.toJSONString();
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			HungerGames.logsManager.log("This error has not been sent but you can send it manually.", Level.WARNING);
 		}
@@ -78,7 +78,7 @@ public class JsonItemStack {
 			final JSONObject array = (JSONObject)JSONValue.parse(jsonItemStack);
 			return new JsonItemStack((String)array.get("material"), (String)array.get("name"), (List<String>)array.get("lore"), (HashMap<String, Long>)array.get("enchantments"), (Long)array.get("amount"));
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			HungerGames.logsManager.log("This error has not been sent but you can send it manually.", Level.WARNING);
 		}

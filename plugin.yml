@@ -1,7 +1,7 @@
 name: Project HungerGames
 main: fr.skyost.hungergames.HungerGames
 description: May the odds be ever in your favour.
-version: 0.7.2
+version: 0.7.3
 softdepend: [WorldEdit, Multiverse-Core]
 author: Skyost
 website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/
@@ -9,7 +9,7 @@ commands:
  hg:
   description: Main command of Project HungerGames.
   aliases: [hunger-games, h-g]
-  usage: /hg join, /hg leave, /hg infos, /hg winners <page> /hg kit create <name>, /hg kit delete <name> or /hg setlobby.
+  usage: /hg join, /hg leave, /hg infos, /hg winners <page> /hg kit <create|delete> <kitname> or /hg setlobby.
 permissions:
  hungergames.join:
   default: true

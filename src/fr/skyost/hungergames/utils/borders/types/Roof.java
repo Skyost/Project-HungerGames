@@ -16,7 +16,7 @@ public class Roof extends WorldEditBorder {
 		try {
 			this.newEditSession(params).makeCylinder(new Vector(params.getX(), 255, params.getZ()), new SingleBlockPattern(new BaseBlock(params.getBlockID(), params.getBlockMeta())), params.getRadius(), params.getRadius(), 1, true);
 		}
-		catch(MaxChangedBlocksException ex) {
+		catch(final MaxChangedBlocksException ex) {
 			new WorldEditMaxChangedBlocksException();
 		}
 	}
@@ -30,4 +30,5 @@ public class Roof extends WorldEditBorder {
 	public String getDescription() {
 		return "Creates a circular roof over the area.";
 	}
+	
 }

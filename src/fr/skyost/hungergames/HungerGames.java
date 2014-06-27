@@ -34,7 +34,14 @@ import org.bukkit.util.ChatPaginator;
 
 import com.google.common.base.CharMatcher;
 
-import fr.skyost.hungergames.commands.HungerGamesCommand;
+import fr.skyost.hungergames.commands.GlobalCommandsExecutor;
+import fr.skyost.hungergames.commands.SubCommandsExecutor.CommandInterface;
+import fr.skyost.hungergames.commands.subcommands.hungergames.InfosSubCommand;
+import fr.skyost.hungergames.commands.subcommands.hungergames.JoinSubCommand;
+import fr.skyost.hungergames.commands.subcommands.hungergames.KitSubCommand;
+import fr.skyost.hungergames.commands.subcommands.hungergames.LeaveSubCommand;
+import fr.skyost.hungergames.commands.subcommands.hungergames.SetLobbySubCommand;
+import fr.skyost.hungergames.commands.subcommands.hungergames.WinnersSubCommand;
 import fr.skyost.hungergames.events.DamageListener;
 import fr.skyost.hungergames.events.EntityListener;
 import fr.skyost.hungergames.events.PlayerListener;
@@ -121,7 +128,7 @@ public class HungerGames extends JavaPlugin {
 				for(int i = 0; i != winnersSize; i++) {
 					winnersMap.put(i, winners.winners.get(i));
 				}
-				pages = new Pages(winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
+				pages = new Pages(winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replace("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
 			}
 			if(config.enableUpdater) {
 				new Skyupdater(this, 75831, this.getDataFolder(), true, true);
@@ -169,15 +176,13 @@ public class HungerGames extends JavaPlugin {
 			final Messenger messenger = Bukkit.getMessenger();
 			messenger.registerOutgoingPluginChannel(this, "BungeeCord");
 			messenger.registerIncomingPluginChannel(this, "BungeeCord", new BungeeMessageListener());
-			final PluginCommand command = this.getCommand("hg");
-			command.setUsage(ChatColor.RED + command.getUsage());
-			command.setExecutor(new HungerGamesCommand());
+			registerCommands();
 		}
 		catch(InvalidConfigurationException ex) {
 			ex.printStackTrace();
 			logsManager.log("Check the documentation for the configurations files here : http://url.skyost.eu/caF.", Level.SEVERE);
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			ErrorReport.createReport(ex).report();
 			logsManager.log("Error while enabling the plugin... Check the stacktrace above.");
@@ -211,7 +216,7 @@ public class HungerGames extends JavaPlugin {
 				HungerGamesAPI.deleteMap(currentMap);
 			}
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			ErrorReport.createReport(ex).report();
 			logsManager.log("Error while disabling the plugin... Check the stacktrace above.");
@@ -297,6 +302,16 @@ public class HungerGames extends JavaPlugin {
 			logsManager.log("You must enable spectators to use the dedicated mode.", Level.WARNING);
 		}
 		return true;
+	}
+	
+	private final void registerCommands() {
+		final GlobalCommandsExecutor executor = new GlobalCommandsExecutor();
+		for(final CommandInterface subCommand : new CommandInterface[]{new InfosSubCommand(), new JoinSubCommand(), new KitSubCommand(), new LeaveSubCommand(), new SetLobbySubCommand(), new WinnersSubCommand()}) {
+			executor.registerSubCommand(subCommand);
+		}
+		final PluginCommand pluginCommand = this.getCommand("hg");
+		pluginCommand.setUsage(ChatColor.RED + pluginCommand.getUsage());
+		pluginCommand.setExecutor(executor);
 	}
 	
 }

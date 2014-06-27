@@ -42,7 +42,7 @@ public class RandomItems extends BukkitRunnable {
 		else {
 			HungerGames.currentMap.dropItem(location, item);
 		}
-		HungerGamesAPI.broadcastMessage(HungerGames.messages.message10.replaceAll("/x/", String.valueOf(location.getBlockX())).replaceAll("/y/", String.valueOf(y)).replaceAll("/z/", String.valueOf(location.getBlockZ())));
+		HungerGamesAPI.broadcastMessage(HungerGames.messages.message10.replace("/x/", String.valueOf(location.getBlockX())).replace("/y/", String.valueOf(y)).replace("/z/", String.valueOf(location.getBlockZ())));
 		if(HungerGames.config.gameRandomItemsThundering) {
 			HungerGames.currentMap.strikeLightningEffect(location);
 		}

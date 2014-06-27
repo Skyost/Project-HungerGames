@@ -86,10 +86,10 @@ public class HungerGamesAPI {
 			}
 			player.teleport(spawn);
 			HungerGames.totalPlayers++;
-			broadcastMessage(HungerGames.messages.message14.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers)).replaceAll("/n-max/", String.valueOf(HungerGames.config.gameMaxPlayers)).replaceAll("/player/", player.getName()));
+			broadcastMessage(HungerGames.messages.message14.replace("/n/", String.valueOf(HungerGames.totalPlayers)).replace("/n-max/", String.valueOf(HungerGames.config.gameMaxPlayers)).replace("/player/", player.getName()));
 			if(HungerGames.totalPlayers == HungerGames.config.gameMinPlayers) {
 				HungerGames.logsManager.log("Starting game...");
-				broadcastMessage(HungerGames.messages.message3.replaceAll("/n/", String.valueOf(HungerGames.config.lobbyCountdownTime)));
+				broadcastMessage(HungerGames.messages.message3.replace("/n/", String.valueOf(HungerGames.config.lobbyCountdownTime)));
 				HungerGames.currentStep = Step.FIRST_COUNTDOWN;
 				HungerGames.tasks.set(0, new Countdown(HungerGames.config.lobbyCountdownTime, HungerGames.config.lobbyCountdownExpBarLevel, HungerGames.config.lobbyCountdownMobBar, new PostExecuteFirst()).runTaskTimer(HungerGames.instance, 0, 20L).getTaskId());
 			}
@@ -135,11 +135,13 @@ public class HungerGamesAPI {
 			}
 			HungerGames.totalPlayers--;
 		}
-		if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
-			finishGame(HungerGames.messages.message8, true);
-		}
-		else if((HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.gameMinPlayers) || Bukkit.getOnlinePlayers().length <= 1) {
-			finishGame(HungerGames.messages.message7, false);
+		if(HungerGames.currentStep != Step.LOBBY) {
+			if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
+				finishGame(HungerGames.messages.message8, true);
+			}
+			else if((HungerGames.currentStep != Step.GAME && HungerGames.totalPlayers < HungerGames.config.gameMinPlayers) || Bukkit.getOnlinePlayers().length <= 1) {
+				finishGame(HungerGames.messages.message7, false);
+			}
 		}
 	}
 	
@@ -170,7 +172,7 @@ public class HungerGamesAPI {
 						giveReward(player, HungerGames.totalPlayers);
 					}
 					HungerGames.winnersMap.put(HungerGames.winnersMap.size(), player.getName());
-					HungerGames.pages = new Pages(HungerGames.winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replaceAll("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
+					HungerGames.pages = new Pages(HungerGames.winnersMap, ChatPaginator.OPEN_CHAT_PAGE_HEIGHT, ChatColor.AQUA + "------\n" + HungerGames.messages.message17.replace("/line-separator/", "\n"), CharMatcher.is('\n').countIn(HungerGames.messages.message17));
 				}
 			}
 		}
@@ -290,7 +292,7 @@ public class HungerGamesAPI {
 		catch(ClassNotFoundException ex) {
 			HungerGames.logsManager.log("You server version seems not compatible with reflection. Try downloading and installing Multiverse to fix this error.", Level.WARNING);
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			ErrorReport.createReport(ex).report();
 			HungerGames.logsManager.log("Error while deleting the current map... Check the stacktrace above.");
@@ -349,7 +351,7 @@ public class HungerGamesAPI {
 			world.setTime(HungerGames.config.mapsDefaultTime);
 			return world;
 		}
-		catch(Exception ex) {
+		catch(final Exception ex) {
 			ex.printStackTrace();
 			ErrorReport.createReport(ex).report();
 			HungerGames.logsManager.log("Error while processing maps... Check the stacktrace above.");
@@ -401,7 +403,7 @@ public class HungerGamesAPI {
 		String motd = null;
 		switch(HungerGames.currentStep) {
 		case LOBBY:
-			motd = HungerGames.messages.motd1.replaceAll("/n/", String.valueOf(HungerGames.config.gameMinPlayers - HungerGames.totalPlayers));
+			motd = HungerGames.messages.motd1.replace("/n/", String.valueOf(HungerGames.config.gameMinPlayers - HungerGames.totalPlayers));
 			break;
 		case FIRST_COUNTDOWN:
 			motd = HungerGames.messages.motd2;
@@ -410,7 +412,7 @@ public class HungerGamesAPI {
 			motd = HungerGames.messages.motd3;
 			break;
 		case GAME:
-			motd = HungerGames.messages.motd4.replaceAll("/n/", String.valueOf(HungerGames.totalPlayers));
+			motd = HungerGames.messages.motd4.replace("/n/", String.valueOf(HungerGames.totalPlayers));
 			break;
 		}
 		return motd;
