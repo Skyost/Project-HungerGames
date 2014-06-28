@@ -17,7 +17,7 @@ public class Cylinder extends WorldEditBorder {
 			this.newEditSession(params).makeCylinder(new Vector(params.getX(), 0, params.getZ()), new SingleBlockPattern(new BaseBlock(params.getBlockID(), params.getBlockMeta())), params.getRadius(), params.getRadius(), 256, false);
 		}
 		catch(final MaxChangedBlocksException ex) {
-			new WorldEditMaxChangedBlocksException();
+			throw new WorldEditMaxChangedBlocksException();
 		}
 	}
 	
