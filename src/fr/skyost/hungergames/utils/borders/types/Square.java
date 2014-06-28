@@ -20,7 +20,7 @@ public class Square extends WorldEditBorder {
 			this.newEditSession(params).makeCuboidWalls(new CuboidRegion(pos1, pos2), new SingleBlockPattern(new BaseBlock(params.getBlockID(), params.getBlockMeta())));
 		}
 		catch(MaxChangedBlocksException ex) {
-			new WorldEditMaxChangedBlocksException();
+			throw new WorldEditMaxChangedBlocksException();
 		}
 	}
 	
