@@ -1,0 +1,37 @@
+name: Project HungerGames
+main: fr.skyost.hungergames.HungerGames
+description: May the odds be ever in your favour.
+version: 0.8.0.2
+softdepend: [WorldEdit, Multiverse-Core, EffectLib]
+author: Skyost
+website: http://dev.bukkit.org/bukkit-plugins/project-hungergames/
+commands:
+ hg:
+  description: Main command of Project HungerGames.
+  aliases: [hunger-games, h-g]
+  usage: /hg join, /hg leave, /hg infos, /hg winners <page> /hg kit <create|delete> <kitname> or /hg setlobby.
+permissions:
+ hungergames.join:
+  default: true
+  description: Allows you to join the game.
+ hungergames.leave:
+  default: true
+  description: Allows you to leave the game.
+ hungergames.infos:
+  default: true
+  description: Allows you to view informations about the next game.
+ hungergames.winners:
+  default: true
+  description: Allows you to view the winners.
+ hungergames.kits.create:
+  default: op
+  description: Allows you to create kits.
+ hungergames.kits.delete:
+  default: op
+  description: Allows you to delete kits.
+ hungergames.kits.use:
+  default: true
+  description: Allows you to use kits.
+ hungergames.lobby.set:
+  default: op
+  description: Allows you to set the spawn of the lobby.
