@@ -82,7 +82,9 @@ public class PluginConfig extends Skyoconfig {
 	@ConfigOptions(name = "game.spawn-distance")
 	public int gameSpawnDistance = 200;
 	@ConfigOptions(name = "game.auto-sneak")
-	public boolean gameAutoSneak = true;
+	public boolean gameAutoSneak = false;
+	@ConfigOptions(name = "game.hide-name-tag")
+	public boolean gameHideNameTag = true;
 	@ConfigOptions(name = "game.compass-nearest-player")
 	public boolean gameCompassNearestPlayer = false;
 	@ConfigOptions(name = "game.death-name-sky")

@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import com.google.common.base.Joiner;
+
+import fr.skyost.hungergames.HungerGames;
+import fr.skyost.hungergames.utils.ErrorReport;
 
 public abstract class SubCommandsExecutor implements CommandExecutor {
 	
@@ -42,7 +49,63 @@ private final List<CommandInterface> commands = new ArrayList<CommandInterface>(
 	}
 
 	@Override
-	public abstract boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args);
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+		try {
+			final CommandInterface commandInterface = this.getExecutor(args[0]);
+			if(commandInterface == null) {
+				return false;
+			}
+			if(commandInterface.forcePlayer() && !(sender instanceof Player)) {
+				sender.sendMessage(ChatColor.RED + "Please perform this command from the game !");
+				return true;
+			}
+			final String permission = commandInterface.getPermission();
+			if(permission != null && !sender.hasPermission(permission)) {
+				sender.sendMessage(HungerGames.messages.messagePermission);
+				return true;
+			}
+			if(args.length - 1 < commandInterface.getMinArgsLength()) {
+				sender.sendMessage(ChatColor.RED + "/" + label + " " + commandInterface.getUsage());
+				return true;
+			}
+			if(!commandInterface.onCommand(sender, Arrays.copyOfRange(args, 1, args.length))) {
+				sender.sendMessage(buildUsage(label));
+			}
+		}
+		catch(final Exception ex) {
+			ex.printStackTrace();
+			ErrorReport.createReport(ex).report();
+			sender.sendMessage(ChatColor.RED + ex.getClass().getName());
+		}
+		return true;
+	}
+	
+	/**
+	 * Builds a String which contains the usage of the command.
+	 * 
+	 * @param label The label used.
+	 * 
+	 * @return The usage.
+	 */
+	
+	private final String buildUsage(final String label) {
+		return ChatColor.RED + "/" + label + " [" + getUsage() + "]";
+	}
+	
+	/**
+	 * Gets the usage of the command.
+	 * 
+	 * @return The usage.
+	 */
+	
+	public final String getUsage() {
+		final List<String> subCommands = new ArrayList<String>();
+		for(final CommandInterface command : commands) {
+			final String commandUsage = command.getUsage();
+			subCommands.add(command.names()[0] + (commandUsage == null ? "" : " " + command.getUsage()));
+		}
+		return Joiner.on(" | ").join(subCommands);
+	}
 	
 	public interface CommandInterface {
 		

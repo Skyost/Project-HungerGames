@@ -1,6 +1,7 @@
 package fr.skyost.hungergames.events;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,9 +23,9 @@ public class EntityListener  implements Listener {
 		if(event.isCancelled()) {
 			return;
 		}	
-		final Entity entity = event.getEntity();
 		final Entity target = event.getTarget();
-		if(target instanceof Player) {
+		if(target.getType() == EntityType.PLAYER) {
+			final Entity entity = event.getEntity();
 			final Player player = (Player)target;
 			if(HungerGames.spectatorsManager.hasSpectator(player) && entity instanceof ExperienceOrb) {
 				Utils.repellExpOrb(player, (ExperienceOrb)entity);

@@ -76,6 +76,9 @@ public class HungerGamesAPI {
 		player.setExp(0f);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
+		if(HungerGames.noNameTag != null) {
+			HungerGames.noNameTag.setNameTag(player, false);
+		}
 		if(setSpectator) {
 			player.teleport(HungerGames.currentMap.getSpawnLocation());
 			HungerGames.spectatorsManager.addSpectator(player);
@@ -139,6 +142,9 @@ public class HungerGamesAPI {
 				giveReward(player, HungerGames.totalPlayers);
 			}
 			HungerGames.totalPlayers--;
+		}
+		if(HungerGames.noNameTag != null) {
+			HungerGames.noNameTag.setNameTag(player, true);
 		}
 		if(HungerGames.currentStep != Step.LOBBY) {
 			if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {

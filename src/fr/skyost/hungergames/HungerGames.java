@@ -58,6 +58,7 @@ public class HungerGames extends JavaPlugin {
 	public static final LogsManager logsManager = new LogsManager();
 	public static MultiverseHook multiverseHook;
 	public static EffectLibHook effectLibHook;
+	public static NoNameTagFactory noNameTag;
 	
 	public static PluginConfig config;
 	public static PluginMessages messages;
@@ -151,6 +152,9 @@ public class HungerGames extends JavaPlugin {
 				else {
 					logsManager.log("EffectLib was not found, could not write names in the sky.", Level.WARNING);
 				}
+			}
+			if(config.gameHideNameTag) {
+				noNameTag = new NoNameTagFactory(this);
 			}
 			setupRandomItems();
 			setupRewards();
