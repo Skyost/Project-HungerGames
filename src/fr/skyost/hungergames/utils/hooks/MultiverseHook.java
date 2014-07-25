@@ -12,13 +12,10 @@ import fr.skyost.hungergames.HungerGames;
 
 public class MultiverseHook {
 	
-	private final MultiverseCore multiverse;
 	private final MVWorldManager manager;
 	
 	public MultiverseHook(final Plugin multiverse) {
-		this.multiverse = (MultiverseCore)multiverse;
-		manager = this.multiverse.getMVWorldManager();
-		manager.getDefaultWorldGenerators();
+		manager = ((MultiverseCore)multiverse).getMVWorldManager();
 	}
 	
 	public final boolean createWorld(final String world, final Environment environment, final long seed, final WorldType type, final boolean generateStructures, final String generator) {

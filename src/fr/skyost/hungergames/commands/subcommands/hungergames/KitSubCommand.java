@@ -92,7 +92,6 @@ public class KitSubCommand implements CommandInterface {
 			sender.sendMessage(ChatColor.RED + getUsage());
 			return true;
 		}
-		HungerGames.config.save();
 		sender.sendMessage(HungerGames.messages.message22);
 		return true;
 	}

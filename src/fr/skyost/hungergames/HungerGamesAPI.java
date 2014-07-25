@@ -29,13 +29,8 @@ import org.json.simple.JSONObject;
 import com.google.common.base.CharMatcher;
 
 import fr.skyost.hungergames.HungerGames.Step;
-import fr.skyost.hungergames.tasks.BorderCreatorTask;
-import fr.skyost.hungergames.tasks.Countdown;
-import fr.skyost.hungergames.tasks.PostExecuteFirst;
-import fr.skyost.hungergames.utils.ErrorReport;
-import fr.skyost.hungergames.utils.JsonItemStack;
-import fr.skyost.hungergames.utils.Pages;
-import fr.skyost.hungergames.utils.Utils;
+import fr.skyost.hungergames.tasks.*;
+import fr.skyost.hungergames.utils.*;
 import fr.skyost.hungergames.utils.borders.Border.Type;
 import fr.skyost.hungergames.utils.borders.BorderParams;
 
@@ -76,23 +71,13 @@ public class HungerGamesAPI {
 		player.setExp(0f);
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setFoodLevel(20);
-		if(HungerGames.noNameTag != null) {
-			HungerGames.noNameTag.setNameTag(player, false);
-		}
 		if(setSpectator) {
 			player.teleport(HungerGames.currentMap.getSpawnLocation());
 			HungerGames.spectatorsManager.addSpectator(player);
 		}
 		else {
 			inventory.addItem(HungerGames.kitSelector);
-			final Location spawn;
-			if(HungerGames.config.lobbySpawnX == 0 && HungerGames.config.lobbySpawnY == 0 && HungerGames.config.lobbySpawnZ == 0) {
-				spawn = HungerGames.lobby.getSpawnLocation();
-			}
-			else {
-				spawn = new Location(HungerGames.lobby, HungerGames.config.lobbySpawnX, HungerGames.config.lobbySpawnY, HungerGames.config.lobbySpawnZ);
-			}
-			player.teleport(spawn);
+			player.teleport((HungerGames.config.lobbySpawnX == 0 && HungerGames.config.lobbySpawnY == 0 && HungerGames.config.lobbySpawnZ == 0) ? HungerGames.lobby.getSpawnLocation() : new Location(HungerGames.lobby, HungerGames.config.lobbySpawnX, HungerGames.config.lobbySpawnY, HungerGames.config.lobbySpawnZ));
 			HungerGames.totalPlayers++;
 			broadcastMessage(HungerGames.messages.message14.replace("/n/", String.valueOf(HungerGames.totalPlayers)).replace("/n-max/", String.valueOf(HungerGames.config.gameMaxPlayers)).replace("/player/", player.getName()));
 			if(HungerGames.totalPlayers == HungerGames.config.gameMinPlayers) {
@@ -142,9 +127,6 @@ public class HungerGamesAPI {
 				giveReward(player, HungerGames.totalPlayers);
 			}
 			HungerGames.totalPlayers--;
-		}
-		if(HungerGames.noNameTag != null) {
-			HungerGames.noNameTag.setNameTag(player, true);
 		}
 		if(HungerGames.currentStep != Step.LOBBY) {
 			if(HungerGames.currentStep == Step.GAME && HungerGames.totalPlayers == 1) {
@@ -299,7 +281,7 @@ public class HungerGamesAPI {
 			}
 			HungerGames.logsManager.log("Done !");
 		}
-		catch(ClassNotFoundException ex) {
+		catch(final ClassNotFoundException ex) {
 			HungerGames.logsManager.log("You server version seems not compatible with reflection. Try downloading and installing Multiverse to fix this error.", Level.WARNING);
 		}
 		catch(final Exception ex) {

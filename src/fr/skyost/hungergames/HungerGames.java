@@ -17,6 +17,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.enchantments.Enchantment;
@@ -58,7 +59,6 @@ public class HungerGames extends JavaPlugin {
 	public static final LogsManager logsManager = new LogsManager();
 	public static MultiverseHook multiverseHook;
 	public static EffectLibHook effectLibHook;
-	public static NoNameTagFactory noNameTag;
 	
 	public static PluginConfig config;
 	public static PluginMessages messages;
@@ -101,7 +101,7 @@ public class HungerGames extends JavaPlugin {
 			winners.load();
 			lobby = Bukkit.getWorld(config.lobbyWorld);
 			if(lobby == null) {
-				lobby = Bukkit.createWorld(new WorldCreator(config.lobbyWorld));
+				lobby = Bukkit.createWorld(new WorldCreator(config.lobbyWorld).type(WorldType.FLAT).generateStructures(false));
 			}
 			if(config.logConsole) {
 				logsManager.setLogger(new PluginLogger(this));
@@ -139,7 +139,7 @@ public class HungerGames extends JavaPlugin {
 				multiverseHook = new MultiverseHook(multiverse);
 				logsManager.log("Multiverse hooked with success !");
 			}
-			else if(Skyupdater.compareVersions(Utils.getMinecraftServerVersion(), "1.6.5")) {
+			else if(Skyupdater.compareVersions("1.7.3", Utils.getMinecraftServerVersion())) {
 				logsManager.log("If you are using a server software which has a version lower than 1.7.3, please install Multiverse.", Level.SEVERE);
 				manager.disablePlugin(this);
 				return;
@@ -152,9 +152,6 @@ public class HungerGames extends JavaPlugin {
 				else {
 					logsManager.log("EffectLib was not found, could not write names in the sky.", Level.WARNING);
 				}
-			}
-			if(config.gameHideNameTag) {
-				noNameTag = new NoNameTagFactory(this);
 			}
 			setupRandomItems();
 			setupRewards();
