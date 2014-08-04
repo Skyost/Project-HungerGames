@@ -1,6 +1,7 @@
 package fr.skyost.hungergames.utils;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -74,13 +75,15 @@ public class ErrorReport {
 			@Override
 			public void run() {
 				try {
-					HungerGames.logsManager.log("[ErrorSender] Sending the report from " + name + "<" + email + ">...");
-					final String encodedName = URLEncoder.encode(name, "UTF-8");
-					final String encodedEmail = URLEncoder.encode(email, "UTF-8");
-					final String encodedMessage = URLEncoder.encode(message, "UTF-8");
-					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.project-hungergames.ml", "/bug.php?name=" + encodedName + "&email=" + encodedEmail + "&message=" + encodedMessage + "&subject=" + subject).openConnection();
-					connection.setRequestMethod("GET");
+					HungerGames.logsManager.log("[ErrorReport] Sending the report from " + name + "<" + email + ">...");
+					final HttpURLConnection connection = (HttpURLConnection)new URL("http", "www.project-hungergames.ml", "/bug.php").openConnection();
+					connection.setRequestMethod("POST");
 					connection.setRequestProperty("User-Agent", "Project HungerGames");
+					connection.setDoOutput(true);
+					final DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+					outputStream.writeBytes("name=" + URLEncoder.encode(name, "UTF-8") + "&email=" + URLEncoder.encode(email, "UTF-8") + "&message=" + URLEncoder.encode(message, "UTF-8") + "&subject=" + subject);
+					outputStream.flush();
+					outputStream.close();
 					final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 					String inputLine;
 					final StringBuilder builder = new StringBuilder();
@@ -90,12 +93,12 @@ public class ErrorReport {
 					reader.close();
 					connection.disconnect();
 					final String response = builder.toString();
-					final boolean success = response.equals("1");
-					HungerGames.logsManager.log("[ErrorSender] (" + response + ") " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
+					final boolean success = response.contains("Success");
+					HungerGames.logsManager.log("[ErrorReport] " + (success ? "Success !" : "Error..."), success ? Level.INFO : Level.SEVERE);
 				}
 				catch(final Exception ex) {
 					ex.printStackTrace();
-					HungerGames.logsManager.log("[ErrorSender] Error while sending error report.");
+					HungerGames.logsManager.log("[ErrorReport] Error while sending error report.");
 				}
 			}
 			
