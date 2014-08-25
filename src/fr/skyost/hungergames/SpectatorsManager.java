@@ -29,7 +29,7 @@ public class SpectatorsManager {
 	// No players in the ghost factory
 	private static final OfflinePlayer[] EMPTY_PLAYERS = new OfflinePlayer[0];
 	
-	private static List<Player> spectatorsList;
+	private List<Player> spectatorsList;
 	private SpectatorsManagerMode mode;
 	
 	private Team spectatorsTeam;

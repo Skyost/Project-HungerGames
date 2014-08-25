@@ -30,4 +30,5 @@ public class Cylinder extends WorldEditBorder {
 	public String getDescription() {
 		return "Creates a cylinder wall around the map.";
 	}
+	
 }

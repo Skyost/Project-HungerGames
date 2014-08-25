@@ -33,4 +33,5 @@ public class Square extends WorldEditBorder {
 	public String getDescription() {
 		return "Creates a square wall around the map.";
 	}
+	
 }
